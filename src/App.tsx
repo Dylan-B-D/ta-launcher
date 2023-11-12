@@ -15,6 +15,9 @@ import { GiLevelFourAdvanced } from 'react-icons/gi';
 import { TiSpanner } from 'react-icons/ti';
 import { CiRoute } from 'react-icons/ci';
 import { LuPackage } from 'react-icons/lu';
+import { IoGitNetworkSharp } from 'react-icons/io5';
+import { TiCog } from 'react-icons/ti';
+import { AiOutlineUser } from 'react-icons/ai';
 
 interface View {
   component?: React.ComponentType;
@@ -53,19 +56,27 @@ function App() {
   const views: View[] = [
     { component: HomeView, path: '/home', name: 'Home' , icon: BiHomeAlt2},
     { component: ServerBrowser, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
+    { component: ServerBrowser, path: '/packages', name: 'Packages', icon: LuPackage, },
     { 
       name: 'Servers', 
       icon: BiServer, 
       subViews: [
-        { name: 'PUG', path: '/servers/pug', component: HomeView },
-        { name: 'Community', path: '/servers/community', component: ServerBrowser },
+        { name: 'PUG', path: '/servers/pug', component: HomeView, icon: IoGitNetworkSharp},
+        { name: 'Community', path: '/servers/community', component: ServerBrowser, icon: IoGitNetworkSharp },
       ] 
     },
-    { component: HomeView, path: '/advanced', name: 'Advanced', icon: GiLevelFourAdvanced, },
-    { component: ServerBrowser, path: '/config', name: 'Config', icon: TiSpanner, },
-    { component: ServerBrowser, path: '/routes', name: 'Routes', icon: CiRoute, },
-    { component: ServerBrowser, path: '/packages', name: 'Packages', icon: LuPackage, },
+    { 
+      name: 'Advanced', 
+      icon: GiLevelFourAdvanced, 
+      subViews: [
+        { name: 'Config', path: '/advanced/config', component: HomeView, icon: TiSpanner},
+        { name: 'Routes', path: '/advanced/routes', component: ServerBrowser, icon: CiRoute },
+      ] 
+    },
+    { component: ServerBrowser, path: '/settings', name: 'Settings', icon: TiCog, },
+    { component: ServerBrowser, path: '/Login', name: 'Login', icon: AiOutlineUser, },
   ];  
+  
 
   const theme = darkTheme;
 
@@ -74,7 +85,7 @@ function App() {
       <MantineProvider theme={darkTheme}>
       <AppShell
       header={{ height: 30 }}
-      navbar={{ width: 200, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="md"
       styles={(theme) => ({
         main: {

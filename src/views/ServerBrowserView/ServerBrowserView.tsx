@@ -1,11 +1,9 @@
-// HomeView.tsx
-
-import ColorBox from '../../components/ColorBox';
+// ServerBrowser.tsx
 
 const HomeView = () => {
   return (
     <div style={{ padding: '1rem' }}>
-      <ColorBox />
+      Test
     </div>
   );
 };
