@@ -1,6 +1,30 @@
 /* HomeView.module.css */
 
-.cardWrapper {
-    margin-bottom: 2rem; /* Adjust as needed */
-  }
-  
+.bridge {
+  position: relative; /* Required for absolute positioning of pseudo-elements */
+  height: 2.5rem; /* Height of the bridge */
+  background-color: var(--mantine-color-mutedBlue-9);
+  width: 1px; /* Width of the bridge */
+  margin: 0 auto; /* Center the bridge */
+}
+
+.bridge::before,
+.bridge::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px; /* Diameter of the semi-circle */
+  height: 8px; /* Diameter of the semi-circle */
+  background-color: var(--mantine-color-mutedBlue-9); /* Color of the semi-circle */
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.bridge::before {
+  top: -5px; /* Half of the height to align with the top edge */
+}
+
+.bridge::after {
+  bottom: -5px; /* Half of the height to align with the bottom edge */
+}

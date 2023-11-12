@@ -22,7 +22,7 @@
   }
 
   .linksInner {
-    padding-top: var(--mantine-spacing-xl);
+    padding-top: var(--mantine-spacing-lg);
     padding-bottom: var(--mantine-spacing-xl);
   }
   

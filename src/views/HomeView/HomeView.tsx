@@ -10,11 +10,15 @@ const HomeView = () => {
       <div className={classes.cardWrapper}>
         <GameLauncherCard />
       </div>
+      
+      <div className={classes.bridge}></div> {/* Visual bridge element */}
+
       <Injector />
     </div>
   );
 };
 
 export default HomeView;
+
 
   

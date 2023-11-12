@@ -7,6 +7,7 @@ import { NavbarNested } from './components/NavbarNested/NavbarNested';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import HomeView from './views/HomeView/HomeView';
 import ServerBrowser from './views/ServerBrowserView/ServerBrowserView';
+import SetupView from './views/Setup/SetupView';
 import React from 'react';
 import { BiHomeAlt2 } from 'react-icons/bi';
 import { RiSettingsLine } from 'react-icons/ri';
@@ -55,8 +56,8 @@ function App() {
   // left sidebar
   const views: View[] = [
     { component: HomeView, path: '/home', name: 'Home', icon: BiHomeAlt2 },
-    { component: ServerBrowser, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
-    { component: ServerBrowser, path: '/packages', name: 'Packages', icon: LuPackage, },
+    { component: SetupView, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
+    { component: SetupView, path: '/packages', name: 'Packages', icon: LuPackage, },
     {
       name: 'Servers',
       icon: BiServer,
