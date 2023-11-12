@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "tribes-revival-launcher",
+    "productName": "ta-launcher",
     "version": "0.1.0"
   },
   "tauri": {
@@ -28,7 +28,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "tribes.revival.launcher",
+      "identifier": "ta.launcher",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -57,7 +57,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Tribes Revival Launcher",
+        "title": "T:A Launcher",
         "width": 800
       }
     ]
