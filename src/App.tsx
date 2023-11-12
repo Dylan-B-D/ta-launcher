@@ -24,8 +24,8 @@ interface View {
   path?: string;
   name: string;
   icon?: React.ComponentType;
-  subViews?: View[]; 
-  isOpen?: boolean; 
+  subViews?: View[];
+  isOpen?: boolean;
 }
 
 
@@ -54,100 +54,100 @@ function App() {
 
   // left sidebar
   const views: View[] = [
-    { component: HomeView, path: '/home', name: 'Home' , icon: BiHomeAlt2},
+    { component: HomeView, path: '/home', name: 'Home', icon: BiHomeAlt2 },
     { component: ServerBrowser, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
     { component: ServerBrowser, path: '/packages', name: 'Packages', icon: LuPackage, },
-    { 
-      name: 'Servers', 
-      icon: BiServer, 
+    {
+      name: 'Servers',
+      icon: BiServer,
       subViews: [
-        { name: 'PUG', path: '/servers/pug', component: HomeView, icon: IoGitNetworkSharp},
+        { name: 'PUG', path: '/servers/pug', component: HomeView, icon: IoGitNetworkSharp },
         { name: 'Community', path: '/servers/community', component: ServerBrowser, icon: IoGitNetworkSharp },
-      ] 
+      ]
     },
-    { 
-      name: 'Advanced', 
-      icon: GiLevelFourAdvanced, 
+    {
+      name: 'Advanced',
+      icon: GiLevelFourAdvanced,
       subViews: [
-        { name: 'Config', path: '/advanced/config', component: HomeView, icon: TiSpanner},
+        { name: 'Config', path: '/advanced/config', component: HomeView, icon: TiSpanner },
         { name: 'Routes', path: '/advanced/routes', component: ServerBrowser, icon: CiRoute },
-      ] 
+      ]
     },
     { component: ServerBrowser, path: '/settings', name: 'Settings', icon: TiCog, },
     { component: ServerBrowser, path: '/Login', name: 'Login', icon: AiOutlineUser, },
-  ];  
-  
+  ];
+
 
   const theme = darkTheme;
 
   return (
     <Router>
       <MantineProvider theme={darkTheme}>
-      <AppShell
-      header={{ height: 30 }}
-      navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding="md"
-      styles={(theme) => ({
-        main: {
-          backgroundColor: theme.colors.darkGray[3], // or any other shade
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100vh', // full height
-          width: '100vw', // full height
-          borderStyle: 'none',
-        },
-      })}
-      
-    >
-      <AppShell.Header
-        styles={(theme) => ({
-          header: {
-            backgroundColor: theme.colors.darkGray[3],
-            borderBottomColor: theme.colors.darkGray[0],
-            borderBottomWidth: '1px',
-            borderBottomStyle: 'solid',
-          },
-        })}
-      >
-      <div className="flex justify-between items-center">
-        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="gray" />
-        <div className="flex-1"></div> {/* Invisible spacer */}
-        <div className="flex items-center pr-4 text-gray-400"> {/* Adjusted for vertical centering */}
-            <Code style={{ marginTop: '4px' }} color={theme.colors?.mutedBlue?.[5] || 'defaultColor'}>
-              Players Online: <strong>0</strong>
-            </Code>
-        </div>
-      </div>
+        <AppShell
+          header={{ height: 30 }}
+          navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+          padding="md"
+          styles={(theme) => ({
+            main: {
+              backgroundColor: theme.colors.darkGray[3], // or any other shade
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100vh', // full height
+              width: '100vw', // full height
+              borderStyle: 'none',
+            },
+          })}
+
+        >
+          <AppShell.Header
+            styles={(theme) => ({
+              header: {
+                backgroundColor: theme.colors.darkGray[3],
+                borderBottomColor: theme.colors.darkGray[0],
+                borderBottomWidth: '1px',
+                borderBottomStyle: 'solid',
+              },
+            })}
+          >
+            <div className="flex justify-between items-center">
+              <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="gray" />
+              <div className="flex-1"></div> {/* Invisible spacer */}
+              <div className="flex items-center pr-4 text-gray-400"> {/* Adjusted for vertical centering */}
+                <Code style={{
+                  marginTop: '4px',
+                  color: theme.colors?.lightGray?.[5] || '#B0B0B0' // Example light gray color
+                }} color={theme.colors?.darkGray?.[2] || 'defaultColor'}>
+                  Players Online: <strong>0</strong>
+                </Code>
+              </div>
+            </div>
+          </AppShell.Header>
+
+          <AppShell.Navbar
+            styles={(theme) => ({
+              navbar: {
+                backgroundColor: theme.colors.darkGray[2],
+                borderRightColor: theme.colors.darkGray[6],
+                borderRightWidth: '1px',
+                borderRightStyle: 'solid',
+              },
+            })}
+          >
+            <NavbarNested views={views} />
+          </AppShell.Navbar>
 
 
+          <AppShell.Main>
+            <Routes>
+              <Route path="/" element={<Navigate to={views[0].path || '/fallback-path'} />} />
+              {views.flatMap(view => renderRoutes(view))}
+            </Routes>
+          </AppShell.Main>
 
-      </AppShell.Header>
-
-      <AppShell.Navbar
-        styles={(theme) => ({
-          navbar: {
-            backgroundColor: theme.colors.darkGray[2],
-            borderRightColor: theme.colors.darkGray[6], 
-            borderRightWidth: '1px',
-            borderRightStyle: 'solid',
-          },
-        })}
-       >
-        <NavbarNested views={views} />
-      </AppShell.Navbar>
-
-
-      <AppShell.Main>
-        <Routes>
-          <Route path="/" element={<Navigate to={views[0].path || '/fallback-path'} />} />
-          {views.flatMap(view => renderRoutes(view))}
-        </Routes>
-      </AppShell.Main>
-
-    </AppShell>
-    </MantineProvider>
+        </AppShell>
+      </MantineProvider>
     </Router>
-    
+
   );
 }
 

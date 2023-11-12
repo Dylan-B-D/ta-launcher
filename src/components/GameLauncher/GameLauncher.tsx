@@ -34,7 +34,7 @@ const GameLauncher: React.FC = () => {
         />
       </Card.Section>
 
-      <Text size="lg" style={{ textAlign: 'center', marginTop: '1rem', color: '#FFFFFF' }}>
+      <Text className={classes.title} size="lg" style={{ textAlign: 'center', marginTop: '1rem', color: theme.colors.lightGray[4] }}>
         Tribes: Ascend Launcher
       </Text>
 
@@ -46,7 +46,7 @@ const GameLauncher: React.FC = () => {
         onClick={startGame} 
         variant="filled" 
         className={classes.customButton}
-        style={{ backgroundColor: theme.colors.mutedAmber[6], color: '#000' }}
+        style={{ backgroundColor: theme.colors.mutedAmber[6], color: theme.colors.darkGray[3] }}
         fullWidth 
         mt="md" 
         radius="xs"
