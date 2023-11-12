@@ -17,22 +17,51 @@ import { CiRoute } from 'react-icons/ci';
 import { LuPackage } from 'react-icons/lu';
 
 interface View {
-  component: React.ComponentType; // or React.ReactNode depending on how you use it
-  path: string;
+  component?: React.ComponentType;
+  path?: string;
   name: string;
-  icon: React.ComponentType; // assuming icons are React components
+  icon?: React.ComponentType;
+  subViews?: View[]; 
+  isOpen?: boolean; 
 }
 
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
 
+  const renderRoutes = (view: View) => {
+    let routes: any[] = [];
+
+    // If the view has a component and path, add its route
+    if (view.path && view.component) {
+      routes.push(
+        <Route key={view.path} path={view.path} element={React.createElement(view.component)} />
+      );
+    }
+
+    // If the view has subViews, add routes for each
+    if (view.subViews) {
+      view.subViews.forEach(subView => {
+        routes = routes.concat(renderRoutes(subView));
+      });
+    }
+
+    return routes;
+  };
+
   // left sidebar
   const views: View[] = [
     { component: HomeView, path: '/home', name: 'Home' , icon: BiHomeAlt2},
     { component: ServerBrowser, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
-    { component: ServerBrowser, path: '/servers', name: 'Servers', icon: BiServer, },
-    { component: ServerBrowser, path: '/advanced', name: 'Advanced', icon: GiLevelFourAdvanced, },
+    { 
+      name: 'Servers', 
+      icon: BiServer, 
+      subViews: [
+        { name: 'PUG', path: '/servers/pug', component: HomeView },
+        { name: 'Community', path: '/servers/community', component: ServerBrowser },
+      ] 
+    },
+    { component: HomeView, path: '/advanced', name: 'Advanced', icon: GiLevelFourAdvanced, },
     { component: ServerBrowser, path: '/config', name: 'Config', icon: TiSpanner, },
     { component: ServerBrowser, path: '/routes', name: 'Routes', icon: CiRoute, },
     { component: ServerBrowser, path: '/packages', name: 'Packages', icon: LuPackage, },
@@ -99,10 +128,8 @@ function App() {
 
       <AppShell.Main>
         <Routes>
-          <Route path="/" element={<Navigate to={views[0].path} />} />
-          {views.map((view, index) => (
-            <Route key={index} path={view.path} element={React.createElement(view.component)} />
-          ))}
+          <Route path="/" element={<Navigate to={views[0].path || '/fallback-path'} />} />
+          {views.flatMap(view => renderRoutes(view))}
         </Routes>
       </AppShell.Main>
 

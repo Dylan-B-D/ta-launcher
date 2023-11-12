@@ -45,8 +45,8 @@
     border-style: solid;
     border-radius: 4px;
     font-family: 'Nunito Sans', sans-serif;
-    font-weight: 600;
-    color: var(--mantine-color-mutedBlue-9);
+    font-weight: 200;
+    color: var(--mantine-color-lightGray-9);
     position: relative; /* Needed for absolute positioning of pseudo-elements */
     overflow: hidden; /* Ensures the pseudo-element doesn't extend outside */
     transition: margin 0.3 ease, background-color 0.8s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease,;
@@ -70,25 +70,19 @@
 .linkText:hover {
   color: white; /* Optional: Change text color on hover */
 }
-  .name {
-    font-family: 'Nunito Sans', sans-serif;
-  }
-  .linkIcon {
-    margin-right: 8px;
-    color: var(--mantine-color-mutedBlue-9);
-    display: flex;
-    align-items: center;
-    transition-duration: 300ms;
+.name {
+  font-family: 'Nunito Sans', sans-serif;
+}
+.linkIcon {
+  margin-right: 8px;
+  color: var(--mantine-color-mutedBlue-9);
+  display: flex;
+  align-items: center;
+  transition-duration: 300ms;
 }
 
 .linkActive.linkActive {
-  background-color: transparent;
-  border-color: transparent;
-  color: rgba(255, 255, 255, 0.842) ;
-}
-
-.linkActive.linkActive {
-  background-color: transparent;
+  background-color: var(--mantine-color-darkGray-1);
   border-color: transparent;
   color: rgba(255, 255, 255, 0.842) ;
 }
@@ -109,3 +103,10 @@
   background-color: rgba(255, 255, 255, 0.199); /* Line color */
   transition: background-color 0.3s ease; /* Transition for the line color */
 }
+
+.subViewsContainer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
