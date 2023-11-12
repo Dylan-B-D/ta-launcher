@@ -10,6 +10,19 @@ export const darkTheme = createTheme({
       '#527594', '#5A80A1', '#628BAF', '#6A96BC', '#729FCA'
     ],
 
+    mutedAmber: [
+      '#50392C', // Dark, rich amber
+      '#6C4F3D', // Dark muted amber
+      '#876452', // Deep muted amber
+      '#A27A68', // Rich muted amber
+      '#BD8F7D', // Mid-tone muted amber
+      '#D8A593', // Neutral muted amber
+      '#F3BCA8', // Light muted amber
+      '#FFD2BE', // Very light muted amber
+      '#FFE8D4', // Pale muted amber
+      '#FFF3E9'  // Almost white amber
+    ],
+    
     // Muted Green Shades
     mutedGreen: [
       '#1E4223', '#28512D', '#316138', '#3C7142', '#47814C',
@@ -51,12 +64,6 @@ export const darkTheme = createTheme({
       '#00796B',
       '#00695C',
       '#004D40'  // Darkest shade
-    ],
-    
-    
-    mutedTeal: [
-      '#542424', '#633030', '#723C3C', '#814848', '#905454',
-      '#9F6060', '#AE6C6C', '#BD7878', '#CC8484', '#DB9090'
     ],
 
     lightGray: [

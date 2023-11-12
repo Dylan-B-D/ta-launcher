@@ -89,7 +89,7 @@ function App() {
       padding="md"
       styles={(theme) => ({
         main: {
-          backgroundColor: theme.colors.mutedBlue[0], // or any other shade
+          backgroundColor: theme.colors.darkGray[3], // or any other shade
           display: 'flex',
           flexDirection: 'column',
           height: '100vh', // full height
