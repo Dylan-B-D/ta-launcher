@@ -1,6 +1,6 @@
 // HomeView.tsx
 
-import GameLauncherCard from '../../components/GameLauncher'; 
+import GameLauncherCard from '../../components/GameLauncher/GameLauncher'; 
 import Injector from '../../components/Injector';
 
 const HomeView = () => {

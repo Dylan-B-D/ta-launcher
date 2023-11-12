@@ -1,0 +1,13 @@
+.customButton {
+    border-width: 0;
+    transition: 0.3s ease;
+
+    /* Focus Effect */
+    &:focus {
+        outline: none;
+    }
+}
+.customButton:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 0.75rem rgb(119, 119, 119));
+}
