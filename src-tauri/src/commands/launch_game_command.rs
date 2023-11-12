@@ -14,6 +14,7 @@ pub fn launch_game() -> Result<()> {
         .map(|_| ())
         .map_err(|e| e.into())
 }
+// TODO fix launch args
 
 #[tauri::command]
 pub fn launch_game_non_steam() -> Result<()> {

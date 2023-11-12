@@ -60,29 +60,33 @@ export const darkTheme = createTheme({
     ],
 
     lightGray: [
-      '#f8f9fa', // Lightest shade
-      '#f1f3f5',
-      '#e9ecef',
-      '#dee2e6',
-      '#ced4da',
-      '#adb5bd',
-      '#868e96',
-      '#495057',
-      '#343a40',
-      '#212529'  // Darkest shade
+      '#f8f9fa', // Very light gray
+      '#f2f3f4', // Slightly darker
+      '#eceef0', // Light gray
+      '#e6e8eb', // Mid-light gray
+      '#dfe1e3', // Neutral gray
+      '#d9dbdd', // Slightly darker gray
+      '#d3d5d7', // Darker gray
+      '#cdced0', // Medium gray
+      '#c7c8c9', // Medium-dark gray
+      '#c1c2c3'  // Darkest shade in light gray range
     ],
+    
+    
     darkGray: [
-      '#ced4da', // Lightest shade
-      '#adb5bd',
-      '#868e96',
-      '#495057',
-      '#343a40',
-      '#212529',
-      '#1c1f23',
-      '#181a1d',
-      '#121416',
-      '#0a0b0d'  // Darkest shade
+      '#0a0b0d', // Almost black
+      '#131415', // Very dark gray
+      '#1c1d1f', // Darker gray
+      '#252729', // Dark gray
+      '#2e3032', // Mid-dark gray
+      '#37393b', // Neutral dark gray
+      '#404346', // Slightly lighter gray
+      '#494c4f', // Medium-dark gray
+      '#525559', // Medium gray
+      '#5b5e61'  // Lightest shade in dark gray range
     ],
+    
+    
     
     highlight: [
       '#FFC107', // Amber
