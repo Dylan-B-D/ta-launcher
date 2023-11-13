@@ -33,16 +33,17 @@ interface View {
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
-  const [playersOnline, setPlayersOnline] = useState(0);
+  const [playerCounts, setPlayerCounts] = useState({ PUG: 0, Community: 0 });
 
-  useEffect(() => {
-    invoke('fetch_players_online')
+useEffect(() => {
+  invoke('fetch_players_online')
     .then((response) => {
-      const data = JSON.parse(response as string); // Type assertion
-      setPlayersOnline(data.online_players_list.length);
+      const data = JSON.parse(response);
+      setPlayerCounts({ PUG: data.PUG, Community: data.Community });
     })
     .catch((error) => console.error('Error fetching players:', error));
-  }, []);
+}, []);
+
 
   const renderRoutes = (view: View) => {
     let routes: any[] = [];
@@ -129,7 +130,7 @@ function App() {
                   marginTop: '4px',
                   color: theme.colors?.lightGray?.[5] || '#B0B0B0' // Example light gray color
                 }} color={theme.colors?.darkGray?.[2] || 'defaultColor'}>
-                  Players Online: <strong>{playersOnline}</strong>
+                  PUG: <strong>{playerCounts.PUG}</strong> Community: <strong>{playerCounts.Community}</strong>
                 </Code>
               </div>
             </div>
