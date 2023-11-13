@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Text, Group, Loader } from '@mantine/core';
+import { Container, Loader } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
+import PackageCard from '../../components/PackageCard/PackageCard';
+import classes from './PackagesView.module.css';
 
 interface PackageMetadata {
   size: string;
@@ -8,11 +10,15 @@ interface PackageMetadata {
   hash: string;
 }
 
-interface PackageData {
-  id: string;
-  objectKey: string;
-  metadata: PackageMetadata | null;
-}
+
+export interface PackageData {
+    id: string;
+    displayName: string;
+    objectKey: string;
+    metadata: PackageMetadata | null;
+    description: string;
+  }
+  
 
 const PackageView: React.FC = () => {
   const [packages, setPackages] = useState<PackageData[]>([]);
@@ -36,7 +42,7 @@ const PackageView: React.FC = () => {
       // Fetch metadata for each package
       const packagesWithMetadata = await Promise.all(packageList.packages.map(async (pkg) => {
         const metadata = await fetchPackageMetadata(`https://tamods-update.s3.ap-southeast-2.amazonaws.com/${pkg.objectKey}`);
-        return { ...pkg, metadata };
+        return { ...pkg, metadata, description: pkg.description }; // Ensure the description is included here
       }));
 
       setPackages(packagesWithMetadata);
@@ -46,29 +52,9 @@ const PackageView: React.FC = () => {
   };
 
   return (
-    <div style={{ height: '500px', overflow: 'auto' }}>
-      {loading ? (
-        <Loader />
-      ) : (
-        packages.map((pkg) => (
-          <Card key={pkg.id} shadow="sm" padding="lg" style={{ marginBottom: '20px' }}>
-         
-            <Group>
-              <Text>Package Name: {pkg.id}</Text>
-              {pkg.metadata ? (
-                <>
-                  <Text>Size: {pkg.metadata.size}</Text>
-                  <Text>Last Modified: {pkg.metadata.lastModified}</Text>
-                  <Text>Hash: {pkg.metadata.hash}</Text>
-                </>
-              ) : (
-                <Text>Loading metadata...</Text>
-              )}
-            </Group>
-          </Card>
-        ))
-      )}
-    </div>
+    <Container fluid h={100} >
+      {loading ? <Loader /> : packages.map(pkg => <PackageCard key={pkg.id} packageData={pkg} />)}
+    </Container>
   );
 };
 

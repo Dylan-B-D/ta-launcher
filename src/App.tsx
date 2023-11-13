@@ -109,11 +109,7 @@ function App() {
           styles={(theme) => ({
             main: {
               backgroundColor: theme.colors.darkGray[3], // or any other shade
-              display: 'flex',
-              flexDirection: 'column',
-              
-              width: '100vw', // full height
-              borderStyle: 'none',
+              width: '100%',
             },
           })}
 
