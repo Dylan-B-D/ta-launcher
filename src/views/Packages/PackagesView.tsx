@@ -85,32 +85,35 @@ const PackageView: React.FC = () => {
 
   return (
     <Container fluid h={100}>
-        {loading ? <Loader /> : packages
-            .filter(pkg => isTopLevelPackage(pkg.id))
-            .map(pkg => {
-                const childrenPackages = dependencyTree[pkg.id]?.map(childId => 
-                    packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
-                const hasChildren = childrenPackages && childrenPackages.length > 0;
-
-                return (
-                    <div key={pkg.id}>
-                        <PackageCard
-                            packageData={pkg}
-                            onToggleDependencies={() => toggleChildPackageVisibility(pkg.id)}
-                            showToggleDependenciesButton={hasChildren}
-                        />
-                        {expandedPackages.has(pkg.id) && (
-                            <div style={{ marginLeft: '60px' }}>
-                                {childrenPackages.map(childPkg => (
-                                    <PackageCard key={childPkg.id} packageData={childPkg} />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                );
-            })}
+      {loading ? <Loader /> : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '16px', justifyContent: 'center' }}>
+          {packages.filter(pkg => isTopLevelPackage(pkg.id)).map(pkg => {
+            const childrenPackages = dependencyTree[pkg.id]?.map(childId => 
+                packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
+            const hasChildren = childrenPackages && childrenPackages.length > 0;
+  
+            return (
+              <div key={pkg.id}>
+                <PackageCard
+                  packageData={pkg}
+                  onToggleDependencies={() => toggleChildPackageVisibility(pkg.id)}
+                  showToggleDependenciesButton={hasChildren}
+                />
+                {expandedPackages.has(pkg.id) && (
+                  <div style={{ marginTop: '10px' }}>
+                    {childrenPackages.map(childPkg => (
+                      <PackageCard key={childPkg.id} packageData={childPkg} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </Container>
-    );
+  );
+  
 };
 
 export default PackageView;

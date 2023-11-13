@@ -62,7 +62,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
   };
 
   return (
-    <Card style={{ width: '50%', backgroundColor: theme.colors.darkGray[2], marginBottom: '16px', overflow: 'hidden' }}>
+    <Card style={{ width: '22rem', backgroundColor: theme.colors.darkGray[2], marginBottom: '16px', overflow: 'hidden' }}>
       <Card.Section>
         <div style={{ background: gradient, padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={{ color: theme.colors.lightGray[5], fontWeight: 'bold' }}>{packageData.displayName}</Text>
