@@ -1,5 +1,5 @@
 // App.tsx
-import { AppShell, Burger, Code, MantineProvider, Badge } from '@mantine/core';
+import { AppShell, Burger, MantineProvider, Badge } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { darkTheme } from './theme';
 import "@mantine/core/styles.css";
@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import HomeView from './views/HomeView/HomeView';
 import ServerBrowser from './views/ServerBrowserView/ServerBrowserView';
 import SetupView from './views/Setup/SetupView';
+import PackagesView from './views/Packages/PackagesView';
 import React, { useEffect, useState } from 'react';
 import { BiHomeAlt2 } from 'react-icons/bi';
 import { RiSettingsLine } from 'react-icons/ri';
@@ -74,7 +75,7 @@ function App() {
   const views: View[] = [
     { component: HomeView, path: '/home', name: 'Home', icon: BiHomeAlt2 },
     { component: SetupView, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
-    { component: SetupView, path: '/packages', name: 'Packages', icon: LuPackage, },
+    { component: PackagesView, path: '/packages', name: 'Packages', icon: LuPackage, },
     {
       name: 'Servers',
       icon: BiServer,
@@ -110,7 +111,7 @@ function App() {
               backgroundColor: theme.colors.darkGray[3], // or any other shade
               display: 'flex',
               flexDirection: 'column',
-              height: '100vh', // full height
+              
               width: '100vw', // full height
               borderStyle: 'none',
             },
@@ -139,7 +140,7 @@ function App() {
                 <Badge color="mutedBlue" variant="filled" style={{
                   marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' // Example light gray color
                 }}>
-                  PUG: <strong>{playerCounts.PUG}</strong>
+                  PUG: {playerCounts.PUG}
                 </Badge>
               </div>
             </div>

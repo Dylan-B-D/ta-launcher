@@ -4,7 +4,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
-use commands::{inject_command, launch_game_command, fetch_players_command};
+use commands::{inject_command, launch_game_command, fetch_players_command, fetch_package_metadata_command};
 
 
 fn main() {
@@ -14,7 +14,9 @@ fn main() {
         inject_command::inject, 
         launch_game_command::launch_game,
         fetch_players_command::fetch_players_online, 
+        fetch_package_metadata_command::fetch_package_metadata,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
+
 }

@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,500;6..12,600&display=swap');
+
+.customButton {
+    border-width: 0;
+    transition: 0.3s ease;
+    font-weight: bold;
+
+    /* Focus Effect */
+    &:focus {
+        outline: none;
+    }
+}
+.customButton:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 0.75rem rgb(119, 119, 119));
+}
+.cardText {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+}
