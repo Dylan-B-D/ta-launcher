@@ -15,13 +15,10 @@ pub async fn fetch_package_metadata(url: &str) -> Result<String, String> {
         .and_then(|lm| lm.to_str().ok())
         .unwrap_or("unknown");
 
-        println!("Message from Rust: {}", last_modified);
-
     let etag = response.headers().get(reqwest::header::ETAG)
         .and_then(|e| e.to_str().ok())
         .unwrap_or("unknown");
 
-    // You might need to convert size and last_modified to a more friendly format
 
     Ok(json!({
         "size": size,
