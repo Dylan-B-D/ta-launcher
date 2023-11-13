@@ -1,3 +1,5 @@
+// PackageView.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Container, Loader } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
@@ -62,7 +64,8 @@ const PackageView: React.FC = () => {
       console.error('Error fetching packages:', error);
     }
   };
-  const togglePackageVisibility = (packageId: string) => {
+
+  const toggleChildPackageVisibility = (packageId: string) => {
     setExpandedPackages(prev => {
       const newSet = new Set(prev);
       if (newSet.has(packageId)) {
@@ -74,39 +77,39 @@ const PackageView: React.FC = () => {
     });
   };
 
+
   const isTopLevelPackage = (packageId: string): boolean => {
     return !Object.values(dependencyTree).some(deps => deps.includes(packageId));
   };
 
   return (
     <Container fluid h={100}>
-      {loading ? <Loader /> : packages
-        .filter(pkg => isTopLevelPackage(pkg.id))  // Render only top-level packages
-        .map(pkg => {
-          const childrenPackages = dependencyTree[pkg.id]?.map(childId => 
-            packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
-          const hasChildren = childrenPackages && childrenPackages.length > 0;
+        {loading ? <Loader /> : packages
+            .filter(pkg => isTopLevelPackage(pkg.id))
+            .map(pkg => {
+                const childrenPackages = dependencyTree[pkg.id]?.map(childId => 
+                    packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
+                const hasChildren = childrenPackages && childrenPackages.length > 0;
 
-          return (
-            <div key={pkg.id}>
-              <PackageCard packageData={pkg} />
-              {hasChildren && (
-                <button onClick={() => togglePackageVisibility(pkg.id)}>
-                  {expandedPackages.has(pkg.id) ? 'Hide Dependencies' : 'Show Dependencies'}
-                </button>
-              )}
-              {expandedPackages.has(pkg.id) && hasChildren && (
-                <div style={{ marginLeft: '20px' }}>
-                  {childrenPackages.map(childPkg => (
-                    <PackageCard key={childPkg.id} packageData={childPkg} />
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                return (
+                    <div key={pkg.id}>
+                        <PackageCard
+                            packageData={pkg}
+                            onToggleDependencies={() => toggleChildPackageVisibility(pkg.id)}
+                            showToggleDependenciesButton={hasChildren}
+                        />
+                        {expandedPackages.has(pkg.id) && (
+                            <div style={{ marginLeft: '60px' }}>
+                                {childrenPackages.map(childPkg => (
+                                    <PackageCard key={childPkg.id} packageData={childPkg} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
     </Container>
-  );
+    );
 };
 
 export default PackageView;

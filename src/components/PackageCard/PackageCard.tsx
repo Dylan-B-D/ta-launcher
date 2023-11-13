@@ -1,19 +1,21 @@
 // PackageCard.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, Text, Group, useMantineTheme, Button } from '@mantine/core';
 import { PackageData } from '../../views/Packages/PackagesView';
 
 interface PackageCardProps {
-  packageData: PackageData;
-  childrenPackages?: PackageData[];
+    packageData: PackageData;
+    onToggleDependencies?: () => void;
+    showToggleDependenciesButton?: boolean;
+    areChildrenVisible?: boolean;
 }
 
-const PackageCard: React.FC<PackageCardProps> = ({ packageData, childrenPackages }) => {
-    const [showChildren, setShowChildren] = useState(false);
+const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependencies, showToggleDependenciesButton, areChildrenVisible }) => {
     const theme = useMantineTheme();
-  return (
-    <Card key={packageData.id}  style={{ backgroundColor: theme.colors.mutedBlue[3], marginBottom: '16px' }}>
-      <Group>
+
+    return (
+        <Card style={{ width: '50%', backgroundColor: theme.colors.mutedBlue[3], marginBottom: '16px' }}>
+            <Group>
         <Text>Package Name: {packageData.displayName}</Text>
         {packageData.metadata ? (
           <>
@@ -25,18 +27,13 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, childrenPackages
           <Text>Loading metadata...</Text>
         )}
       </Group>
-      {childrenPackages && childrenPackages.length > 0 && (
-        <Button onClick={() => setShowChildren(!showChildren)}>
-          {showChildren ? 'Hide Dependencies' : 'Show Dependencies'}
-        </Button>
-      )}
-      {showChildren && (
-        <div style={{ marginLeft: '20px' }}>
-          {/* Render child packages here */}
-        </div>
-      )}
-    </Card>
-  );
+            {showToggleDependenciesButton && (
+                <Button onClick={onToggleDependencies}>
+                    {areChildrenVisible ? 'Hide Dependencies' : 'Show Dependencies'}
+                </Button>
+            )}
+        </Card>
+    );
 };
 
 export default PackageCard;
