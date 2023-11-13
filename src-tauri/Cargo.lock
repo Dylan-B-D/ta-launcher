@@ -70,6 +70,7 @@ dependencies = [
  "color-eyre",
  "ctor",
  "dll-syringe",
+ "reqwest",
  "serde",
  "serde_json",
  "tauri",

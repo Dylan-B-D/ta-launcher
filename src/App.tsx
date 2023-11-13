@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import HomeView from './views/HomeView/HomeView';
 import ServerBrowser from './views/ServerBrowserView/ServerBrowserView';
 import SetupView from './views/Setup/SetupView';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiHomeAlt2 } from 'react-icons/bi';
 import { RiSettingsLine } from 'react-icons/ri';
 import { BiServer } from 'react-icons/bi';
@@ -19,6 +19,7 @@ import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
 import { TiCog } from 'react-icons/ti';
 import { AiOutlineUser } from 'react-icons/ai';
+import { invoke } from '@tauri-apps/api/tauri';
 
 interface View {
   component?: React.ComponentType;
@@ -32,6 +33,16 @@ interface View {
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
+  const [playersOnline, setPlayersOnline] = useState(0);
+
+  useEffect(() => {
+    invoke('fetch_players_online')
+    .then((response) => {
+      const data = JSON.parse(response as string); // Type assertion
+      setPlayersOnline(data.online_players_list.length);
+    })
+    .catch((error) => console.error('Error fetching players:', error));
+  }, []);
 
   const renderRoutes = (view: View) => {
     let routes: any[] = [];
@@ -118,7 +129,7 @@ function App() {
                   marginTop: '4px',
                   color: theme.colors?.lightGray?.[5] || '#B0B0B0' // Example light gray color
                 }} color={theme.colors?.darkGray?.[2] || 'defaultColor'}>
-                  Players Online: <strong>0</strong>
+                  Players Online: <strong>{playersOnline}</strong>
                 </Code>
               </div>
             </div>
