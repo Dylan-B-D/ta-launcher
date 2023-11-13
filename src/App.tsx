@@ -1,26 +1,40 @@
 // App.tsx
+
+// React and related hooks
+import React, { useEffect, useState } from 'react';
+
+// Routing
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+// Mantine UI components and hooks
 import { AppShell, Burger, MantineProvider, Badge } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { darkTheme } from './theme';
+
+// Tauri specific imports
+import { invoke } from '@tauri-apps/api/tauri';
+
+// Styling
 import "@mantine/core/styles.css";
+import { darkTheme } from './theme';
+
+// Custom components
 import { NavbarNested } from './components/NavbarNested/NavbarNested';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+// Views
 import HomeView from './views/HomeView/HomeView';
 import ServerBrowser from './views/ServerBrowserView/ServerBrowserView';
 import SetupView from './views/Setup/SetupView';
 import PackagesView from './views/Packages/PackagesView';
-import React, { useEffect, useState } from 'react';
-import { BiHomeAlt2 } from 'react-icons/bi';
+
+// Icons
+import { BiHomeAlt2, BiServer } from 'react-icons/bi';
 import { RiSettingsLine } from 'react-icons/ri';
-import { BiServer } from 'react-icons/bi';
 import { GiLevelFourAdvanced } from 'react-icons/gi';
-import { TiSpanner } from 'react-icons/ti';
+import { TiSpanner, TiCog } from 'react-icons/ti';
 import { CiRoute } from 'react-icons/ci';
 import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
-import { TiCog } from 'react-icons/ti';
 import { AiOutlineUser } from 'react-icons/ai';
-import { invoke } from '@tauri-apps/api/tauri';
 
 interface View {
   component?: React.ComponentType;
@@ -71,7 +85,7 @@ function App() {
     return routes;
   };
 
-  // left sidebar
+  // Navigation routes
   const views: View[] = [
     { component: HomeView, path: '/home', name: 'Home', icon: BiHomeAlt2 },
     { component: SetupView, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
@@ -129,12 +143,12 @@ function App() {
               <div className="flex-1"></div> {/* Invisible spacer */}
               <div className="flex items-center pr-4"> {/* Adjusted for vertical centering */}
                 <Badge color="mutedBlue" variant="filled" style={{
-                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' // Example light gray color
+                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0'
                 }}>
                   Community: {playerCounts.Community}
                 </Badge>
                 <Badge color="mutedBlue" variant="filled" style={{
-                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' // Example light gray color
+                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' 
                 }}>
                   PUG: {playerCounts.PUG}
                 </Badge>
