@@ -10,13 +10,11 @@ interface PackageMetadata {
   hash: string;
 }
 
-
 export interface PackageData {
     id: string;
     displayName: string;
     objectKey: string;
     metadata: PackageMetadata | null;
-    description: string;
   }
   
 
@@ -42,7 +40,7 @@ const PackageView: React.FC = () => {
       // Fetch metadata for each package
       const packagesWithMetadata = await Promise.all(packageList.packages.map(async (pkg) => {
         const metadata = await fetchPackageMetadata(`https://tamods-update.s3.ap-southeast-2.amazonaws.com/${pkg.objectKey}`);
-        return { ...pkg, metadata, description: pkg.description }; // Ensure the description is included here
+        return { ...pkg, metadata };
       }));
 
       setPackages(packagesWithMetadata);
