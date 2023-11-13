@@ -16,6 +16,7 @@ fn main() {
         fetch_players_command::fetch_players_online, 
         fetch_packages_command::fetch_package_metadata,
         fetch_packages_command::fetch_packages,
+        fetch_packages_command::fetch_dependency_tree,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

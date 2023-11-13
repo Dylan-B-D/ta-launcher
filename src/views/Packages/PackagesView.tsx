@@ -20,15 +20,29 @@ export interface PackageData {
 
 const PackageView: React.FC = () => {
   const [packages, setPackages] = useState<PackageData[]>([]);
+  const [dependencyTree, setDependencyTree] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [expandedPackages, setExpandedPackages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetchPackages().then(() => setLoading(false));
+    fetchPackages().then(() => {
+      fetchDependencyTree().then(() => setLoading(false));
+    });
   }, []);
 
   const fetchPackageMetadata = async (url: string): Promise<PackageMetadata> => {
     const response = await invoke('fetch_package_metadata', { url });
     return JSON.parse(response as string);
+  };
+
+  const fetchDependencyTree = async () => {
+    try {
+      const response = await invoke('fetch_dependency_tree');
+      const tree: Record<string, string[]> = JSON.parse(response as string);
+      setDependencyTree(tree);
+    } catch (error) {
+      console.error('Error fetching dependency tree:', error);
+    }
   };
 
   const fetchPackages = async () => {
@@ -48,10 +62,49 @@ const PackageView: React.FC = () => {
       console.error('Error fetching packages:', error);
     }
   };
+  const togglePackageVisibility = (packageId: string) => {
+    setExpandedPackages(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(packageId)) {
+        newSet.delete(packageId);
+      } else {
+        newSet.add(packageId);
+      }
+      return newSet;
+    });
+  };
+
+  const isTopLevelPackage = (packageId: string): boolean => {
+    return !Object.values(dependencyTree).some(deps => deps.includes(packageId));
+  };
 
   return (
-    <Container fluid h={100} >
-      {loading ? <Loader /> : packages.map(pkg => <PackageCard key={pkg.id} packageData={pkg} />)}
+    <Container fluid h={100}>
+      {loading ? <Loader /> : packages
+        .filter(pkg => isTopLevelPackage(pkg.id))  // Render only top-level packages
+        .map(pkg => {
+          const childrenPackages = dependencyTree[pkg.id]?.map(childId => 
+            packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
+          const hasChildren = childrenPackages && childrenPackages.length > 0;
+
+          return (
+            <div key={pkg.id}>
+              <PackageCard packageData={pkg} />
+              {hasChildren && (
+                <button onClick={() => togglePackageVisibility(pkg.id)}>
+                  {expandedPackages.has(pkg.id) ? 'Hide Dependencies' : 'Show Dependencies'}
+                </button>
+              )}
+              {expandedPackages.has(pkg.id) && hasChildren && (
+                <div style={{ marginLeft: '20px' }}>
+                  {childrenPackages.map(childPkg => (
+                    <PackageCard key={childPkg.id} packageData={childPkg} />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
     </Container>
   );
 };
