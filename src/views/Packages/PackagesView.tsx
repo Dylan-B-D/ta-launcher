@@ -16,6 +16,7 @@ export interface PackageData {
     id: string;
     displayName: string;
     objectKey: string;
+    description: string;
     metadata: PackageMetadata | null;
   }
   
