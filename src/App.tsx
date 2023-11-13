@@ -1,5 +1,5 @@
 // App.tsx
-import { AppShell, Burger, Code, MantineProvider } from '@mantine/core';
+import { AppShell, Burger, Code, MantineProvider, Badge } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { darkTheme } from './theme';
 import "@mantine/core/styles.css";
@@ -35,14 +35,19 @@ function App() {
   const [opened, { toggle }] = useDisclosure();
   const [playerCounts, setPlayerCounts] = useState({ PUG: 0, Community: 0 });
 
-useEffect(() => {
-  invoke('fetch_players_online')
-    .then((response) => {
-      const data = JSON.parse(response);
-      setPlayerCounts({ PUG: data.PUG, Community: data.Community });
-    })
-    .catch((error) => console.error('Error fetching players:', error));
-}, []);
+  useEffect(() => {
+    invoke('fetch_players_online')
+      .then((response) => {
+        if (typeof response === 'string') {
+          const data = JSON.parse(response);
+          setPlayerCounts({ PUG: data.PUG, Community: data.Community });
+        } else {
+          console.error('Response is not a string:', response);
+        }
+      })
+      .catch((error) => console.error('Error fetching players:', error));
+
+  }, []);
 
 
   const renderRoutes = (view: View) => {
@@ -125,13 +130,17 @@ useEffect(() => {
             <div className="flex justify-between items-center">
               <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="gray" />
               <div className="flex-1"></div> {/* Invisible spacer */}
-              <div className="flex items-center pr-4 text-gray-400"> {/* Adjusted for vertical centering */}
-                <Code style={{
-                  marginTop: '4px',
-                  color: theme.colors?.lightGray?.[5] || '#B0B0B0' // Example light gray color
-                }} color={theme.colors?.darkGray?.[2] || 'defaultColor'}>
-                  PUG: <strong>{playerCounts.PUG}</strong> Community: <strong>{playerCounts.Community}</strong>
-                </Code>
+              <div className="flex items-center pr-4"> {/* Adjusted for vertical centering */}
+                <Badge color="mutedBlue" variant="filled" style={{
+                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' // Example light gray color
+                }}>
+                  Community: {playerCounts.Community}
+                </Badge>
+                <Badge color="mutedBlue" variant="filled" style={{
+                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' // Example light gray color
+                }}>
+                  PUG: <strong>{playerCounts.PUG}</strong>
+                </Badge>
               </div>
             </div>
           </AppShell.Header>
