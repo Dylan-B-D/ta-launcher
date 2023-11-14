@@ -54,7 +54,6 @@ pub async fn fetch_dependency_tree() -> Result<String, String> {
     }
 
     let tree_json = serde_json::to_string(&tree).map_err(|e| e.to_string())?;
-    println!("Dependency Tree: {}", tree_json);
 
     // Return the tree as JSON string
     Ok(tree_json)

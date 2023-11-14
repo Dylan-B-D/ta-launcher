@@ -10,6 +10,7 @@ interface PackageCardProps {
   onToggleDependencies?: () => void;
   showToggleDependenciesButton?: boolean;
   areChildrenVisible?: boolean;
+  totalSize?: number;
 }
 
 function formatBytes(bytes: any, decimals = 2) {
@@ -36,7 +37,7 @@ function formatBytes(bytes: any, decimals = 2) {
   
   
 
-const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependencies, showToggleDependenciesButton, areChildrenVisible }) => {
+const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependencies, showToggleDependenciesButton, areChildrenVisible, totalSize}) => {
   const theme = useMantineTheme();
 
   const [isExpanded, setIsExpanded] = useState(areChildrenVisible);
@@ -60,6 +61,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
     // Placeholder for install logic
     console.log("Install clicked for package:", packageData.id);
   };
+  
 
   return (
     <Card style={{ width: '22rem', backgroundColor: theme.colors.darkGray[2], marginBottom: '16px', overflow: 'hidden' }}>
@@ -79,6 +81,12 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
             <Text style={{ color: theme.colors.lightGray[9], opacity: 0.5 }}>
                 Size: {formatBytes(packageData.metadata.size)}
             </Text>
+            {/* Display Total Size if available */}
+            {typeof totalSize === 'number' && (
+              <Text style={{ color: theme.colors.lightGray[9], opacity: 0.5 }}>
+                Total Size: {formatBytes(totalSize)}
+              </Text>
+            )}
             <Text style={{ color: theme.colors.lightGray[9], opacity: 0.5 }}>
                 Last Modified: {formatDate(packageData.metadata.lastModified)}
             </Text>
