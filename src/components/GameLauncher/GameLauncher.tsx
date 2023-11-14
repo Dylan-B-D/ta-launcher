@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Card, Image, Button, Text, useMantineTheme, Group, TextInput, ActionIcon } from '@mantine/core';
+import { Card, Image, Button, Text, useMantineTheme, Group, TextInput, Textarea, Collapse } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaCog  } from 'react-icons/fa';
 import classes from './GameLauncher.module.css';
+import { dialog } from '@tauri-apps/api';
 
 const GameLauncher: React.FC = () => {
   const theme = useMantineTheme();
@@ -13,8 +14,7 @@ const GameLauncher: React.FC = () => {
   const [loginServer, setLoginServer] = useState(localStorage.getItem('loginServer') || 'Community');
   const [exePath, setExePath] = useState(localStorage.getItem('exePath') || '');
   const [customServer, setCustomServer] = useState(localStorage.getItem('customServer') || '');
-
-  
+  const [isNonSteamOptionsOpen, setIsNonSteamOptionsOpen] = useState(false);
 
   useEffect(() => {
     const savedLaunchType = localStorage.getItem('launchType');
@@ -39,21 +39,22 @@ const GameLauncher: React.FC = () => {
 
   const startGame = async () => {
     try {
-      // Determine the appropriate launch argument based on the selected login server
       let launchArg;
-      switch (loginServer) {
-        case 'Community':
-          launchArg = '-hostx=ta.kfk4ever.com';
-          break;
-        case 'PUG':
-          launchArg = '-hostx=Ta.dodgesdomain.com';
-          break;
-        case 'Custom':
-          // Temporary argument for Custom, can be updated later
-          launchArg = '-hostx=Ta.dodgesdomain.com';
-          break;
-        default:
-          launchArg = '';
+      if (loginServer === 'Custom' && customServer) {
+        // Append '-hostx=' to the custom server IP
+        launchArg = `-hostx=${customServer}`;
+      } else {
+        // For predefined servers, use their respective launch arguments
+        switch (loginServer) {
+          case 'Community':
+            launchArg = '-hostx=ta.kfk4ever.com';
+            break;
+          case 'PUG':
+            launchArg = '-hostx=Ta.dodgesdomain.com';
+            break;
+          default:
+            launchArg = '';
+        }
       }
   
       let options = {
@@ -74,13 +75,39 @@ const GameLauncher: React.FC = () => {
       console.error("Failed to launch Tribes Ascend", error);
     }
   };
-  
+
+  const handleOpenFile = async () => {
+    try {
+      const selected = await dialog.open({
+        filters: [{ name: 'Executable', extensions: ['exe'] }],
+        multiple: false,
+      });
+
+      if (selected && typeof selected === 'string') {
+        setExePath(selected);
+      }
+    } catch (error) {
+      console.error("Error opening file chooser:", error);
+    }
+  };
 
   const buttonStyle = (selected: boolean) => ({
     backgroundColor: selected ? theme.colors.mutedBlue[9] : 'rgba(0, 0, 0, 0.1)',
     color: selected ? theme.colors.darkGray[3] : theme.colors.lightGray[3],
     fontWeight: selected ? 'bold' : 'normal',
   });
+
+  useEffect(() => {
+    // Automatically open advanced settings if Non Steam is selected and exePath is empty
+    if (launchType === 'Non Steam' && !exePath) {
+      setIsNonSteamOptionsOpen(true);
+    }
+  }, [launchType, exePath]);
+
+  const toggleNonSteamOptions = () => {
+    setIsNonSteamOptionsOpen(!isNonSteamOptionsOpen);
+  };
+
 
   return (
     <Card 
@@ -89,16 +116,31 @@ const GameLauncher: React.FC = () => {
       radius="sm" 
       style={{ backgroundColor: '#2C3E50', maxWidth: '350px', margin: 'auto' }}
     >
-      <Card.Section>
-        <Image
-          src="https://i.ibb.co/4dxGMxq/ds.jpg"
-          alt="Tribes Ascend"
-        />
-      </Card.Section>
-
-      <Text className={classes.title} size="lg" style={{ textAlign: 'center', marginTop: '1rem', color: theme.colors.lightGray[4] }}>
-        Tribes: Ascend Launcher
-      </Text>
+      <Card.Section style={{ position: 'relative' }}>
+    <Image
+      src="http://2.bp.blogspot.com/-6n4vKnqI6nw/T68hef_YuXI/AAAAAAAABEE/dSq-jfdxkdE/s640/IlyaNazarov_Tribes1.jpg"
+      alt="Tribes Ascend"
+      style={{ width: '100%', maxHeight: '80px' }}
+    />
+    <Text 
+      size="lg" 
+      style={{ 
+        position: 'absolute', 
+        top: '50%', 
+        left: '50%', 
+        transform: 'translate(-50%, -50%)',
+        color: theme.colors.lightGray[4],
+        textAlign: 'center',
+        fontWeight: 'bold',
+        textShadow: '0 0px 4px rgba(0, 0, 0, 1)',
+        background: 'radial-gradient(closest-side, rgba(0,0,0,0.5),  transparent)',
+        borderRadius: '4px',
+        padding: '16px',
+      }}
+    >
+      Tribes: Ascend Launcher
+    </Text>
+  </Card.Section>
 
       <Text 
       size="sm" 
@@ -125,28 +167,43 @@ const GameLauncher: React.FC = () => {
 
       {launchType === 'Non Steam' && (
         <>
-          <TextInput
-            value={exePath}
-            onChange={(event) => setExePath(event.currentTarget.value)}
-            description="Tribes Ascend executable path"
-            placeholder="Path to executable"
-            error={!exePath && "Invalid Path"}
-            styles={{
-              input: {
-                color: 'black',
-                backgroundColor: 'lightgray',
-                width: '100%'
-              },
-            }}
-          />
           <Group>
-            <ActionIcon onClick={() => {/* Implement Folder Open Logic */}}>
-              <FaFolderOpen />
-            </ActionIcon>
-            <ActionIcon onClick={() => {/* Implement Search Logic */}}>
-              <FaSearch />
-            </ActionIcon>
+            <Text size="sm" style={{ fontWeight: 'bold', color: theme.colors.mutedBlue[8] }}>Executable Path:</Text>
+            <Button onClick={toggleNonSteamOptions} style={{ color: theme.colors.mutedBlue[8]}}>
+              <FaCog size={16} />
+            </Button>
           </Group>
+          <Collapse in={isNonSteamOptionsOpen}>
+            <Textarea
+              value={exePath}
+              onChange={(event) => setExePath(event.target.value)}
+              label="Tribes Ascend executable path"
+              placeholder="Path to executable"
+              error={!exePath && "Invalid Path"}
+              autosize
+              styles={{
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal'},
+                input: {
+                  color: 'black',
+                  backgroundColor: 'lightgray',
+                  width: '100%'
+                },
+              }}
+              minRows={3}
+              maxRows={4}
+            />
+            <Group>
+              <Button onClick={handleOpenFile}>
+                <span style={{ marginRight: '8px' }}>Open</span>
+                <FaFolderOpen />
+              </Button>
+              <Button onClick={() => {/* Implement Search Logic */}}>
+                <span style={{ marginRight: '8px' }}>Search</span>
+                <FaSearch />
+              </Button>
+            </Group>
+
+          </Collapse>
         </>
       )}
 

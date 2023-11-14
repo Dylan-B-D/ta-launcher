@@ -7,8 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 // Mantine UI components and hooks
-import { AppShell, Burger, MantineProvider, Badge } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { AppShell, MantineProvider, Badge } from '@mantine/core';
 
 // Tauri specific imports
 import { invoke } from '@tauri-apps/api/tauri';
@@ -35,6 +34,9 @@ import { CiRoute } from 'react-icons/ci';
 import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
 import { AiOutlineUser } from 'react-icons/ai';
+import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
+
+await appWindow.setMinSize(new PhysicalSize(600, 550));
 
 interface View {
   component?: React.ComponentType;
@@ -47,7 +49,6 @@ interface View {
 
 
 function App() {
-  const [opened, { toggle }] = useDisclosure();
   const [playerCounts, setPlayerCounts] = useState({ PUG: 0, Community: 0 });
 
   useEffect(() => {
@@ -118,7 +119,7 @@ function App() {
       <MantineProvider theme={darkTheme}>
         <AppShell
           header={{ height: 30 }}
-          navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+          navbar={{ width: 220, breakpoint: 'none' }}
           padding="md"
           styles={(theme) => ({
             main: {
@@ -139,7 +140,6 @@ function App() {
             })}
           >
             <div className="flex justify-between items-center">
-              <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="gray" />
               <div className="flex-1"></div> {/* Invisible spacer */}
               <div className="flex items-center pr-4"> {/* Adjusted for vertical centering */}
                 <Badge color="mutedBlue" variant="filled" style={{
