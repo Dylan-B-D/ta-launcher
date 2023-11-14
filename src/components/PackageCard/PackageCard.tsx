@@ -4,6 +4,7 @@ import { Card, Text, Badge, useMantineTheme, Button } from '@mantine/core';
 import { PackageData } from '../../views/Packages/PackagesView';
 import { PiCaretRightBold, PiCaretUpBold } from'react-icons/pi';
 import { BiSolidDownload } from 'react-icons/bi';
+import { invoke } from '@tauri-apps/api/tauri';
 
 interface PackageCardProps {
   packageData: PackageData;
@@ -59,6 +60,13 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
   const gradient = `linear-gradient(135deg, ${theme.colors.mutedBlue[3]} 0%, ${theme.colors.mutedBlue[0]} 100%)`;
 
   const handleInstallClick = () => {
+    invoke('download_package', { packageId: packageData.id })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.error('Download error:', error);
+    });
     // Placeholder for install logic
     console.log("Install clicked for package:", packageData.id);
   };
