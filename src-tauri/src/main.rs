@@ -4,7 +4,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
-use commands::{inject_command, launch_game_command, fetch_players_command, fetch_packages_command, downloader_command};
+use commands::{
+    inject_command, 
+    launch_game_command, 
+    fetch_players_command, 
+    fetch_packages_command, 
+    downloader_command,
+    find_executable_command,
+};
 
 
 fn main() {
@@ -18,7 +25,8 @@ fn main() {
         fetch_packages_command::fetch_package_metadata,
         fetch_packages_command::fetch_packages,
         fetch_packages_command::fetch_dependency_tree,
-        downloader_command::download_package
+        downloader_command::download_package,
+        find_executable_command:: find_executable,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

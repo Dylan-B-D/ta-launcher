@@ -2,11 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Card, Image, Button, Text, useMantineTheme, Group, TextInput, Textarea, Collapse } from '@mantine/core';
+import { Card, Image, Button, Text, useMantineTheme, Group, TextInput, Textarea, Collapse, Code } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch, FaCog  } from 'react-icons/fa';
 import classes from './GameLauncher.module.css';
 import { dialog } from '@tauri-apps/api';
+import { listen } from '@tauri-apps/api/event';
 
 const GameLauncher: React.FC = () => {
   const theme = useMantineTheme();
@@ -15,6 +16,10 @@ const GameLauncher: React.FC = () => {
   const [exePath, setExePath] = useState(localStorage.getItem('exePath') || '');
   const [customServer, setCustomServer] = useState(localStorage.getItem('customServer') || '');
   const [isNonSteamOptionsOpen, setIsNonSteamOptionsOpen] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchProgress, setSearchProgress] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
 
   useEffect(() => {
     const savedLaunchType = localStorage.getItem('launchType');
@@ -76,6 +81,25 @@ const GameLauncher: React.FC = () => {
     }
   };
 
+  const handleSearchGame = async () => {
+    setSearchError(null); // Reset the error message before searching
+    setIsSearching(true);
+    try {
+      const filePath = await invoke("find_executable");
+      if (typeof filePath === 'string' && filePath) {
+        setExePath(filePath);
+      } else {
+        setSearchError("Game executable not found. Please install the game or select the executable manually.");
+      }
+    } catch (error) {
+      console.error("Error searching for Tribes Ascend executable:", error);
+      setSearchError("An error occurred during the search.");
+    } finally {
+      setIsSearching(false); // Stop searching
+    }
+  };
+  
+
   const handleOpenFile = async () => {
     try {
       const selected = await dialog.open({
@@ -108,6 +132,15 @@ const GameLauncher: React.FC = () => {
     setIsNonSteamOptionsOpen(!isNonSteamOptionsOpen);
   };
 
+  useEffect(() => {
+    const unlisten = listen("search_progress", (event: { payload: any; }) => {
+      setSearchProgress(event.payload); // Or update a state to show progress in the UI
+    });
+  
+    return () => {
+      unlisten.then((fn: () => any) => fn()); // Clean up the listener when the component unmounts
+    };
+  }, []);
 
   return (
     <Card 
@@ -169,7 +202,7 @@ const GameLauncher: React.FC = () => {
         <>
           <Group>
             <Text size="sm" style={{ fontWeight: 'bold', color: theme.colors.mutedBlue[8] }}>Executable Path:</Text>
-            <Button onClick={toggleNonSteamOptions} style={{ color: theme.colors.mutedBlue[8]}}>
+            <Button onClick={toggleNonSteamOptions} style={{ color: theme.colors.mutedBlue[8] }}>
               <FaCog size={16} />
             </Button>
           </Group>
@@ -182,7 +215,7 @@ const GameLauncher: React.FC = () => {
               error={!exePath && "Invalid Path"}
               autosize
               styles={{
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal'},
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
                 input: {
                   color: 'black',
                   backgroundColor: 'lightgray',
@@ -197,11 +230,21 @@ const GameLauncher: React.FC = () => {
                 <span style={{ marginRight: '8px' }}>Open</span>
                 <FaFolderOpen />
               </Button>
-              <Button onClick={() => {/* Implement Search Logic */}}>
+              <Button onClick={handleSearchGame}>
                 <span style={{ marginRight: '8px' }}>Search</span>
                 <FaSearch />
               </Button>
             </Group>
+            <Collapse in={isSearching}>
+              <Code>
+                Searching for game executable... {searchProgress}
+              </Code>
+            </Collapse>
+            {searchError && (
+              <Text style={{ color: theme.colors.mutedRed[9] }} >
+                {searchError}
+              </Text>
+            )}
 
           </Collapse>
         </>
