@@ -1,6 +1,6 @@
 // GameLauncher.tsx
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { Card, Image, Button, Text, useMantineTheme, Group, TextInput, ActionIcon } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
@@ -9,10 +9,33 @@ import classes from './GameLauncher.module.css';
 
 const GameLauncher: React.FC = () => {
   const theme = useMantineTheme();
-  const [launchType, setLaunchType] = useState('Steam');
-  const [loginServer, setLoginServer] = useState('Community');
-  const [exePath, setExePath] = useState('');
-  const [customServer, setCustomServer] = useState('');
+  const [launchType, setLaunchType] = useState(localStorage.getItem('launchType') || 'Steam');
+  const [loginServer, setLoginServer] = useState(localStorage.getItem('loginServer') || 'Community');
+  const [exePath, setExePath] = useState(localStorage.getItem('exePath') || '');
+  const [customServer, setCustomServer] = useState(localStorage.getItem('customServer') || '');
+
+  
+
+  useEffect(() => {
+    const savedLaunchType = localStorage.getItem('launchType');
+    const savedLoginServer = localStorage.getItem('loginServer');
+    const savedExePath = localStorage.getItem('exePath');
+    const savedCustomServer = localStorage.getItem('customServer');
+
+    if (savedLaunchType) setLaunchType(savedLaunchType);
+    if (savedLoginServer) setLoginServer(savedLoginServer);
+    if (savedExePath) setExePath(savedExePath);
+    if (savedCustomServer) setCustomServer(savedCustomServer);
+  }, []);
+
+  // Update local storage when states change
+  useEffect(() => {
+    localStorage.setItem('launchType', launchType);
+    localStorage.setItem('loginServer', loginServer);
+    localStorage.setItem('exePath', exePath);
+    localStorage.setItem('customServer', customServer);
+  }, [launchType, loginServer, exePath, customServer]);
+
 
   const startGame = async () => {
     try {
@@ -69,7 +92,6 @@ const GameLauncher: React.FC = () => {
       <Card.Section>
         <Image
           src="https://i.ibb.co/4dxGMxq/ds.jpg"
-          height={160}
           alt="Tribes Ascend"
         />
       </Card.Section>
@@ -102,16 +124,13 @@ const GameLauncher: React.FC = () => {
       </Button.Group>
 
       {launchType === 'Non Steam' && (
-        <Group grow>
-          <ActionIcon>
-            <FaFolderOpen />
-          </ActionIcon>
+        <>
           <TextInput
             value={exePath}
             onChange={(event) => setExePath(event.currentTarget.value)}
             description="Tribes Ascend executable path"
             placeholder="Path to executable"
-            error="Invalid Path"
+            error={!exePath && "Invalid Path"}
             styles={{
               input: {
                 color: 'black',
@@ -120,10 +139,15 @@ const GameLauncher: React.FC = () => {
               },
             }}
           />
-          <ActionIcon>
-            <FaSearch />
-          </ActionIcon>
-        </Group>
+          <Group>
+            <ActionIcon onClick={() => {/* Implement Folder Open Logic */}}>
+              <FaFolderOpen />
+            </ActionIcon>
+            <ActionIcon onClick={() => {/* Implement Search Logic */}}>
+              <FaSearch />
+            </ActionIcon>
+          </Group>
+        </>
       )}
 
     <Text 
