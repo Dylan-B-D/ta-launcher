@@ -11,6 +11,7 @@ interface PackageCardProps {
   showToggleDependenciesButton?: boolean;
   areChildrenVisible?: boolean;
   totalSize?: number;
+  childrenCount?: number;
 }
 
 function formatBytes(bytes: any, decimals = 2) {
@@ -37,7 +38,7 @@ function formatBytes(bytes: any, decimals = 2) {
   
   
 
-const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependencies, showToggleDependenciesButton, areChildrenVisible, totalSize}) => {
+const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependencies, showToggleDependenciesButton, areChildrenVisible, totalSize, childrenCount }) => {
   const theme = useMantineTheme();
 
   const [isExpanded, setIsExpanded] = useState(areChildrenVisible);
@@ -64,7 +65,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
   
 
   return (
-    <Card style={{ width: '22rem', backgroundColor: theme.colors.darkGray[2], marginBottom: '16px', overflow: 'hidden' }}>
+    <Card style={{ width: '18rem', backgroundColor: theme.colors.darkGray[2], marginBottom: '16px', overflow: 'hidden' }}>
       <Card.Section>
         <div style={{ background: gradient, padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={{ color: theme.colors.lightGray[5], fontWeight: 'bold' }}>{packageData.displayName}</Text>
@@ -101,7 +102,11 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
         <Button 
           rightSection={<BiSolidDownload size={14} />}
           onClick={handleInstallClick}
-          style={{ backgroundColor: theme.colors.mutedBlue[3], color: theme.colors.lightGray[5] }}
+          style={{ backgroundColor: theme.colors.mutedBlue[3], 
+            color: theme.colors.lightGray[5],
+            paddingLeft: '4px',
+            paddingRight: '4px'
+           }}
         >
           Install
         </Button>
@@ -109,9 +114,13 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
         <Button 
           rightSection={isExpanded ? <PiCaretUpBold size={14} /> : <PiCaretRightBold size={14} />}
           onClick={handleToggleDependencies} 
-          style={{ backgroundColor: theme.colors.mutedBlue[3], color: theme.colors.lightGray[5] }}
+          style={{ backgroundColor: theme.colors.mutedBlue[3], 
+            color: theme.colors.lightGray[5],
+            paddingLeft: '4px',
+            paddingRight: '4px'
+           }}
         >
-          {isExpanded ? 'Hide Dependencies' : 'Show Dependencies'}
+          {isExpanded ? `Dependencies (${childrenCount})` : `Dependencies (${childrenCount})`}
         </Button>
       )}
       </div>

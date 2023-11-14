@@ -130,7 +130,7 @@ const PackageView: React.FC = () => {
       {loading ? <Loader /> : (
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 0fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 0fr))', 
           gap: '16px', 
         }}>
           {packages.filter(pkg => isTopLevelPackage(pkg.id)).map(pkg => {
@@ -138,6 +138,7 @@ const PackageView: React.FC = () => {
                 packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
             const hasChildren = childrenPackages && childrenPackages.length > 0;
             const totalSize = rootPackageTotalSizes[pkg.id];
+            const childrenCount = getChildrenCountForRootPackage(pkg.id);
   
             return (
               <div key={pkg.id}>
@@ -145,8 +146,8 @@ const PackageView: React.FC = () => {
                   packageData={pkg}
                   onToggleDependencies={() => toggleChildPackageVisibility(pkg.id)}
                   showToggleDependenciesButton={hasChildren}
-                  key={pkg.id}
                   totalSize={totalSize}
+                  childrenCount={childrenCount}
                 />
                 {expandedPackages.has(pkg.id) && (
                   <div style={{borderColor: 'rgba(255,255,255,0.5)', borderStyle: 'solid', borderWidth: '0 0 0 2px ', borderRadius: '6px' }}>
