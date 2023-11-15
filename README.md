@@ -22,13 +22,16 @@ Before you begin, ensure you have the following installed:
    npm install
 
 3. **Set Rust Mode to Nighlty:**
-The injector used requires Rust Nightly to function. 
-If you don't have the Rust Nightly toolchain installed, you can use:
-```bash
-   rustup install nightly
 
-To set this specific project to use Rust Nightly using the command:
-```bash
+    The injector used requires Rust Nightly to function. 
+    If you don't have the Rust Nightly toolchain installed, you can use:
+
+   ```bash
+   rustup install nightly
+    ```
+    To set this specific project to use Rust Nightly using the command:
+    
+   ```bash
    rustup override set nightly
 
 3. **Run in Development Mode:**
