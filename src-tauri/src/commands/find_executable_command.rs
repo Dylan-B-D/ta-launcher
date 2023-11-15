@@ -4,7 +4,7 @@ use walkdir::{WalkDir, DirEntry};
 use tauri::{command, Window};
 use std::env;
 
-
+// TODO: Fix bug with finding files in non-primary drives
 #[command]
 pub async fn find_executable(window: Window) -> Option<String> {
     let start = Instant::now();
