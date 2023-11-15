@@ -1,6 +1,7 @@
 // downloader_command.rs
 
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
 use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
@@ -8,6 +9,8 @@ use tauri::api::path::download_dir;
 use std::env;
 use tokio::io::AsyncWriteExt;
 
+// Global or shared state to control the download
+static DOWNLOAD_CONTROL: AtomicBool = AtomicBool::new(true);
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Progress {
@@ -91,6 +94,11 @@ pub async fn download_package(
 
     // Stream and write the download
     while let Some(item) = stream.next().await {
+        // Check if the download should continue
+        if !DOWNLOAD_CONTROL.load(Ordering::SeqCst) {
+            break; // or wait until DOWNLOAD_CONTROL is true again
+        }
+        
         let chunk = item.map_err(|e| e.to_string())?;
         progress.transfered += chunk.len() as u64;
         temp_zip_file.write_all(&chunk).await.map_err(|e| e.to_string())?;
@@ -136,4 +144,5 @@ pub async fn download_package(
 
     Ok(format!("Extracted to {:?}", download_path))
 }
+
 
