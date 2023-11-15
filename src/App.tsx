@@ -1,16 +1,13 @@
 // App.tsx
 
 // React and related hooks
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 // Routing
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 // Mantine UI components and hooks
-import { AppShell, MantineProvider, Badge } from '@mantine/core';
-
-// Tauri specific imports
-import { invoke } from '@tauri-apps/api/tauri';
+import { AppShell, MantineProvider } from '@mantine/core';
 
 // Styling
 import "@mantine/core/styles.css";
@@ -35,6 +32,7 @@ import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
 import { AiOutlineUser } from 'react-icons/ai';
 import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
+import HeaderComponent from './components/Header/Header';
 
 await appWindow.setMinSize(new PhysicalSize(600, 550));
 
@@ -48,23 +46,8 @@ interface View {
 }
 
 
+
 function App() {
-  const [playerCounts, setPlayerCounts] = useState({ PUG: 0, Community: 0 });
-
-  useEffect(() => {
-    invoke('fetch_players_online')
-      .then((response) => {
-        if (typeof response === 'string') {
-          const data = JSON.parse(response);
-          setPlayerCounts({ PUG: data.PUG, Community: data.Community });
-        } else {
-          console.error('Response is not a string:', response);
-        }
-      })
-      .catch((error) => console.error('Error fetching players:', error));
-
-  }, []);
-
 
   const renderRoutes = (view: View) => {
     let routes: any[] = [];
@@ -112,7 +95,6 @@ function App() {
   ];
 
 
-  const theme = darkTheme;
 
   return (
     <Router>
@@ -129,32 +111,8 @@ function App() {
           })}
 
         >
-          <AppShell.Header
-            styles={(theme) => ({
-              header: {
-                backgroundColor: theme.colors.darkGray[3],
-                borderBottomColor: theme.colors.darkGray[0],
-                borderBottomWidth: '1px',
-                borderBottomStyle: 'solid',
-              },
-            })}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex-1"></div> {/* Invisible spacer */}
-              <div className="flex items-center pr-4"> {/* Adjusted for vertical centering */}
-                <Badge color="mutedBlue" variant="filled" style={{
-                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0'
-                }}>
-                  Community: {playerCounts.Community}
-                </Badge>
-                <Badge color="mutedBlue" variant="filled" style={{
-                  marginLeft: '10px', marginTop: '5px', color: theme.colors?.darkGray?.[3] || '#B0B0B0' 
-                }}>
-                  PUG: {playerCounts.PUG}
-                </Badge>
-              </div>
-            </div>
-          </AppShell.Header>
+       <HeaderComponent />
+
 
           <AppShell.Navbar
             styles={(theme) => ({

@@ -1,6 +1,6 @@
 // PackageCard.tsx
 import React, { useEffect, useState } from 'react';
-import { Card, Text, Badge, useMantineTheme, Button, Progress } from '@mantine/core';
+import { Card, Text, Badge, useMantineTheme, Button } from '@mantine/core';
 import { PackageData } from '../../views/Packages/PackagesView';
 import { PiCaretRightBold, PiCaretUpBold } from'react-icons/pi';
 import { BiSolidDownload } from 'react-icons/bi';
@@ -48,16 +48,7 @@ function formatBytes(bytes: any, decimals = 2) {
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
 
-  function formatSpeed(bytesPerSecond: number, decimals = 2) {
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s'];
-  
-    if (bytesPerSecond === 0) return '0 Bytes/s';
-  
-    const i = Math.floor(Math.log(bytesPerSecond) / Math.log(k));
-    return parseFloat((bytesPerSecond / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  }
+
   
   
   
@@ -66,7 +57,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
   const theme = useMantineTheme();
 
   const [isExpanded, setIsExpanded] = useState(areChildrenVisible);
-  const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
+  const [, setDownloadProgress] = useState<DownloadProgress | null>(null);
 
 
   // Update local state when the prop changes
@@ -194,23 +185,6 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
         </Button>
       )}
       </div>
-      {downloadProgress && (
-      <div style={{ width: '100%', padding: '10px', backgroundColor: theme.colors.darkGray[2] }}>
-        <Text size="sm" style={{ marginBottom: '4px', textAlign: 'center', color: theme.colors.lightGray[9], fontWeight: 'bold' }}>
-          {downloadProgress.percentage.toFixed(2)}%
-        </Text>
-        <Progress 
-          value={downloadProgress.percentage} 
-          color="green" 
-          animated
-          size="sm" 
-          style={{ marginBottom: '10px', background: theme.colors.darkGray[4] }}
-        />
-        <Text size="sm" style={{ color: theme.colors.lightGray[9], fontWeight: 'bold' }}>
-          Speed: {formatSpeed(downloadProgress.transfer_rate)}
-        </Text>
-      </div>
-    )}
     </Card>
   );
 };
