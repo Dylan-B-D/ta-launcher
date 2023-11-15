@@ -118,24 +118,30 @@ fn extract_zip_file(zip_path: PathBuf, destination_path: PathBuf) -> Result<(), 
         let mut file = zip_archive.by_index(i).map_err(|e| e.to_string())?;
         let outpath = destination_path.join(file.mangled_name());
 
-        if let Some(parent) = outpath.parent() {
-            if !parent.exists() {
-                std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        // Create directories as needed
+        if file.is_dir() {
+            std::fs::create_dir_all(&outpath).map_err(|e| e.to_string())?;
+        } else {
+            if let Some(parent) = outpath.parent() {
+                if !parent.exists() {
+                    std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+                }
             }
-        }
 
-        // Manages permissions if file exists, to prevent read only errors
-        if outpath.exists() {
-            let metadata = std::fs::metadata(&outpath).map_err(|e| e.to_string())?;
-            if metadata.permissions().readonly() {
-                let mut permissions = metadata.permissions();
-                permissions.set_readonly(false);
-                std::fs::set_permissions(&outpath, permissions).map_err(|e| e.to_string())?;
+            // Manage permissions if file exists and is read-only
+            if outpath.exists() && outpath.is_file() {
+                let metadata = std::fs::metadata(&outpath).map_err(|e| e.to_string())?;
+                if metadata.permissions().readonly() {
+                    let mut permissions = metadata.permissions();
+                    permissions.set_readonly(false);
+                    std::fs::set_permissions(&outpath, permissions).map_err(|e| e.to_string())?;
+                }
             }
-        }
 
-        let mut outfile = std::fs::File::create(&outpath).map_err(|e| e.to_string())?;
-        std::io::copy(&mut file, &mut outfile).map_err(|e| e.to_string())?;
+            // Extract file
+            let mut outfile = std::fs::File::create(&outpath).map_err(|e| e.to_string())?;
+            std::io::copy(&mut file, &mut outfile).map_err(|e| e.to_string())?;
+        }
     }
 
     Ok(())
