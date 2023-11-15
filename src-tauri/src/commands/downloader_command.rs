@@ -39,7 +39,11 @@ fn determine_download_path(package_id: &str) -> Result<PathBuf, String> {
     match package_id {
         id if id.contains("dll") => Ok(ta_launcher_path.clone()),
         id if id.contains("map") => Ok(ta_launcher_path.join("Game Files")),
+        id if id.contains("refshadercache") => Ok(ta_launcher_path.join("Game Files")),
+        id if id.contains("treacherous") => Ok(ta_launcher_path.join("Game Files")),
+        id if id.contains("arena") => Ok(ta_launcher_path.join("Game Files")),
         id if id.contains("route") => Ok(ta_launcher_path.join("Tribes Config")), 
+        id if id.contains("stdlib") => Ok(ta_launcher_path.join("Tribes Config")),
         _ => Err("Unrecognized package type".to_string()),
     }
 }
@@ -116,7 +120,19 @@ fn extract_zip_file(zip_path: PathBuf, destination_path: PathBuf) -> Result<(), 
 
     for i in 0..zip_archive.len() {
         let mut file = zip_archive.by_index(i).map_err(|e| e.to_string())?;
-        let outpath = destination_path.join(file.mangled_name());
+        let file_path = file.mangled_name();
+        let mut outpath = destination_path.join(&file_path);
+    
+        // Check if the file_path starts with "!CONFIG/" or "!TRIBESDIR/" and adjust the path
+        let stripped_path = if file_path.starts_with("!CONFIG/") {
+            file_path.strip_prefix("!CONFIG/").unwrap()
+        } else if file_path.starts_with("!TRIBESDIR/") {
+            file_path.strip_prefix("!TRIBESDIR/").unwrap()
+        } else {
+            &file_path
+        };
+    
+        outpath = destination_path.join(stripped_path);
 
         // Create directories as needed
         if file.is_dir() {
@@ -146,3 +162,4 @@ fn extract_zip_file(zip_path: PathBuf, destination_path: PathBuf) -> Result<(), 
 
     Ok(())
 }
+
