@@ -1,7 +1,8 @@
 # ta-launcher
 [W.I.P] Launcher to start the game on community servers, inject TAMods, and manage community maps.
 
-This project is a Rust Tauri application using Svelte for the frontend. Follow these instructions to set up and run the application on your system.
+This project is a Tauri application using Rust for the backend, and React for the frontend. 
+Follow these instructions to set up and run the application on your system.
 
 ## Prerequisites
 
@@ -16,15 +17,25 @@ Before you begin, ensure you have the following installed:
    git clone https://github.com/Dylan-B-D/ta-launcher
    cd ta-launcher
 
-2. **Install dependencies**
+2. **Install Dependencies:**
    ```bash
    npm install
 
-3. **Run in dev**
+3. **Set Rust Mode to Nighlty:**
+The injector used requires Rust Nightly to function. 
+If you don't have the Rust Nightly toolchain installed, you can use:
+```bash
+   rustup install nightly
+
+To set this specific project to use Rust Nightly using the command:
+```bash
+   rustup override set nightly
+
+3. **Run in Development Mode:**
    ```bash
    npx tauri dev
 
-3. **Build executable**
+3. **Build Executable:**
    ```bash
    npx tauri build
   
