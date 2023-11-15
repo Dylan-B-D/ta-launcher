@@ -121,7 +121,7 @@ fn extract_zip_file(zip_path: PathBuf, destination_path: PathBuf) -> Result<(), 
     for i in 0..zip_archive.len() {
         let mut file = zip_archive.by_index(i).map_err(|e| e.to_string())?;
         let file_path = file.mangled_name();
-        let mut outpath = destination_path.join(&file_path);
+        let  outpath;
     
         // Check if the file_path starts with "!CONFIG/" or "!TRIBESDIR/" and adjust the path
         let stripped_path = if file_path.starts_with("!CONFIG/") {

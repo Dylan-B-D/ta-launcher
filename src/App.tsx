@@ -21,6 +21,7 @@ import HomeView from './views/HomeView/HomeView';
 import ServerBrowser from './views/ServerBrowserView/ServerBrowserView';
 import SetupView from './views/Setup/SetupView';
 import PackagesView from './views/Packages/PackagesView';
+import SettingsView from './views/Settings/SettingsView';
 
 // Icons
 import { BiHomeAlt2, BiServer } from 'react-icons/bi';
@@ -90,7 +91,7 @@ function App() {
         { name: 'Routes', path: '/advanced/routes', component: ServerBrowser, icon: CiRoute },
       ]
     },
-    { component: ServerBrowser, path: '/settings', name: 'Settings', icon: TiCog, },
+    { component: SettingsView, path: '/settings', name: 'Settings', icon: TiCog, },
     { component: ServerBrowser, path: '/Login', name: 'Login', icon: AiOutlineUser, },
   ];
 
