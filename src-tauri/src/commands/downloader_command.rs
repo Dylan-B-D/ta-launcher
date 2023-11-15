@@ -28,7 +28,8 @@ impl Progress {
     }
 }
 
-// New function to determine download path based on package type
+
+// Adjusted function to determine download path based on package type
 fn determine_download_path(package_id: &str) -> Result<PathBuf, String> {
     let username = env::var("USERNAME").unwrap_or_else(|_| "default".into());
     let tribes_path = PathBuf::from(format!(r"C:\Users\{}\Documents\My Games\Tribes Ascend\TribesGame", username));
@@ -37,8 +38,8 @@ fn determine_download_path(package_id: &str) -> Result<PathBuf, String> {
     // Check package type and return the corresponding path
     match package_id {
         id if id.contains("dll") => Ok(ta_launcher_path.clone()),
-        id if id.contains("game_files") => Ok(ta_launcher_path.join("Game Files")), // Adjusted path for game_files
-        id if id.contains("config") => Ok(tribes_path.join("Tribes Config")),
+        id if id.contains("map") => Ok(ta_launcher_path.join("Game Files")),
+        id if id.contains("route") => Ok(ta_launcher_path.join("Tribes Config")), 
         _ => Err("Unrecognized package type".to_string()),
     }
 }
@@ -47,92 +48,95 @@ fn determine_download_path(package_id: &str) -> Result<PathBuf, String> {
 #[tauri::command]
 pub async fn download_package(
     package_id: String, 
-    filesize: u64, // Pass filesize as a parameter
-    handle: tauri::AppHandle // Pass the app handle to emit events
+    filesize: u64, 
+    handle: AppHandle
 ) -> Result<String, String> {
     let base_url = "https://tamods-update.s3.ap-southeast-2.amazonaws.com/";
-
-    // Check if the package_id contains 'dll'
-    let object_key = if package_id.contains("dll") {
-        format!("packages/{}.zip", package_id)
-    } else {
-        return Err("Package not recognized".to_string());
-    };
-
+    let object_key = format!("packages/{}.zip", package_id);
     let download_url = format!("{}{}", base_url, object_key);
-    println!("Download url: {}", download_url);
 
     let download_path = determine_download_path(&package_id)?;
+    let temp_dir = tempfile::tempdir().map_err(|e| e.to_string())?;
+    let temp_zip_path = temp_dir.path().join("temp_package.zip");
 
-    let file_path = download_path.join(object_key.split('/').last().unwrap());
-    println!("File Path: {:?}", file_path);
+    let progress = download_zip_file(download_url, temp_zip_path.clone(), filesize, &handle).await?;
 
-    // Initialize progress tracking
+    // Emit final progress
+    progress.emit_finished(&handle);
+
+    extract_zip_file(temp_zip_path, download_path.clone()).map_err(|e| e.to_string())?;
+    temp_dir.close().map_err(|e| e.to_string())?;
+
+    Ok(format!("Extracted to {:?}", download_path))
+}
+
+async fn download_zip_file(
+    download_url: String,
+    temp_zip_path: PathBuf,
+    filesize: u64,
+    handle: &AppHandle,
+) -> Result<Progress, String> {
     let mut progress = Progress {
-        package_id: package_id.clone(),
+        package_id: "".to_string(), // Update this as needed
         filesize,
         transfered: 0,
         transfer_rate: 0.0,
         percentage: 0.0,
     };
 
-    // Start the download
     let response = reqwest::get(&download_url).await.map_err(|e| e.to_string())?;
     let mut stream = response.bytes_stream();
 
     let start = std::time::Instant::now();
     let mut last_update = start;
 
-    // Create a temporary path for the zip file
-    let temp_dir = tempfile::tempdir().map_err(|e| e.to_string())?;
-    let temp_zip_path = temp_dir.path().join("temp_package.zip");
     let mut temp_zip_file = tokio::fs::File::create(&temp_zip_path).await.map_err(|e| e.to_string())?;
 
-    // Stream and write the download
     while let Some(item) = stream.next().await {
         let chunk = item.map_err(|e| e.to_string())?;
         progress.transfered += chunk.len() as u64;
         temp_zip_file.write_all(&chunk).await.map_err(|e| e.to_string())?;
 
-        // Update progress
         progress.percentage = (progress.transfered as f64 * 100.0) / filesize as f64;
         progress.transfer_rate = (progress.transfered as f64) / (start.elapsed().as_secs_f64());
 
-        // Emit progress periodically
-        if last_update.elapsed().as_millis() >= 50 { // UPDATE_SPEED = 50ms
-            progress.emit_progress(&handle);
+        if last_update.elapsed().as_millis() >= 50 { 
+            progress.emit_progress(handle);
             last_update = std::time::Instant::now();
         }
     }
 
-    // Emit final progress
-    progress.emit_finished(&handle);
-
-    // Open the zip file
-    let zip_file = std::fs::File::open(&temp_zip_path).map_err(|e| e.to_string())?;
-    let mut zip_archive = zip::ZipArchive::new(zip_file).map_err(|e| e.to_string())?;
-
-    // Iterate over each file & directory and extract
-    for i in 0..zip_archive.len() {
-        let mut file = zip_archive.by_index(i).map_err(|e| e.to_string())?;
-        let outpath = download_path.join(file.mangled_name());
-
-        if (&*file.name()).ends_with('/') {
-            std::fs::create_dir_all(&outpath).map_err(|e| e.to_string())?;
-        } else {
-            if let Some(p) = outpath.parent() {
-                if !p.exists() {
-                    std::fs::create_dir_all(&p).map_err(|e| e.to_string())?;
-                }
-            }
-            let mut outfile = std::fs::File::create(&outpath).map_err(|e| e.to_string())?;
-            std::io::copy(&mut file, &mut outfile).map_err(|e| e.to_string())?;
-        }
-    }
-
-    // Optionally, clean up the temporary zip file
-    temp_dir.close().map_err(|e| e.to_string())?;
-
-    Ok(format!("Extracted to {:?}", download_path))
+    Ok(progress)
 }
 
+
+fn extract_zip_file(zip_path: PathBuf, destination_path: PathBuf) -> Result<(), String> {
+    let zip_file = std::fs::File::open(zip_path).map_err(|e| e.to_string())?;
+    let mut zip_archive = zip::ZipArchive::new(zip_file).map_err(|e| e.to_string())?;
+
+    for i in 0..zip_archive.len() {
+        let mut file = zip_archive.by_index(i).map_err(|e| e.to_string())?;
+        let outpath = destination_path.join(file.mangled_name());
+
+        if let Some(parent) = outpath.parent() {
+            if !parent.exists() {
+                std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+            }
+        }
+
+        // Manages permissions if file exists, to prevent read only errors
+        if outpath.exists() {
+            let metadata = std::fs::metadata(&outpath).map_err(|e| e.to_string())?;
+            if metadata.permissions().readonly() {
+                let mut permissions = metadata.permissions();
+                permissions.set_readonly(false);
+                std::fs::set_permissions(&outpath, permissions).map_err(|e| e.to_string())?;
+            }
+        }
+
+        let mut outfile = std::fs::File::create(&outpath).map_err(|e| e.to_string())?;
+        std::io::copy(&mut file, &mut outfile).map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
+}
