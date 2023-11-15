@@ -1,10 +1,10 @@
 // SettingsView.tsx
 
 import React, { useState } from 'react';
-import { MantineProvider, TextInput, Switch, Select, Button, Paper, Title, Box, Group, Divider, useMantineTheme } from '@mantine/core';
+import {  Switch, Select, Button, Paper, Title, Box, Group, Divider, useMantineTheme, Textarea } from '@mantine/core';
 
 interface SettingsProps {
-  // Define any additional props you need here
+  // Define additional props
 }
 
 const SettingsView: React.FC<SettingsProps> = () => {
@@ -18,12 +18,12 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
 
   const paperStyle = {
-    backgroundColor: '#1A1B1E', // Dark background
-    color: '#E4E4E4', // Light text
+    backgroundColor: '#1A1B1E',
+    color: '#E4E4E4', 
     borderRadius: '10px',
     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-    padding: '16px', // Add padding
-    margin: '8px', // Add margin
+    padding: '16px', 
+    margin: '8px',
   };
   
 
@@ -33,7 +33,6 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const theme = useMantineTheme();
 
   return (
-    <MantineProvider>
       <Paper shadow="sm" style={paperStyle}>
         <Title order={2} style={{color: theme.colors.mutedBlue[7], fontWeight: 'bold'}}>Advanced Settings</Title>
         
@@ -41,19 +40,38 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
         <Box mt="md">
           <Title order={4} style={{color: theme.colors.lightGray[9]}}>General</Title>
-          <TextInput
-            label="Executable Override"
+          <Textarea
+            label="Steam ID Ovveride"
             placeholder="Path to executable"
             value={executableOverride}
-            
-            style={{color: theme.colors.lightGray[9] }}
+            variant='unstyled'
             onChange={(event) => setExecutableOverride(event.currentTarget.value)}
-          />
+              autosize
+              styles={{
+                
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
+                input: {
+                  backgroundColor: theme.colors.darkGray[4],
+                  paddingLeft: '10px',
+                },
+              }}
+              minRows={1}
+              maxRows={2}
+            />
           <Select
             label="Theme"
             value={customTheme}
             //onChange={setTheme}
             data={['dark', 'light', 'default']}
+            variant='unstyled'
+            styles={{
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
+                input: {
+                    backgroundColor: theme.colors.darkGray[4],
+                    color: theme.colors.lightGray[9],
+                    paddingLeft: '10px',
+                },
+              }}
           />
         </Box>
 
@@ -75,7 +93,16 @@ const SettingsView: React.FC<SettingsProps> = () => {
             label="Injection Order"
             value={injectionOrder}
             //onChange={setInjectionOrder}
+            variant='unstyled'
             data={['default', 'option1', 'option2']}
+            styles={{
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
+                input: {
+                    backgroundColor: theme.colors.darkGray[4],
+                    paddingLeft: '10px',
+                    color: theme.colors.lightGray[9],
+                },
+              }}
           />
         </Box>
 
@@ -83,25 +110,46 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
         <Box mt="md">
           <Title order={4}>Paths and Servers</Title>
-          <TextInput
+          <Textarea
             label="Custom Config Path"
             placeholder="Path to config"
             value={customConfigPath}
+            variant='unstyled'
             onChange={(event) => setCustomConfigPath(event.currentTarget.value)}
-          />
-          <TextInput
+              autosize
+              styles={{
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
+                input: {
+                  backgroundColor: theme.colors.darkGray[4],
+                  paddingLeft: '10px',
+                },
+              }}
+              minRows={1}
+              maxRows={2}
+            />
+            <Textarea
             label="Additional Login Server"
             placeholder="URL"
             value={additionalLoginServer}
+            variant='unstyled'
             onChange={(event) => setAdditionalLoginServer(event.currentTarget.value)}
-          />
+              autosize
+              styles={{
+                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
+                input: {
+                  backgroundColor: theme.colors.darkGray[4],
+                  paddingLeft: '10px',
+                },
+              }}
+              minRows={1}
+              maxRows={2}
+            />
         </Box>
 
         <Group mt="md">
           <Button onClick={handleSaveSettings}>Save Settings</Button>
         </Group>
       </Paper>
-    </MantineProvider>
   );
 };
 
