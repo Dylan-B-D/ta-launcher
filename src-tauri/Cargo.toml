@@ -30,6 +30,7 @@ walkdir = "2.3.2"
 regex = "1"
 zip = "0.5"
 tempfile = "3.8.1"
+futures = "0.3"
 
 [features]
 # by default Tauri runs in production mode

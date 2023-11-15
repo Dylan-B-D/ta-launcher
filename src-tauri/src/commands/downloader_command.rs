@@ -1,11 +1,41 @@
 // downloader_command.rs
 
 use std::path::PathBuf;
+use futures::StreamExt;
+use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager};
 use tauri::api::path::download_dir;
 use std::env;
+use tokio::io::AsyncWriteExt;
+
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Progress {
+    pub download_id: i64,
+    pub filesize: u64,
+    pub transfered: u64,
+    pub transfer_rate: f64,
+    pub percentage: f64,
+}
+
+
+
+impl Progress {
+    pub fn emit_progress(&self, handle: &AppHandle) {
+        handle.emit_all("DOWNLOAD_PROGRESS", &self).ok();
+    }
+
+    pub fn emit_finished(&self, handle: &AppHandle) {
+        handle.emit_all("DOWNLOAD_FINISHED", &self).ok();
+    }
+}
 
 #[tauri::command]
-pub async fn download_package(package_id: String) -> Result<String, String> {
+pub async fn download_package(
+    package_id: String, 
+    filesize: u64, // Pass filesize as a parameter
+    handle: tauri::AppHandle // Pass the app handle to emit events
+) -> Result<String, String> {
     let base_url = "https://tamods-update.s3.ap-southeast-2.amazonaws.com/";
     
     // Check if the package_id contains 'dll'
@@ -14,9 +44,6 @@ pub async fn download_package(package_id: String) -> Result<String, String> {
     } else {
         return Err("Package not recognized".to_string());
     };
-
-    let download_url = format!("{}{}", base_url, object_key);
-    println!("Download url: {}", download_url);
 
     let download_url = format!("{}{}", base_url, object_key);
     println!("Download url: {}", download_url);
@@ -38,21 +65,49 @@ pub async fn download_package(package_id: String) -> Result<String, String> {
         }
     };
 
-    // Append each part of the object_key to the file_path
     let file_path = download_path.join(object_key.split('/').last().unwrap());
-
     println!("File Path: {:?}", file_path);
 
-    // Perform the download
+    // Initialize progress tracking
+    let mut progress = Progress {
+        download_id: 0, // Set an appropriate download ID
+        filesize,
+        transfered: 0,
+        transfer_rate: 0.0,
+        percentage: 0.0,
+    };
+
+    // Start the download
     let response = reqwest::get(&download_url).await.map_err(|e| e.to_string())?;
-    let content = response.bytes().await.map_err(|e| e.to_string())?;
+    let mut stream = response.bytes_stream();
+
+    let start = std::time::Instant::now();
+    let mut last_update = start;
 
     // Create a temporary path for the zip file
     let temp_dir = tempfile::tempdir().map_err(|e| e.to_string())?;
     let temp_zip_path = temp_dir.path().join("temp_package.zip");
+    let mut temp_zip_file = tokio::fs::File::create(&temp_zip_path).await.map_err(|e| e.to_string())?;
 
-    // Write the content to the temporary zip file
-    tokio::fs::write(&temp_zip_path, &content).await.map_err(|e| e.to_string())?;
+    // Stream and write the download
+    while let Some(item) = stream.next().await {
+        let chunk = item.map_err(|e| e.to_string())?;
+        progress.transfered += chunk.len() as u64;
+        temp_zip_file.write_all(&chunk).await.map_err(|e| e.to_string())?;
+
+        // Update progress
+        progress.percentage = (progress.transfered as f64 * 100.0) / filesize as f64;
+        progress.transfer_rate = (progress.transfered as f64) / (start.elapsed().as_secs_f64());
+
+        // Emit progress periodically
+        if last_update.elapsed().as_millis() >= 50 { // UPDATE_SPEED = 50ms
+            progress.emit_progress(&handle);
+            last_update = std::time::Instant::now();
+        }
+    }
+
+    // Emit final progress
+    progress.emit_finished(&handle);
 
     // Open the zip file
     let zip_file = std::fs::File::open(&temp_zip_path).map_err(|e| e.to_string())?;
