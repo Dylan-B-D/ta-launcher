@@ -4,8 +4,6 @@
 
 
 :root {
-  color-scheme: light dark;
-  background-color: var(--mantine-color-darkGray-3);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
