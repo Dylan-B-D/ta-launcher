@@ -1,7 +1,7 @@
 // SettingsView.tsx
 
 import React, { useState } from 'react';
-import { MantineProvider, TextInput, Switch, Select, Button, Paper, Title, Box, Group } from '@mantine/core';
+import { MantineProvider, TextInput, Switch, Select, Button, Paper, Title, Box, Group, useMantineTheme } from '@mantine/core';
 
 interface SettingsProps {
   // Add any props you need here
@@ -9,13 +9,28 @@ interface SettingsProps {
 
 const SettingsView: React.FC<SettingsProps> = () => {
   // State hooks for each setting
-  const [theme, setTheme] = useState<string>('dark');
+  const theme = useMantineTheme();
+  const [selectedColor, setSelectedColor] = useState<string>(theme.primaryColor);
   const [manualInjection, setManualInjection] = useState<boolean>(false);
   const [injectionOrder, setInjectionOrder] = useState<string>('default');
   const [executableOverride, setExecutableOverride] = useState<string>('');
   const [multiInjection, setMultiInjection] = useState<boolean>(false);
   const [customConfigPath, setCustomConfigPath] = useState<string>('');
   const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
+
+  // Extract color names from the theme
+  const colorOptions = Object.keys(theme.colors).map(colorName => ({
+    value: colorName,
+    label: colorName.charAt(0).toUpperCase() + colorName.slice(1), // Capitalize the first letter
+  }));
+
+  const handleColorChange = (value: string | null) => {
+    if (value !== null) {
+      setSelectedColor(value);
+      // Additional logic to apply the selected color as primary or secondary
+    }
+    // Handle the `null` case if needed
+  };
 
   const handleSaveSettings = () => {
     // Implement save settings logic
@@ -82,11 +97,11 @@ const SettingsView: React.FC<SettingsProps> = () => {
         <Paper withBorder style={paperStyles.root}>
           <Title order={3}>Theme Customization</Title>
           <Select
-            label="Theme"
-            value={theme}
-            //onChange={setTheme}
-            // data={[get themes]}
-          />
+              label="Theme Color"
+              value={selectedColor}
+              onChange={handleColorChange}
+              data={colorOptions}
+            />
           {/* Add more theme customization options here */}
         </Paper>
 
