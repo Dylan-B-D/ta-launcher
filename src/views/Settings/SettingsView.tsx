@@ -113,7 +113,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
     <Box>
       <Title order={1} style={{ marginBottom: '20px' }}>Advanced Settings</Title>
 
-      <Paper withBorder style={paperStyles.root}>
+      <Paper withBorder style={{ ...paperStyles.root, ...theme.components.Paper.styles(theme).root }}>
         <Title order={3}>General Settings</Title>
         <TextInput
           label="Executable Override"
@@ -137,7 +137,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
         />
       </Paper>
 
-      <Paper withBorder style={paperStyles.root}>
+      <Paper withBorder style={{ ...paperStyles.root, ...theme.components.Paper.styles(theme).root }}>
         <Title order={3}>Injection Settings</Title>
         <Switch
           label="Manual Injection"
@@ -159,8 +159,9 @@ const SettingsView: React.FC<SettingsProps> = () => {
         />
       </Paper>
 
-      <Paper withBorder style={paperStyles.root}>
+      <Paper withBorder style={{ ...paperStyles.root, ...theme.components.Paper.styles(theme).root }}>
         <Title order={3}>Theme Customization</Title>
+        <Title order={5}>Colors</Title>
         <Select
           label="Primary Color"
           value={selectedColor}
@@ -184,6 +185,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
           searchable
         />
         <Space h="md" />
+        <Title order={5}>Fonts</Title>
         <Select
           label="Primary Font-Family"
           value={selectedFontFamily}
@@ -191,6 +193,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
           data={fontFamilyOptions}
           searchable
         />
+        <Space h="md" />
         <Select
           label="Secondary Font-Family"
           value={selectedSecondaryFontFamily}

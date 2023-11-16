@@ -16,6 +16,7 @@ import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
 import HeaderComponent from './components/Header/Header';
 import { useThemeContext } from './context/ThemeContext';
 
+
 await appWindow.setMinSize(new PhysicalSize(600, 550));
 
 

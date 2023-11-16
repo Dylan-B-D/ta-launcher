@@ -41,7 +41,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     );
     
     const [secondaryFontFamily, setSecondaryFontFamily] = useState<string>(
-        () => localStorage.getItem('secondaryFontFamily') || 'DefaultSecondaryFont'
+        () => localStorage.getItem('secondaryFontFamily') || 'Nunito Sans'
         );
 
     useEffect(() => {

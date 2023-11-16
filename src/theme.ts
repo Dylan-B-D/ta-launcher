@@ -138,6 +138,14 @@ const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryCo
           },
         }),
       },
+      Paper: {
+        styles: (theme: MantineTheme) => ({
+          root: {
+            backgroundColor: theme.colors[theme.tertiaryColor][9],
+            borderColor: theme.colors[theme.secondaryColor][9],
+          },
+        }),
+      },
     },
   });
 };
