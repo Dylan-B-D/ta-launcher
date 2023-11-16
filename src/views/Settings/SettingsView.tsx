@@ -1,7 +1,8 @@
 // SettingsView.tsx
 
 import React, { useState } from 'react';
-import { MantineProvider, TextInput, Switch, Select, Button, Paper, Title, Box, Group, useMantineTheme } from '@mantine/core';
+import { TextInput, Switch, Select, Button, Paper, Title, Box, Group, useMantineTheme } from '@mantine/core';
+import { useThemeContext } from '../../context/ThemeContext';
 
 interface SettingsProps {
   // Add any props you need here
@@ -10,6 +11,7 @@ interface SettingsProps {
 const SettingsView: React.FC<SettingsProps> = () => {
   // State hooks for each setting
   const theme = useMantineTheme();
+  const { setPrimaryColor } = useThemeContext();
   const [selectedColor, setSelectedColor] = useState<string>(theme.primaryColor);
   const [manualInjection, setManualInjection] = useState<boolean>(false);
   const [injectionOrder, setInjectionOrder] = useState<string>('default');
@@ -26,8 +28,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
   const handleColorChange = (value: string | null) => {
     if (value !== null) {
-      setSelectedColor(value);
-      // Additional logic to apply the selected color as primary or secondary
+      setPrimaryColor(value);
     }
     // Handle the `null` case if needed
   };
