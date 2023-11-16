@@ -1,12 +1,19 @@
 // SettingsView.tsx
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextInput, Switch, Select, Paper, Title, Box, useMantineTheme, Space } from '@mantine/core';
 import { useThemeContext } from '../../context/ThemeContext';
+import { invoke } from '@tauri-apps/api/tauri';
 
 interface SettingsProps {
   // Add props
 }
+
+interface FontOption {
+  value: string;
+  label: string;
+}
+
 
 const SettingsView: React.FC<SettingsProps> = () => {
   // State hooks for each setting
@@ -21,12 +28,35 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const { setTertiaryColor } = useThemeContext();
   const [selectedColorTertiary, setSelectedColorTertiary] = useState<string>(theme.tertiaryColor);
 
+  const [fontFamilyOptions, setFontFamilyOptions] = useState<FontOption[]>([]);
+  const [selectedFontFamily, setSelectedFontFamily] = useState<string>(theme.fontFamily || "DefaultFont");
+
+
   const [manualInjection, setManualInjection] = useState<boolean>(false);
   const [injectionOrder, setInjectionOrder] = useState<string>('default');
   const [executableOverride, setExecutableOverride] = useState<string>('');
   const [multiInjection, setMultiInjection] = useState<boolean>(false);
   const [customConfigPath, setCustomConfigPath] = useState<string>('');
   const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
+
+  async function fetchSystemFonts(): Promise<string[]> {
+    try {
+      const fonts: string[] = await invoke('get_system_fonts');
+      return fonts;
+    } catch (error) {
+      console.error('Error fetching system fonts:', error);
+      return []; // Return an empty array in case of an error
+    }
+  }
+  
+
+  useEffect(() => {
+    fetchSystemFonts().then(fonts => {
+      const fontOptions: FontOption[] = fonts.map(font => ({ value: font, label: font }));
+      setFontFamilyOptions(fontOptions);
+    });
+  }, []);  
+  
 
   // Extract color names from the theme
   const mutedColors: { value: string; label: string; }[] = [];
@@ -65,6 +95,14 @@ const SettingsView: React.FC<SettingsProps> = () => {
       setSelectedColorTertiary(value);
     }
   };
+
+  const handleChangeFontFamily = (value: string | null) => {
+    if (value !== null) {
+      setSelectedFontFamily(value); // Update the state
+      // Additional logic if needed
+    }
+  };
+  
 
   const handleSaveSettings = () => {
     // Implement save settings logic
@@ -147,13 +185,20 @@ const SettingsView: React.FC<SettingsProps> = () => {
               onChange={handleColorChangeSecondary}
               data={groupedColorOptions}
             />
-            <Space h="md" />
+          <Space h="md" />
           <Select
               label="Tertiary Color"
               value={selectedColorTertiary}
               onChange={handleColorChangeTertiary}
               data={groupedColorOptions}
             />
+          <Space h="md" />
+          <Select
+            label="Primary Font-Family"
+            value={selectedFontFamily}
+            onChange={handleChangeFontFamily}
+            data={fontFamilyOptions}
+          />
         </Paper>
 
       </Box>

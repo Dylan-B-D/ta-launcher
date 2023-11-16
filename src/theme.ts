@@ -9,9 +9,11 @@ declare module "@mantine/core" {
 }
 
 const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryColor: string) => {
+  const primaryFontFamily = '"Nunito Sans", sans-serif';
+  const secondaryFontFamily = '"Roboto", sans-serif';
 
   return createTheme({
-    fontFamily: "Nunito Sans",
+    fontFamily: primaryFontFamily,
 
     //  https://mantine.dev/colors-generator/
     //  Colors for UI components, try to keep intensity range normalised.
@@ -131,6 +133,7 @@ const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryCo
       Button: {
         styles: (theme: MantineTheme) => ({
           root: {
+            fontFamily: secondaryFontFamily,
             color: theme.colors[theme.secondaryColor][5],
             backgroundColor: theme.colors[theme.primaryColor][5],
             borderColor: theme.colors[theme.tertiaryColor][5],
