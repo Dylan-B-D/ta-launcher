@@ -30,7 +30,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
   const [fontFamilyOptions, setFontFamilyOptions] = useState<FontOption[]>([]);
   const [selectedFontFamily, setSelectedFontFamily] = useState<string>(theme.fontFamily || "DefaultFont");
-
+  const { setPrimaryFontFamily } = useThemeContext();
 
   const [manualInjection, setManualInjection] = useState<boolean>(false);
   const [injectionOrder, setInjectionOrder] = useState<string>('default');
@@ -98,8 +98,8 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
   const handleChangeFontFamily = (value: string | null) => {
     if (value !== null) {
-      setSelectedFontFamily(value); // Update the state
-      // Additional logic if needed
+      setPrimaryFontFamily(value);
+      setSelectedFontFamily(value);
     }
   };
   

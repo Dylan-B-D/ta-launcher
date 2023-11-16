@@ -8,8 +8,7 @@ declare module "@mantine/core" {
   }
 }
 
-const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryColor: string) => {
-  const primaryFontFamily = '"Nunito Sans", sans-serif';
+const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryColor: string, primaryFontFamily: string) => {
   const secondaryFontFamily = '"Roboto", sans-serif';
 
   return createTheme({
