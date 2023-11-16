@@ -29,10 +29,21 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
 
   // Extract color names from the theme
-  const colorOptions = Object.keys(theme.colors).map(colorName => ({
-    value: colorName,
-    label: colorName.charAt(0).toUpperCase() + colorName.slice(1), // Capitalize the first letter
-  }));
+  const mutedColors: { value: string; label: string; }[] = [];
+  const otherColors: { value: string; label: string; }[] = [];
+  Object.keys(theme.colors).forEach(colorName => {
+    const option = { value: colorName, label: colorName.charAt(0).toUpperCase() + colorName.slice(1) };
+    if (colorName.includes('muted')) {
+      mutedColors.push(option);
+    } else {
+      otherColors.push(option);
+    }
+  });
+
+  const groupedColorOptions = [
+    { group: 'Muted Colors', items: mutedColors },
+    { group: 'Other Colors', items: otherColors },
+  ];
 
   const handleColorChange = (value: string | null) => {
     if (value !== null) {
@@ -124,24 +135,24 @@ const SettingsView: React.FC<SettingsProps> = () => {
         <Paper withBorder style={paperStyles.root}>
           <Title order={3}>Theme Customization</Title>
           <Select
-              label="Primary Color"
-              value={selectedColor}
-              onChange={handleColorChange}
-              data={colorOptions}
-            />
+            label="Primary Color"
+            value={selectedColor}
+            onChange={handleColorChange}
+            data={groupedColorOptions}
+          />
           <Space h="md" />
           <Select
               label="Secondary Color"
               value={selectedColorSecondary}
               onChange={handleColorChangeSecondary}
-              data={colorOptions}
+              data={groupedColorOptions}
             />
             <Space h="md" />
           <Select
               label="Tertiary Color"
               value={selectedColorTertiary}
               onChange={handleColorChangeTertiary}
-              data={colorOptions}
+              data={groupedColorOptions}
             />
         </Paper>
 
