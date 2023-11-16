@@ -29,8 +29,8 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const handleColorChange = (value: string | null) => {
     if (value !== null) {
       setPrimaryColor(value);
+      setSelectedColor(value);
     }
-    // Handle the `null` case if needed
   };
 
   const handleSaveSettings = () => {
@@ -106,9 +106,6 @@ const SettingsView: React.FC<SettingsProps> = () => {
           {/* Add more theme customization options here */}
         </Paper>
 
-        <Group mt="md">
-          <Button onClick={handleSaveSettings}>Save Settings</Button>
-        </Group>
       </Box>
   );
 };

@@ -7,7 +7,6 @@ import { views } from './routes';
 
 // UI components and hooks
 import { AppShell, MantineProvider } from '@mantine/core';
-import { ThemeProvider, useThemeContext } from './context/ThemeContext';
 
 // Styling
 import "@mantine/core/styles.css";
@@ -15,13 +14,14 @@ import createAppTheme from './theme';
 import { NavbarNested } from './components/NavbarNested/NavbarNested';
 import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
 import HeaderComponent from './components/Header/Header';
+import { useThemeContext } from './context/ThemeContext';
 
 await appWindow.setMinSize(new PhysicalSize(600, 550));
 
 
 function App() {
-  
-const theme = createAppTheme();
+  const { primaryColor } = useThemeContext();
+  const theme = createAppTheme(primaryColor);
 
   return (
     <Router>

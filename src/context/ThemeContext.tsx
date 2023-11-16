@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface ThemeContextType {
   primaryColor: string;
@@ -16,11 +16,18 @@ export const useThemeContext = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [primaryColor, setPrimaryColor] = useState<string>('mutedBlue');
-
-  return (
-    <ThemeContext.Provider value={{ primaryColor, setPrimaryColor }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
+    const [primaryColor, setPrimaryColor] = useState<string>(
+      () => localStorage.getItem('primaryColor') || 'mutedBlue'
+    );
+  
+    useEffect(() => {
+      localStorage.setItem('primaryColor', primaryColor);
+    }, [primaryColor]);
+  
+    return (
+      <ThemeContext.Provider value={{ primaryColor, setPrimaryColor }}>
+        {children}
+      </ThemeContext.Provider>
+    );
+  };
+  
