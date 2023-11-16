@@ -110,7 +110,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
       <div className={classes.header}>
         <Group justify="space-between">
           <span className={classes.name} style={{ fontSize: rem(24), fontWeight: 'bold', color: 'rgba(255,255,255,0.8)' }}>T:A Launcher</span>
-          <Code fw={700} color={theme.colors.mutedBlue[5]}>Alpha v0.0.1</Code>
+          <Code fw={700} >Alpha v0.0.1</Code>
         </Group>
       </div>
 

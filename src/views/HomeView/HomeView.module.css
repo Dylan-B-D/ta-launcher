@@ -3,7 +3,6 @@
 .bridge {
   position: relative; /* Required for absolute positioning of pseudo-elements */
   height: 2.5rem; /* Height of the bridge */
-  background-color: var(--mantine-color-mutedBlue-0);
   width: 2px; /* Width of the bridge */
   margin: 0 auto; /* Center the bridge */
 }
@@ -16,11 +15,11 @@
   transform: translateX(-50%);
   width: 10px; /* Diameter of the semi-circle */
   height: 10px; /* Diameter of the semi-circle */
-  background-color: var(--mantine-color-mutedBlue-4); /* Color of the semi-circle */
+
   border-radius: 50%;
   border-width: 1px;
   border-style: solid;
-  border-color: var(--mantine-color-darkGray-2);
+
   z-index: 1;
 }
 

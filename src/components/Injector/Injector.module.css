@@ -6,9 +6,6 @@
     border: none;
     transition: 0.3s ease;
     margin-right: 1px;
-    &:hover {
-      background-color: #527594; /* Lighter shade for hover */
-    }
   
     &:focus {
         outline: none;
@@ -20,7 +17,6 @@
 }
 
 .title {
-    font-family: 'Nunito Sans', sans-serif;
     font-weight: 400;
 }
   

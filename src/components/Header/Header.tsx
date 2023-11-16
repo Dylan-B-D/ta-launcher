@@ -72,8 +72,7 @@ interface DownloadProgress {
     <AppShell.Header
       styles={(theme) => ({
         header: {
-          backgroundColor: theme.colors.darkGray[3],
-          borderBottomColor: theme.colors.darkGray[0],
+
           borderBottomWidth: '1px',
           borderBottomStyle: 'solid',
         },
@@ -95,7 +94,7 @@ interface DownloadProgress {
       />
     </div>
     <div style={{ width: '150px', marginLeft: '15px' }}> {/* Fixed width for the text */}
-      <span style={{ color: theme.colors.lightGray[9], whiteSpace: 'nowrap' }}>
+      <span style={{ whiteSpace: 'nowrap' }}>
         {downloadProgress.percentage.toFixed(2)}% at {formatSpeed(downloadProgress.transfer_rate)}
       </span>
     </div>

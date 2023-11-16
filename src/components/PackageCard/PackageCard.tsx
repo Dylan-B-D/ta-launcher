@@ -100,7 +100,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
   };
 
   // Gradient background for the package name
-  const gradient = `linear-gradient(135deg, ${theme.colors.mutedBlue[3]} 0%, ${theme.colors.mutedBlue[0]} 100%)`;
+
 
   const handleInstallClick = () => {
     // Convert filesize to a number. Use optional chaining and nullish coalescing.
@@ -125,30 +125,30 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
   
 
   return (
-    <Card style={{ width: '18rem', backgroundColor: theme.colors.darkGray[2], marginBottom: '16px', overflow: 'hidden' }}>
+    <Card style={{ width: '18rem',  marginBottom: '16px', overflow: 'hidden' }}>
       <Card.Section>
-        <div style={{ background: gradient, padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ color: theme.colors.lightGray[5], fontWeight: 'bold' }}>{packageData.displayName}</Text>
+        <div style={{  padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ fontWeight: 'bold' }}>{packageData.displayName}</Text>
           <Badge color="red" variant="light">Not Installed</Badge>
         </div>
       </Card.Section>
 
       <div style={{ padding: '10px 15px' }}>
-        <Text style={{ color: theme.colors.lightGray[9], opacity: 0.8, marginBottom: '10px' }}>{packageData.description}</Text>
-        <hr style={{ borderColor: theme.colors.mutedBlue[3] }} />
+        <Text style={{  opacity: 0.8, marginBottom: '10px' }}>{packageData.description}</Text>
+        <hr style={{  }} />
 
         {packageData.metadata ? (
           <>
-            <Text style={{ color: theme.colors.lightGray[9], opacity: 0.5 }}>
+            <Text style={{  opacity: 0.5 }}>
                 Size: {formatBytes(packageData.metadata.size)}
             </Text>
             {/* Display Total Size if available */}
             {typeof totalSize === 'number' && (
-              <Text style={{ color: theme.colors.lightGray[9], opacity: 0.5 }}>
+              <Text style={{  opacity: 0.5 }}>
                 Total Size: {formatBytes(totalSize)}
               </Text>
             )}
-            <Text style={{ color: theme.colors.lightGray[9], opacity: 0.5 }}>
+            <Text style={{  opacity: 0.5 }}>
                 Last Modified: {formatDate(packageData.metadata.lastModified)}
             </Text>
           </>
@@ -162,8 +162,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
         <Button 
           rightSection={<BiSolidDownload size={14} />}
           onClick={handleInstallClick}
-          style={{ backgroundColor: theme.colors.mutedBlue[3], 
-            color: theme.colors.lightGray[5],
+          style={{ 
             paddingLeft: '4px',
             paddingRight: '4px'
            }}
@@ -175,8 +174,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
         <Button 
           rightSection={isExpanded ? <PiCaretUpBold size={14} /> : <PiCaretRightBold size={14} />}
           onClick={handleToggleDependencies} 
-          style={{ backgroundColor: theme.colors.mutedBlue[3], 
-            color: theme.colors.lightGray[5],
+          style={{ 
             paddingLeft: '4px',
             paddingRight: '4px'
            }}

@@ -116,8 +116,7 @@ const GameLauncher: React.FC = () => {
   };
 
   const buttonStyle = (selected: boolean) => ({
-    backgroundColor: selected ? theme.colors.mutedBlue[9] : 'rgba(0, 0, 0, 0.1)',
-    color: selected ? theme.colors.darkGray[3] : theme.colors.lightGray[3],
+    
     fontWeight: selected ? 'bold' : 'normal',
   });
 
@@ -162,7 +161,7 @@ const GameLauncher: React.FC = () => {
         top: '50%', 
         left: '50%', 
         transform: 'translate(-50%, -50%)',
-        color: theme.colors.lightGray[4],
+
         textAlign: 'center',
         fontWeight: 'bold',
         textShadow: '0 0px 4px rgba(0, 0, 0, 1)',
@@ -179,7 +178,7 @@ const GameLauncher: React.FC = () => {
       size="sm" 
       style={{ 
         marginTop: '1rem', 
-        color: theme.colors.lightGray[7],
+
         fontWeight: 'bold',
        }}
       >Launch Type:</Text>
@@ -201,8 +200,8 @@ const GameLauncher: React.FC = () => {
       {launchType === 'Non Steam' && (
         <>
           <Group>
-            <Text size="sm" style={{ fontWeight: 'bold', color: theme.colors.mutedBlue[8] }}>Executable Path:</Text>
-            <Button onClick={toggleNonSteamOptions} style={{ color: theme.colors.mutedBlue[8] }}>
+            <Text size="sm" style={{ fontWeight: 'bold' }}>Executable Path:</Text>
+            <Button onClick={toggleNonSteamOptions} >
               <FaCog size={16} />
             </Button>
           </Group>
@@ -215,7 +214,7 @@ const GameLauncher: React.FC = () => {
               error={!exePath && "Invalid Path"}
               autosize
               styles={{
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
+                label: {  fontWeight: 'normal' },
                 input: {
                   color: 'black',
                   backgroundColor: 'lightgray',
@@ -241,7 +240,7 @@ const GameLauncher: React.FC = () => {
               </Code>
             </Collapse>
             {searchError && (
-              <Text style={{ color: theme.colors.mutedRed[9] }} >
+              <Text style={{  }} >
                 {searchError}
               </Text>
             )}
@@ -254,7 +253,7 @@ const GameLauncher: React.FC = () => {
       size="sm" 
       style={{ 
         marginTop: '1rem', 
-        color: theme.colors.lightGray[7],
+
         fontWeight: 'bold',
        }}
       >
@@ -293,7 +292,7 @@ const GameLauncher: React.FC = () => {
         onClick={startGame} 
         variant="filled" 
         className={classes.customButton}
-        style={{ backgroundColor: theme.colors.mutedAmber[6], color: theme.colors.darkGray[3] }}
+
         fullWidth 
         mt="md" 
         radius="xs"

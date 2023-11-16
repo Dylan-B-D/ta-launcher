@@ -1,15 +1,15 @@
 // SettingsView.tsx
 
 import React, { useState } from 'react';
-import {  Switch, Select, Button, Paper, Title, Box, Group, Divider, useMantineTheme, Textarea } from '@mantine/core';
+import { MantineProvider, TextInput, Switch, Select, Button, Paper, Title, Box, Group } from '@mantine/core';
 
 interface SettingsProps {
-  // Define additional props
+  // Add any props you need here
 }
 
 const SettingsView: React.FC<SettingsProps> = () => {
   // State hooks for each setting
-  const [customTheme, setTheme] = useState<string>('dark');
+  const [theme, setTheme] = useState<string>('dark');
   const [manualInjection, setManualInjection] = useState<boolean>(false);
   const [injectionOrder, setInjectionOrder] = useState<string>('default');
   const [executableOverride, setExecutableOverride] = useState<string>('');
@@ -17,68 +17,50 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const [customConfigPath, setCustomConfigPath] = useState<string>('');
   const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
 
-  const paperStyle = {
-    backgroundColor: '#1A1B1E',
-    color: '#E4E4E4', 
-    borderRadius: '10px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-    padding: '16px', 
-    margin: '8px',
-  };
-  
-
   const handleSaveSettings = () => {
     // Implement save settings logic
   };
-  const theme = useMantineTheme();
+
+  // Custom styles for Paper component
+  const paperStyles = {
+    root: {
+      backgroundColor: '#1A1B1E', // Dark background
+      color: '#FFFFFF', // Light text
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      padding: '20px',
+      marginBottom: '20px',
+    }
+  };
 
   return (
-      <Paper shadow="sm" style={paperStyle}>
-        <Title order={2} style={{color: theme.colors.mutedBlue[7], fontWeight: 'bold'}}>Advanced Settings</Title>
-        
-        <Divider my="sm" />
+      <Box>
+        <Title order={1} style={{ marginBottom: '20px' }}>Advanced Settings</Title>
 
-        <Box mt="md">
-          <Title order={4} style={{color: theme.colors.lightGray[9]}}>General</Title>
-          <Textarea
-            label="Steam ID Ovveride"
+        <Paper withBorder style={paperStyles.root}>
+          <Title order={3}>General Settings</Title>
+          <TextInput
+            label="Executable Override"
             placeholder="Path to executable"
             value={executableOverride}
-            variant='unstyled'
             onChange={(event) => setExecutableOverride(event.currentTarget.value)}
-              autosize
-              styles={{
-                
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
-                input: {
-                  backgroundColor: theme.colors.darkGray[4],
-                  paddingLeft: '10px',
-                },
-              }}
-              minRows={1}
-              maxRows={2}
-            />
-          <Select
-            label="Theme"
-            value={customTheme}
-            //onChange={setTheme}
-            data={['dark', 'light', 'default']}
-            variant='unstyled'
-            styles={{
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
-                input: {
-                    backgroundColor: theme.colors.darkGray[4],
-                    color: theme.colors.lightGray[9],
-                    paddingLeft: '10px',
-                },
-              }}
           />
-        </Box>
+          <TextInput
+            label="Custom Config Path"
+            placeholder="Path to config"
+            value={customConfigPath}
+            onChange={(event) => setCustomConfigPath(event.currentTarget.value)}
+          />
+          <TextInput
+            label="Additional Login Server"
+            placeholder="URL"
+            value={additionalLoginServer}
+            onChange={(event) => setAdditionalLoginServer(event.currentTarget.value)}
+          />
+        </Paper>
 
-        <Divider my="sm" />
-
-        <Box mt="md">
-          <Title order={4}>Injection Settings</Title>
+        <Paper withBorder style={paperStyles.root}>
+          <Title order={3}>Injection Settings</Title>
           <Switch
             label="Manual Injection"
             checked={manualInjection}
@@ -93,63 +75,25 @@ const SettingsView: React.FC<SettingsProps> = () => {
             label="Injection Order"
             value={injectionOrder}
             //onChange={setInjectionOrder}
-            variant='unstyled'
             data={['default', 'option1', 'option2']}
-            styles={{
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
-                input: {
-                    backgroundColor: theme.colors.darkGray[4],
-                    paddingLeft: '10px',
-                    color: theme.colors.lightGray[9],
-                },
-              }}
           />
-        </Box>
+        </Paper>
 
-        <Divider my="sm" />
-
-        <Box mt="md">
-          <Title order={4}>Paths and Servers</Title>
-          <Textarea
-            label="Custom Config Path"
-            placeholder="Path to config"
-            value={customConfigPath}
-            variant='unstyled'
-            onChange={(event) => setCustomConfigPath(event.currentTarget.value)}
-              autosize
-              styles={{
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
-                input: {
-                  backgroundColor: theme.colors.darkGray[4],
-                  paddingLeft: '10px',
-                },
-              }}
-              minRows={1}
-              maxRows={2}
-            />
-            <Textarea
-            label="Additional Login Server"
-            placeholder="URL"
-            value={additionalLoginServer}
-            variant='unstyled'
-            onChange={(event) => setAdditionalLoginServer(event.currentTarget.value)}
-              autosize
-              styles={{
-                label: { color: theme.colors.lightGray[9], fontWeight: 'normal' },
-                input: {
-                  backgroundColor: theme.colors.darkGray[4],
-                  paddingLeft: '10px',
-                },
-              }}
-              minRows={1}
-              maxRows={2}
-            />
-        </Box>
+        <Paper withBorder style={paperStyles.root}>
+          <Title order={3}>Theme Customization</Title>
+          <Select
+            label="Theme"
+            value={theme}
+            //onChange={setTheme}
+            data={['dark', 'light', 'custom']}
+          />
+          {/* Add more theme customization options here */}
+        </Paper>
 
         <Group mt="md">
           <Button onClick={handleSaveSettings}>Save Settings</Button>
         </Group>
-      </Paper>
+      </Box>
   );
 };
 

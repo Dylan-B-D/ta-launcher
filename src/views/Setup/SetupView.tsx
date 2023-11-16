@@ -25,7 +25,7 @@ const SetupView = () => {
       <Button 
       variant="filled" 
       className={classes.customButton}
-      style={{ backgroundColor: theme.colors.mutedAmber[6], color: theme.colors.darkGray[3] }}
+      style={{  }}
       fullWidth 
       mt="md" 
       radius="xs"

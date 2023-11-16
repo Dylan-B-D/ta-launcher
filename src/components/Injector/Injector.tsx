@@ -49,14 +49,14 @@ const Injector: React.FC = () => {
 
   return (
     <Card shadow="sm" padding="lg" radius="sm" style={{ backgroundColor: '#2C3E50', maxWidth: '350px', margin: 'auto' }}>
-      <Text className={classes.title} size="lg" style={{ textAlign: 'center', marginBottom: '1rem', color: theme.colors.lightGray[4]}}>
+      <Text className={classes.title} size="lg" style={{ textAlign: 'center', marginBottom: '1rem'}}>
         DLL Injector
       </Text>
 
       <Button.Group style={{ display: 'flex', justifyContent: 'center' }}>
         <Button 
           className={classes.customButton}
-          style={{ backgroundColor: theme.colors.mutedBlue[8], color: theme.colors.darkGray[3] }}
+
           onClick={openFile}
         >
           <BsFileEarmarkCodeFill style={{ marginRight: '0.5rem' }} />
@@ -65,7 +65,7 @@ const Injector: React.FC = () => {
 
         <Button 
           className={classes.customButton}
-          style={{ backgroundColor: theme.colors.mutedBlue[8], color: theme.colors.darkGray[3] }}
+
           onClick={inject}
           disabled={isInjected}
         >
