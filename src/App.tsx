@@ -20,8 +20,8 @@ await appWindow.setMinSize(new PhysicalSize(600, 550));
 
 
 function App() {
-  const { primaryColor } = useThemeContext();
-  const theme = createAppTheme(primaryColor);
+  const { primaryColor, secondaryColor, tertiaryColor } = useThemeContext();
+  const theme = createAppTheme(primaryColor, secondaryColor, tertiaryColor);
 
   return (
     <Router>
