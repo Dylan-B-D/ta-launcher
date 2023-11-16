@@ -31,6 +31,7 @@ regex = "1"
 zip = "0.5"
 tempfile = "3.8.1"
 futures = "0.3"
+font-loader = "0.8"
 
 [features]
 # by default Tauri runs in production mode

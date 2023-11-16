@@ -11,6 +11,7 @@ use commands::{
     fetch_packages_command, 
     downloader_command,
     find_executable_command,
+    get_available_fonts_command,
 };
 
 
@@ -27,6 +28,7 @@ fn main() {
         fetch_packages_command::fetch_dependency_tree,
         downloader_command::download_package,
         find_executable_command:: find_executable,
+        get_available_fonts_command::get_system_fonts,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
