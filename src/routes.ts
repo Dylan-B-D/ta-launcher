@@ -1,7 +1,6 @@
 import { BiHomeAlt2, BiServer } from 'react-icons/bi';
 import HomeView from './views/HomeView/HomeView';
 import PackagesView from './views/Packages/PackagesView';
-import SetupView from './views/Setup/SetupView';
 import { RiSettingsLine } from 'react-icons/ri';
 import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
@@ -24,7 +23,6 @@ export interface View {
 
 export const views: View[] = [
     { component: HomeView, path: '/home', name: 'Home', icon: BiHomeAlt2 },
-    { component: SetupView, path: '/setup', name: 'Setup', icon: RiSettingsLine, },
     { component: PackagesView, path: '/packages', name: 'Packages', icon: LuPackage, },
     {
       name: 'Servers',
