@@ -103,7 +103,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     );
   });
   
-  
+  const maxScrollHeight = 'calc(100vh - 100px)';
 
   return (
     <nav className={classes.navbar}>
@@ -114,7 +114,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
         </Group>
       </div>
 
-      <ScrollArea className={classes.links}>
+      <ScrollArea className={classes.links} style={{ maxHeight: maxScrollHeight }}>
         <div className={classes.linksInner}>{links}</div>
       </ScrollArea>
     </nav>
