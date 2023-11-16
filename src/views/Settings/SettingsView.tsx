@@ -85,7 +85,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
             label="Theme"
             value={theme}
             //onChange={setTheme}
-            data={['dark', 'light', 'custom']}
+            // data={[get themes]}
           />
           {/* Add more theme customization options here */}
         </Paper>
