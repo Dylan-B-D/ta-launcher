@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Card, Image, Button, Text, useMantineTheme, Group, TextInput, Textarea, Collapse, Code } from '@mantine/core';
+import { Card, Image, Button, Text, Group, TextInput, Textarea, Collapse, Code } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch, FaCog  } from 'react-icons/fa';
 import classes from './GameLauncher.module.css';
@@ -10,7 +10,6 @@ import { dialog } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
 
 const GameLauncher: React.FC = () => {
-  const theme = useMantineTheme();
   const [launchType, setLaunchType] = useState(localStorage.getItem('launchType') || 'Steam');
   const [loginServer, setLoginServer] = useState(localStorage.getItem('loginServer') || 'Community');
   const [exePath, setExePath] = useState(localStorage.getItem('exePath') || '');

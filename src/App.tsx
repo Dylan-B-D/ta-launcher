@@ -17,13 +17,15 @@ import HeaderComponent from './components/Header/Header';
 import { useThemeContext } from './context/ThemeContext';
 
 
-await appWindow.setMinSize(new PhysicalSize(600, 550));
+async function setMinWindowSize() {
+  await appWindow.setMinSize(new PhysicalSize(600, 550));
+}
 
 
 function App() {
   const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily } = useThemeContext();
   const theme = createAppTheme(primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily);
-
+  setMinWindowSize();
 
   return (
     <Router>

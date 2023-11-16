@@ -1,6 +1,6 @@
 // PackageCard.tsx
 import React, { useEffect, useState } from 'react';
-import { Card, Text, Badge, useMantineTheme, Button } from '@mantine/core';
+import { Card, Text, Badge, Button } from '@mantine/core';
 import { PackageData } from '../../views/Packages/PackagesView';
 import { PiCaretRightBold, PiCaretUpBold } from'react-icons/pi';
 import { BiSolidDownload } from 'react-icons/bi';
@@ -54,7 +54,6 @@ function formatBytes(bytes: any, decimals = 2) {
   
 
 const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependencies, showToggleDependenciesButton, areChildrenVisible, totalSize, childrenCount }) => {
-  const theme = useMantineTheme();
 
   const [isExpanded, setIsExpanded] = useState(areChildrenVisible);
   const [, setDownloadProgress] = useState<DownloadProgress | null>(null);

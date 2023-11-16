@@ -1,6 +1,6 @@
 // NavbarNested.tsx
 
-import { Group, Code, ScrollArea, rem, useMantineTheme } from '@mantine/core';
+import { Group, Code, ScrollArea, rem } from '@mantine/core';
 import classes from './NavbarNested.module.css';
 import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
@@ -21,7 +21,6 @@ interface NavbarNestedProps {
 }
 
 export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
-  const theme = useMantineTheme();
   const [views, setViews] = useState(initialViews);
 
   const toggleSubViews = (name: string) => {

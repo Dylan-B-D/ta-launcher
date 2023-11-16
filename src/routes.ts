@@ -1,7 +1,6 @@
 import { BiHomeAlt2, BiServer } from 'react-icons/bi';
 import HomeView from './views/HomeView/HomeView';
 import PackagesView from './views/Packages/PackagesView';
-import { RiSettingsLine } from 'react-icons/ri';
 import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
 import { GiLevelFourAdvanced } from 'react-icons/gi';

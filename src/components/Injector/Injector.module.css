@@ -6,10 +6,7 @@
     border: none;
     transition: 0.3s ease;
     margin-right: 1px;
-  
-    &:focus {
-        outline: none;
-    }
+
   }
 
   .customButton:hover {

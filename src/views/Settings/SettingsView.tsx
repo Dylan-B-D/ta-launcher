@@ -59,7 +59,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
 
   const [manualInjection, setManualInjection] = useState<boolean>(false);
-  const [injectionOrder, setInjectionOrder] = useState<string>('default');
+  //const [injectionOrder, setInjectionOrder] = useState<string>('default');
   const [executableOverride, setExecutableOverride] = useState<string>('');
   const [multiInjection, setMultiInjection] = useState<boolean>(false);
   const [customConfigPath, setCustomConfigPath] = useState<string>('');
@@ -153,7 +153,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
         <Space h="md" />
         <Select
           label="Injection Order"
-          value={injectionOrder}
+          //value={injectionOrder}
           //onChange={setInjectionOrder}
           data={['default', 'option1', 'option2']}
         />
