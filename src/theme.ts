@@ -1,6 +1,5 @@
 // theme.ts
 import { MantineTheme, createTheme } from "@mantine/core";
-import { useThemeContext } from "./context/ThemeContext";
 
 declare module "@mantine/core" {
   interface MantineTheme {
@@ -9,8 +8,8 @@ declare module "@mantine/core" {
   }
 }
 
-const createAppTheme = () => {
-  const { primaryColor } = useThemeContext();
+const createAppTheme = (primaryColor = 'mutedBlue') => {
+
   return createTheme({
     fontFamily: "Nunito Sans",
 
