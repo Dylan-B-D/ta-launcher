@@ -4,18 +4,19 @@ import { MantineTheme, createTheme } from "@mantine/core";
 declare module "@mantine/core" {
   interface MantineTheme {
     secondaryColor: string;
-    highlightColor: string;
+    tertiaryColor: string;
   }
 }
 
-const createAppTheme = (primaryColor = 'mutedBlue') => {
+const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryColor: string) => {
 
   return createTheme({
     fontFamily: "Nunito Sans",
 
-    // https://mantine.dev/colors-generator/
-    // Colors for UI components, try to keep intensity range normalised.
-    // Intensity ranges should be from light to dark.
+    //  https://mantine.dev/colors-generator/
+    //  Colors for UI components, try to keep intensity range normalised.
+    //  Intensity ranges should be from light to dark.
+    //  Default colors are set in ./context/ThemeContext.tsx
 
     colors: {
       mutedBlue: [
@@ -124,15 +125,15 @@ const createAppTheme = (primaryColor = 'mutedBlue') => {
       
     },
     primaryColor,
-    secondaryColor: "mutedAmber",
-    highlightColor: "mutedRed",
+    secondaryColor,
+    tertiaryColor,
     components: {
       Button: {
         styles: (theme: MantineTheme) => ({
           root: {
             color: theme.colors[theme.secondaryColor][5],
             backgroundColor: theme.colors[theme.primaryColor][5],
-            borderColor: theme.colors[theme.highlightColor][5],
+            borderColor: theme.colors[theme.tertiaryColor][5],
           },
         }),
       },

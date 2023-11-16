@@ -1,18 +1,26 @@
 // SettingsView.tsx
 
 import React, { useState } from 'react';
-import { TextInput, Switch, Select, Button, Paper, Title, Box, Group, useMantineTheme } from '@mantine/core';
+import { TextInput, Switch, Select, Paper, Title, Box, useMantineTheme, Space } from '@mantine/core';
 import { useThemeContext } from '../../context/ThemeContext';
 
 interface SettingsProps {
-  // Add any props you need here
+  // Add props
 }
 
 const SettingsView: React.FC<SettingsProps> = () => {
   // State hooks for each setting
   const theme = useMantineTheme();
+
   const { setPrimaryColor } = useThemeContext();
   const [selectedColor, setSelectedColor] = useState<string>(theme.primaryColor);
+
+  const { setSecondaryColor } = useThemeContext();
+  const [selectedColorSecondary, setSelectedColorSecondary] = useState<string>(theme.secondaryColor);
+
+  const { setTertiaryColor } = useThemeContext();
+  const [selectedColorTertiary, setSelectedColorTertiary] = useState<string>(theme.tertiaryColor);
+
   const [manualInjection, setManualInjection] = useState<boolean>(false);
   const [injectionOrder, setInjectionOrder] = useState<string>('default');
   const [executableOverride, setExecutableOverride] = useState<string>('');
@@ -30,6 +38,20 @@ const SettingsView: React.FC<SettingsProps> = () => {
     if (value !== null) {
       setPrimaryColor(value);
       setSelectedColor(value);
+    }
+  };
+
+  const handleColorChangeSecondary = (value: string | null) => {
+    if (value !== null) {
+      setSecondaryColor(value);
+      setSelectedColorSecondary(value);
+    }
+  };
+
+  const handleColorChangeTertiary = (value: string | null) => {
+    if (value !== null) {
+      setTertiaryColor(value);
+      setSelectedColorTertiary(value);
     }
   };
 
@@ -61,12 +83,14 @@ const SettingsView: React.FC<SettingsProps> = () => {
             value={executableOverride}
             onChange={(event) => setExecutableOverride(event.currentTarget.value)}
           />
+          <Space h="md" />
           <TextInput
             label="Custom Config Path"
             placeholder="Path to config"
             value={customConfigPath}
             onChange={(event) => setCustomConfigPath(event.currentTarget.value)}
           />
+          <Space h="md" />
           <TextInput
             label="Additional Login Server"
             placeholder="URL"
@@ -82,11 +106,13 @@ const SettingsView: React.FC<SettingsProps> = () => {
             checked={manualInjection}
             onChange={(event) => setManualInjection(event.currentTarget.checked)}
           />
+          <Space h="md" />
           <Switch
             label="Multi Injection"
             checked={multiInjection}
             onChange={(event) => setMultiInjection(event.currentTarget.checked)}
           />
+          <Space h="md" />
           <Select
             label="Injection Order"
             value={injectionOrder}
@@ -98,12 +124,25 @@ const SettingsView: React.FC<SettingsProps> = () => {
         <Paper withBorder style={paperStyles.root}>
           <Title order={3}>Theme Customization</Title>
           <Select
-              label="Theme Color"
+              label="Primary Color"
               value={selectedColor}
               onChange={handleColorChange}
               data={colorOptions}
             />
-          {/* Add more theme customization options here */}
+          <Space h="md" />
+          <Select
+              label="Secondary Color"
+              value={selectedColorSecondary}
+              onChange={handleColorChangeSecondary}
+              data={colorOptions}
+            />
+            <Space h="md" />
+          <Select
+              label="Tertiary Color"
+              value={selectedColorTertiary}
+              onChange={handleColorChangeTertiary}
+              data={colorOptions}
+            />
         </Paper>
 
       </Box>
