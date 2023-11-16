@@ -20,8 +20,8 @@ await appWindow.setMinSize(new PhysicalSize(600, 550));
 
 
 function App() {
-  const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily } = useThemeContext();
-  const theme = createAppTheme(primaryColor, secondaryColor, tertiaryColor, primaryFontFamily);
+  const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily } = useThemeContext();
+  const theme = createAppTheme(primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily);
 
 
   return (

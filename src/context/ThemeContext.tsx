@@ -5,10 +5,12 @@ interface ThemeContextType {
     secondaryColor: string;
     tertiaryColor: string;
     primaryFontFamily: string;
+    secondaryFontFamily: string;
     setPrimaryColor: (color: string) => void;
     setSecondaryColor: (color: string) => void;
     setTertiaryColor: (color: string) => void;
     setPrimaryFontFamily: (font: string) => void;
+    setSecondaryFontFamily: (fontFamily: string) => void;
   }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -38,20 +40,24 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         () => localStorage.getItem('primaryFontFamily') || 'Nunito Sans'
     );
     
+    const [secondaryFontFamily, setSecondaryFontFamily] = useState<string>(
+        () => localStorage.getItem('secondaryFontFamily') || 'DefaultSecondaryFont'
+        );
 
     useEffect(() => {
       localStorage.setItem('primaryColor', primaryColor);
       localStorage.setItem('secondaryColor', secondaryColor);
       localStorage.setItem('tertiaryColor', tertiaryColor); 
       localStorage.setItem('primaryFontFamily', primaryFontFamily);
-    }, [primaryColor, secondaryColor, tertiaryColor, primaryFontFamily]);
+      localStorage.setItem('secondaryFontFamily', secondaryFontFamily);
+    }, [primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily]);
   
     return (
         <ThemeContext.Provider value={{ 
             primaryColor, secondaryColor, tertiaryColor,
-            primaryFontFamily,
+            primaryFontFamily,secondaryFontFamily,
             setPrimaryColor, setSecondaryColor, setTertiaryColor,
-            setPrimaryFontFamily
+            setPrimaryFontFamily, setSecondaryFontFamily
           }}>
         {children}
       </ThemeContext.Provider>
