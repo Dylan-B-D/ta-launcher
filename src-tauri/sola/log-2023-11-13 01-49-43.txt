@@ -1,1 +1,0 @@
-Process: TribesAscend.exeDLL: C:\Users\dylan\Desktop\TribesLauncherSharp-2.1.3\tamods-beta.dllResult: ProcessModule { handle: 0x79ad0000, process: BorrowedProcess(BorrowedHandle { handle: 0xf9c }) }
