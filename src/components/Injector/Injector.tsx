@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
 import { path } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
+import { listen } from '@tauri-apps/api/event';
 
 import { Button } from '@mantine/core';
 import { FaSyringe } from 'react-icons/fa6';
@@ -14,36 +15,50 @@ import { useSettingsContext } from '../../context/SettingsContext';
 
 const Injector: React.FC = () => {
   const { manualInjection } = useSettingsContext();
-  const defaultDllPath = 'C:\\Users\\{username}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher\\TAMods.dll';
-  const [dll, setDll] = useState<string>(defaultDllPath);
+  const defaultDllPath = '';
   const processName = 'TribesAscend.exe';
   const [isInjected, setIsInjected] = useState<boolean>(false);
   const [, setInjectionStatus] = useState<string>("");
   const [isFileMissing, setIsFileMissing] = useState<boolean>(false);
 
-  const getUserDocumentsPath = async () => {
-    const homeDir = await path.homeDir();
-    return `${homeDir}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher`;
+
+  const getInitialDllPath = async () => {
+    try {
+      const homeDir = await path.homeDir();
+      const documentsPath = `${homeDir}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher`;
+      const files = await readDir(documentsPath);
+      const dllExists = files.some(file => file.name === 'TAMods.dll');
+      setIsFileMissing(!dllExists);
+      return dllExists ? `${documentsPath}\\TAMods.dll` : defaultDllPath;
+    } catch (error) {
+      console.error('Error accessing DLL path:', error);
+      setIsFileMissing(true);
+      return defaultDllPath;
+    }
   };
 
+  const [dll, setDll] = useState<string>('');
+
   useEffect(() => {
-    const checkDefaultDll = async () => {
-      try {
-        const documentsPath = await getUserDocumentsPath();
-        const files = await readDir(documentsPath);
-        const dllExists = files.some(file => file.name === 'TAMods.dll');
-        setIsFileMissing(!dllExists);
-        if (dllExists) {
-          setDll(`${documentsPath}\\TAMods.dll`);
-        }
-      } catch (error) {
-        console.error('Error reading directory:', error);
-        setIsFileMissing(true);
+    getInitialDllPath().then(setDll);
+  }, []);
+
+  useEffect(() => {
+    let unlisten: Promise<any>;
+  
+    if (!manualInjection) {
+      unlisten = listen('dll-injection-trigger', () => {
+        console.log("Auto-injecting with DLL path:", dll);
+        inject();
+      });
+    }
+  
+    return () => {
+      if (unlisten) {
+        unlisten.then(unsubscribe => unsubscribe());
       }
     };
-
-    checkDefaultDll();
-  }, []);
+  }, [dll, manualInjection]);
 
   const inject = async () => {
     try {
@@ -74,7 +89,6 @@ const Injector: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       const running = await isProcessRunning(processName);
-      console.log(`Process running: ${running}`); // Add this line for debugging
       if (!running && isInjected) {
         setIsInjected(false);
         setInjectionStatus('');
