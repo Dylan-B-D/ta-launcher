@@ -8,6 +8,7 @@ import { FaSearch } from 'react-icons/fa';
 import { IoEye } from "react-icons/io5";
 import { dialog } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
+import { hexToRgba } from '../../utils.ts'; 
 import classes from '../../styles.module.css';
 
 const GameLauncher: React.FC = () => {
@@ -144,14 +145,6 @@ const GameLauncher: React.FC = () => {
     };
   }, []);
 
-  function hexToRgba(hex: string, opacity: number) {
-    let r = parseInt(hex.slice(1, 3), 16);
-    let g = parseInt(hex.slice(3, 5), 16);
-    let b = parseInt(hex.slice(5, 7), 16);
-  
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-  }
-
   return (
     <div>
       <Paper style={{
@@ -229,6 +222,11 @@ const GameLauncher: React.FC = () => {
       )}
       </Paper>
       <Space h="md" />
+      <Paper style={{
+        border: `${theme.colors.dark[4]} 1px solid`,
+        background: hexToRgba(theme.colors.dark[4], 0.2),
+        padding: '10px',
+      }}>
       <Text
         size="sm"
         style={{
@@ -282,6 +280,7 @@ const GameLauncher: React.FC = () => {
       >
         Launch Tribes Ascend
       </Button>
+      </Paper>
       </div>
   );
 };

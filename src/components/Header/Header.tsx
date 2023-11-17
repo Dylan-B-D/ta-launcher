@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { AppShell, Badge, Progress, useMantineTheme } from '@mantine/core';
 import { invoke } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
+import { formatSpeed } from '../../utils.ts';
 
 interface DownloadProgress {
   download_id: number;
@@ -12,16 +13,7 @@ interface DownloadProgress {
   percentage: number;
 }
 
-function formatSpeed(bytesPerSecond: number, decimals = 2) {
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s'];
 
-  if (bytesPerSecond === 0) return '0 Bytes/s';
-
-  const i = Math.floor(Math.log(bytesPerSecond) / Math.log(k));
-  return parseFloat((bytesPerSecond / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
 
 const HeaderComponent: React.FC = () => {
   const theme = useMantineTheme();

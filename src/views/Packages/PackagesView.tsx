@@ -12,14 +12,13 @@ interface PackageMetadata {
 }
 
 export interface PackageData {
-    id: string;
-    displayName: string;
-    objectKey: string;
-    description: string;
-    metadata: PackageMetadata | null;
-  }
-  
-// total size for parent packages
+  id: string;
+  displayName: string;
+  objectKey: string;
+  description: string;
+  metadata: PackageMetadata | null;
+}
+
 
 const PackageView: React.FC = () => {
   const [packages, setPackages] = useState<PackageData[]>([]);
@@ -127,18 +126,18 @@ const PackageView: React.FC = () => {
   return (
     <Container fluid h={100}>
       {loading ? <Loader /> : (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 0fr))', 
-          gap: '16px', 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 0fr))',
+          gap: '16px',
         }}>
           {packages.filter(pkg => isTopLevelPackage(pkg.id)).map(pkg => {
-            const childrenPackages = dependencyTree[pkg.id]?.map(childId => 
-                packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
+            const childrenPackages = dependencyTree[pkg.id]?.map(childId =>
+              packages.find(p => p.id === childId)).filter(Boolean) as PackageData[];
             const hasChildren = childrenPackages && childrenPackages.length > 0;
             const totalSize = rootPackageTotalSizes[pkg.id];
             const childrenCount = getChildrenCountForRootPackage(pkg.id);
-  
+
             return (
               <div key={pkg.id}>
                 <PackageCard
@@ -149,9 +148,9 @@ const PackageView: React.FC = () => {
                   childrenCount={childrenCount}
                 />
                 {expandedPackages.has(pkg.id) && (
-                  <div style={{borderColor: 'rgba(255,255,255,0.5)', borderStyle: 'solid', borderWidth: '0 0 0 2px ', borderRadius: '6px' }}>
+                  <div style={{ borderColor: 'rgba(255,255,255,0.5)', borderStyle: 'solid', borderWidth: '0 0 0 2px ', borderRadius: '6px' }}>
                     {childrenPackages.map(childPkg => (
-                      <PackageCard key={childPkg.id} packageData={childPkg} 
+                      <PackageCard key={childPkg.id} packageData={childPkg}
                       />
                     ))}
                   </div>
@@ -163,7 +162,7 @@ const PackageView: React.FC = () => {
       )}
     </Container>
   );
-  
+
 };
 
 export default PackageView;
