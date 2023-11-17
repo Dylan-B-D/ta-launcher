@@ -1,5 +1,7 @@
 // theme.ts
 import { MantineTheme, createTheme } from "@mantine/core";
+import { useThemeContext } from "./context/ThemeContext";
+import classes from '../../styles.module.css';
 
 declare module "@mantine/core" {
   interface MantineTheme {
@@ -8,7 +10,8 @@ declare module "@mantine/core" {
   }
 }
 
-const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryColor: string, primaryFontFamily: string, secondaryFontFamily: string) => {
+const createAppTheme = () => {
+  const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily } = useThemeContext();
 
   return createTheme({
     fontFamily: primaryFontFamily,
@@ -132,20 +135,30 @@ const createAppTheme = (primaryColor: string, secondaryColor: string, tertiaryCo
         styles: (theme: MantineTheme) => ({
           root: {
             fontFamily: secondaryFontFamily,
-            color: theme.colors[theme.secondaryColor][5],
-            backgroundColor: theme.colors[theme.primaryColor][5],
-            borderColor: theme.colors[theme.tertiaryColor][5],
+            transition: 'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+            color: theme.colors.dark[1],
+            borderWidth: '1px 0 0 0',
+            borderColor: theme.colors.gray[8],
+            background: theme.colors.dark[7],
           },
+          
         }),
       },
       Paper: {
         styles: (theme: MantineTheme) => ({
           root: {
             backgroundColor: theme.colors[theme.tertiaryColor][9],
-            borderColor: theme.colors[theme.secondaryColor][9],
           },
         }),
       },
+      Card: {
+        styles: (theme: MantineTheme) => ({
+          root: {
+            background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
+            boxShadow: theme.shadows.lg,
+          },
+        }),
+      }
     },
   });
 };
