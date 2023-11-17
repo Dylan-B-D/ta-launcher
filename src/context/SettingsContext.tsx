@@ -1,11 +1,15 @@
 // SettingsContext.tsx
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface SettingsContextType {
   manualInjection: boolean;
   setManualInjection: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+interface SettingsProviderProps {
+    children: ReactNode;
+  }
 
 const defaultValues: SettingsContextType = {
   manualInjection: false,
@@ -16,7 +20,7 @@ const SettingsContext = createContext<SettingsContextType>(defaultValues);
 
 export const useSettingsContext = () => useContext(SettingsContext);
 
-export const SettingsProvider: React.FC = ({ children }) => {
+export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
   const [manualInjection, setManualInjection] = useState(defaultValues.manualInjection);
 
   useEffect(() => {
