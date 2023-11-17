@@ -4,19 +4,19 @@ import React, { useEffect, useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
 import { path } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
-import { open } from '@tauri-apps/api/dialog';
-import { Button, Text, useMantineTheme, Code, Space, Paper } from '@mantine/core';
-import { FaSyringe } from'react-icons/fa6';
-import { hexToRgba } from '../../utils.ts';
+
+import { Button } from '@mantine/core';
+import { FaSyringe } from 'react-icons/fa6';
+
 import classes from '../../styles.module.css';
+import { notifications } from '@mantine/notifications';
 
 const Injector: React.FC = () => {
-  const theme = useMantineTheme();
   const defaultDllPath = 'C:\\Users\\{username}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher\\TAMods.dll';
   const [dll, setDll] = useState<string>(defaultDllPath);
   const processName = 'TribesAscend.exe';
   const [isInjected, setIsInjected] = useState<boolean>(false);
-  const [injectionStatus, setInjectionStatus] = useState<string>("");
+  const [, setInjectionStatus] = useState<string>("");
   const [isFileMissing, setIsFileMissing] = useState<boolean>(false);
 
   const getUserDocumentsPath = async () => {
@@ -39,7 +39,7 @@ const Injector: React.FC = () => {
         setIsFileMissing(true);
       }
     };
-  
+
     checkDefaultDll();
   }, []);
 
@@ -51,18 +51,18 @@ const Injector: React.FC = () => {
       });
       console.log(res);
       setIsInjected(true);
-      setInjectionStatus("Injection Successful");
+      notifications.show({ title: 'Success', message: 'Injection Successful', color: 'green' });
     } catch (error) {
       console.error(error);
       setIsInjected(false);
-      setInjectionStatus(`Unable to inject: ${error}`);
+      notifications.show({ title: 'Failed', message: `Unable to inject: ${error}`, color: 'red' });
     }
   };
-  
+
   const isProcessRunning = async (processName: string) => {
     try {
       const res = await invoke('is_process_running', { processName });
-      return res; // Assuming the 'is_process_running' command returns a boolean
+      return res;
     } catch (error) {
       console.error('Error checking process status:', error);
       return false;
@@ -72,45 +72,27 @@ const Injector: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       const running = await isProcessRunning(processName);
+      console.log(`Process running: ${running}`); // Add this line for debugging
       if (!running && isInjected) {
         setIsInjected(false);
         setInjectionStatus('');
       }
     }, 5000);
-  
+
     return () => clearInterval(interval);
   }, [isInjected, processName]);
-  
+
 
   return (
-    <Paper style={{
-      border: `${theme.colors.dark[4]} 1px solid`,
-      background: hexToRgba(theme.colors.dark[4], 0.2),
-      padding: '10px',
-    }}>
-      <Text  size="lg" style={{ textAlign: 'center', marginBottom: '1rem'}}>
-        DLL Injector
-      </Text>
-
-      <Button 
-        className={classes.buttonHoverEffect}
-        onClick={inject}
-        disabled={isInjected || isFileMissing}
-      >
-        <FaSyringe style={{ marginRight: '0.5rem' }} />
-        {isFileMissing ? 'Please download TAMods Core package' : (isInjected ? 'Injected' : 'Inject')}
-      </Button>
-      <Space h="md" />
-      {injectionStatus && (
-        <>
-        <Code style={{
-          marginTop: '4px',
-          color: theme.colors?.lightGray?.[5] || '#B0B0B0'
-        }} color={theme.colors?.darkGray?.[2] || 'defaultColor'}>
-            {injectionStatus}
-          </Code></>
-      )}
-    </Paper>
+    <Button
+      className={classes.buttonHoverEffect}
+      onClick={inject}
+      disabled={isInjected || isFileMissing}
+      h={50}
+    >
+      {isFileMissing ? 'Please download TAMods Core package' : (isInjected ? 'Injected' : 'Inject')}
+      <FaSyringe style={{ marginLeft: '0.5rem' }} />
+    </Button>
   );
 };
 

@@ -8,8 +8,9 @@ import { FaSearch } from 'react-icons/fa';
 import { IoEye } from "react-icons/io5";
 import { dialog } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
-import { hexToRgba } from '../../utils.ts'; 
+import { hexToRgba } from '../../utils.ts';
 import classes from '../../styles.module.css';
+import Injector from '../Injector/Injector.tsx';
 
 const GameLauncher: React.FC = () => {
   const theme = useMantineTheme();
@@ -119,7 +120,8 @@ const GameLauncher: React.FC = () => {
 
   const buttonStyle = (selected: boolean) => ({
     color: selected ? theme.colors.gray[0] : theme.colors.dark[1],
-    backgroundColor: selected ? theme.colors[theme.primaryColor][9] : hexToRgba(theme.colors.dark[1], 0.1),
+    background: selected ? `linear-gradient(45deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][4]} 100%)` : hexToRgba(theme.colors.dark[1], 0.1),
+    borderWidth:'0px',
     borderColor: selected ? hexToRgba(theme.colors.dark[1], 0.2) : 'transparent',
   });
 
@@ -151,135 +153,135 @@ const GameLauncher: React.FC = () => {
 
   return (
     <div>
-     <Grid>
+      <Grid>
         {/* First Column */}
         <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
-      <Paper style={{
-        border: `${theme.colors.dark[4]} 1px solid`,
-        background: hexToRgba(theme.colors.dark[4], 0.2),
-        padding: '10px',
-      }}>
-      <Text
-        size="sm"
-        style={{
-          fontWeight: 'bold',
-        }}
-      >Launch Type:</Text>
-      <Space h="xs" />
-      <Button.Group>
-        <Button
-          className={classes.buttonHoverEffect}
-          onClick={() => setLaunchType('Steam')}
-          style={buttonStyle(launchType === 'Steam')}
-        >
-          Steam
-        </Button>
-        <Button
-          className={classes.buttonHoverEffect}
-          onClick={() => setLaunchType('Non Steam')}
-          style={buttonStyle(launchType === 'Non Steam')}
-        >
-          Non Steam
-        </Button>
-      </Button.Group>
-      <Space h="xs" />
-
-      {launchType === 'Non Steam' && (
-        <>
-          <Group>
-            <Text size="sm" style={{ fontWeight: 'bold' }}>Executable Path:</Text>
-            <Button onClick={toggleNonSteamOptions} className={classes.buttonHoverEffect}>
-              <IoEye size={16} />
-            </Button>
-          </Group>
-          <Collapse in={isNonSteamOptionsOpen}>
-            <Textarea
-              value={exePath}
-              onChange={(event) => setExePath(event.target.value)}
-              label="Tribes Ascend executable path"
-              placeholder="Path to executable"
-              error={!exePath && "Invalid Path"}
-              autosize
-              minRows={3}
-              maxRows={4}
-            />
+          <Paper style={{
+            border: `${theme.colors.dark[4]} 1px solid`,
+            background: hexToRgba(theme.colors.dark[4], 0.2),
+            padding: '10px',
+          }}>
+            <Text
+              size="sm"
+              style={{
+                fontWeight: 'bold',
+              }}
+            >Launch Type:</Text>
             <Space h="xs" />
-            <Group>
-              <Button onClick={handleOpenFile} className={classes.buttonHoverEffect}>
-                <span style={{ marginRight: '8px' }}>Open</span>
-                <FaFolderOpen />
+            <Button.Group>
+              <Button
+                className={classes.buttonHoverEffect}
+                onClick={() => setLaunchType('Steam')}
+                style={buttonStyle(launchType === 'Steam')}
+              >
+                Steam
               </Button>
-              <Button onClick={handleSearchGame} className={classes.buttonHoverEffect}>
-                <span style={{ marginRight: '8px' }}>Search</span>
-                <FaSearch />
+              <Button
+                className={classes.buttonHoverEffect}
+                onClick={() => setLaunchType('Non Steam')}
+                style={buttonStyle(launchType === 'Non Steam')}
+              >
+                Non Steam
               </Button>
-            </Group>
-            <Collapse in={isSearching}>
-              <Code>
-                Searching for game executable... {searchProgress}
-              </Code>
-            </Collapse>
-            {searchError && (
-              <Text>
-                {searchError}
-              </Text>
-            )}
+            </Button.Group>
+            <Space h="xs" />
 
-          </Collapse>
-          <Space h="md" />
-        </>
-      )}
-      </Paper>
-      </Grid.Col>
-      <Space h="md" />
-      <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
-      <Paper style={{
-        border: `${theme.colors.dark[4]} 1px solid`,
-        background: hexToRgba(theme.colors.dark[4], 0.2),
-        padding: '10px',
-      }}>
-      <Text
-        size="sm"
-        style={{
-          fontWeight: 'bold',
-        }}
-      >
-        Login Server:</Text>
-      <Space h="xs" />
-      <Button.Group>
-        <Button
-          onClick={() => setLoginServer('Community')}
-          style={buttonStyle(loginServer === 'Community')}
-          className={classes.buttonHoverEffect}
-        >
-          Community
-        </Button>
-        <Button
-          onClick={() => setLoginServer('PUG')}
-          style={buttonStyle(loginServer === 'PUG')}
-          className={classes.buttonHoverEffect}
-        >
-          PUG
-        </Button>
-        <Button
-          onClick={() => setLoginServer('Custom')}
-          style={buttonStyle(loginServer === 'Custom')}
-          className={classes.buttonHoverEffect}
-        >
-          Custom
-        </Button>
-      </Button.Group>
-      <Space h="xs" />
-      {loginServer === 'Custom' && (
-        <TextInput
-          label="Custom Login Server"
-          placeholder="Enter custom server"
-          value={customServer}
-          onChange={(event) => setCustomServer(event.currentTarget.value)}
-        />
-      )}
-      </Paper>
-      </Grid.Col>
+            {launchType === 'Non Steam' && (
+              <>
+                <Group>
+                  <Text size="sm" style={{ fontWeight: 'bold' }}>Executable Path:</Text>
+                  <Button onClick={toggleNonSteamOptions} className={classes.buttonHoverEffect}>
+                    <IoEye size={16} />
+                  </Button>
+                </Group>
+                <Collapse in={isNonSteamOptionsOpen}>
+                  <Textarea
+                    value={exePath}
+                    onChange={(event) => setExePath(event.target.value)}
+                    label="Tribes Ascend executable path"
+                    placeholder="Path to executable"
+                    error={!exePath && "Invalid Path"}
+                    autosize
+                    minRows={3}
+                    maxRows={4}
+                  />
+                  <Space h="xs" />
+                  <Group>
+                    <Button onClick={handleOpenFile} className={classes.buttonHoverEffect}>
+                      <span style={{ marginRight: '8px' }}>Open</span>
+                      <FaFolderOpen />
+                    </Button>
+                    <Button onClick={handleSearchGame} className={classes.buttonHoverEffect}>
+                      <span style={{ marginRight: '8px' }}>Search</span>
+                      <FaSearch />
+                    </Button>
+                  </Group>
+                  <Collapse in={isSearching}>
+                    <Code>
+                      Searching for game executable... {searchProgress}
+                    </Code>
+                  </Collapse>
+                  {searchError && (
+                    <Text>
+                      {searchError}
+                    </Text>
+                  )}
+
+                </Collapse>
+                <Space h="md" />
+              </>
+            )}
+          </Paper>
+        </Grid.Col>
+        <Space h="md" />
+        <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
+          <Paper style={{
+            border: `${theme.colors.dark[4]} 1px solid`,
+            background: hexToRgba(theme.colors.dark[4], 0.2),
+            padding: '10px',
+          }}>
+            <Text
+              size="sm"
+              style={{
+                fontWeight: 'bold',
+              }}
+            >
+              Login Server:</Text>
+            <Space h="xs" />
+            <Button.Group>
+              <Button
+                onClick={() => setLoginServer('Community')}
+                style={buttonStyle(loginServer === 'Community')}
+                className={classes.buttonHoverEffect}
+              >
+                Community
+              </Button>
+              <Button
+                onClick={() => setLoginServer('PUG')}
+                style={buttonStyle(loginServer === 'PUG')}
+                className={classes.buttonHoverEffect}
+              >
+                PUG
+              </Button>
+              <Button
+                onClick={() => setLoginServer('Custom')}
+                style={buttonStyle(loginServer === 'Custom')}
+                className={classes.buttonHoverEffect}
+              >
+                Custom
+              </Button>
+            </Button.Group>
+            <Space h="xs" />
+            {loginServer === 'Custom' && (
+              <TextInput
+                label="Custom Login Server"
+                placeholder="Enter custom server"
+                value={customServer}
+                onChange={(event) => setCustomServer(event.currentTarget.value)}
+              />
+            )}
+          </Paper>
+        </Grid.Col>
       </Grid>
       <Space h="md" />
       <Paper style={{
@@ -287,20 +289,24 @@ const GameLauncher: React.FC = () => {
         background: hexToRgba(theme.colors.dark[4], 0.2),
         padding: '10px',
       }}>
+        <Group>
       <Button
         onClick={startGame}
-        fullWidth
-        h={64}
-        style={{background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
-        border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
-      }}
+        h={50}
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
+          border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
+          flexGrow: 4, // Takes more space
+        }}
         rightSection={<FaCirclePlay size={14} />}
         className={classes.buttonHoverEffect}
       >
         Launch Tribes Ascend
       </Button>
+      <Injector/> {/* Takes less space */}
+    </Group>
       </Paper>
-      </div>
+    </div>
   );
 };
 
