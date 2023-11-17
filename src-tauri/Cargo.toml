@@ -20,7 +20,7 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.5.2", features = ["api-all"] }
 dll-syringe = "0.15.2"
 color-eyre = "0.6.2"
-ctor = "0.1.26"
+ctor = "0.2.5"
 winapi = { version = "0.3.9", features = ["consoleapi", "minwindef"] }
 chrono = "0.4.19"
 reqwest = { version = "0.11", features = ["json"] }
@@ -28,10 +28,11 @@ serde_yaml = "0.9.27"
 tokio = { version = "1", features = ["full"] }
 walkdir = "2.3.2"
 regex = "1"
-zip = "0.5"
+zip = "0.6.6"
 tempfile = "3.8.1"
 futures = "0.3"
-font-loader = "0.8"
+font-loader = "0.11.0"
+sysinfo = "0.29.10"
 
 [features]
 # by default Tauri runs in production mode

@@ -59,6 +59,28 @@ const Injector: React.FC = () => {
     }
   };
   
+  const isProcessRunning = async (processName: string) => {
+    try {
+      const res = await invoke('is_process_running', { processName });
+      return res; // Assuming the 'is_process_running' command returns a boolean
+    } catch (error) {
+      console.error('Error checking process status:', error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const running = await isProcessRunning(processName);
+      if (!running && isInjected) {
+        setIsInjected(false);
+        setInjectionStatus('');
+      }
+    }, 5000);
+  
+    return () => clearInterval(interval);
+  }, [isInjected, processName]);
+  
 
   return (
     <Paper style={{
