@@ -1,14 +1,14 @@
 import { BiHomeAlt2, BiServer } from 'react-icons/bi';
-import HomeView from './views/HomeView/HomeView';
-import PackagesView from './views/Packages/PackagesView';
+import HomeView from '../views/HomeView/HomeView';
+import PackagesView from '../views/Packages/PackagesView';
 import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
 import { GiLevelFourAdvanced } from 'react-icons/gi';
-import SettingsView from './views/Settings/SettingsView';
+import SettingsView from '../views/Settings/SettingsView';
 import { TiCog, TiSpanner } from 'react-icons/ti';
 import { CiRoute } from 'react-icons/ci';
 import { AiOutlineUser } from 'react-icons/ai';
-import ServerBrowser from './views/ServerBrowserView/ServerBrowserView';
+import ServerBrowser from '../views/ServerBrowserView/ServerBrowserView';
 
 
 export interface View {
