@@ -120,8 +120,8 @@ const GameLauncher: React.FC = () => {
 
   const buttonStyle = (selected: boolean) => ({
     color: selected ? theme.colors.gray[0] : theme.colors.dark[1],
-    background: selected ? `linear-gradient(45deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][4]} 100%)` : hexToRgba(theme.colors.dark[1], 0.1),
-    borderWidth:'0px',
+    background: selected ? `linear-gradient(45deg, ${theme.colors.dark[3]} 0%, ${theme.colors[theme.primaryColor][3]} 100%)` : hexToRgba(theme.colors.dark[1], 0.1),
+    borderWidth: '0px',
     borderColor: selected ? hexToRgba(theme.colors.dark[1], 0.2) : 'transparent',
   });
 
@@ -158,7 +158,7 @@ const GameLauncher: React.FC = () => {
         <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
           <Paper style={{
             border: `${theme.colors.dark[4]} 1px solid`,
-            background: hexToRgba(theme.colors.dark[4], 0.2),
+            //background: hexToRgba(theme.colors.dark[4], 0.2),
             padding: '10px',
           }}>
             <Text
@@ -168,33 +168,36 @@ const GameLauncher: React.FC = () => {
               }}
             >Launch Type:</Text>
             <Space h="xs" />
-            <Button.Group>
-              <Button
-                className={classes.buttonHoverEffect}
-                onClick={() => setLaunchType('Steam')}
-                style={buttonStyle(launchType === 'Steam')}
-              >
-                Steam
-              </Button>
-              <Button
-                className={classes.buttonHoverEffect}
-                onClick={() => setLaunchType('Non Steam')}
-                style={buttonStyle(launchType === 'Non Steam')}
-              >
-                Non Steam
-              </Button>
-            </Button.Group>
-            <Space h="xs" />
+            <Group style={{ width: '100%' }}>
+              <Button.Group>
+                <Button
+                  className={classes.buttonHoverEffect}
+                  onClick={() => setLaunchType('Steam')}
+                  style={buttonStyle(launchType === 'Steam')}
+                >
+                  Steam
+                </Button>
+                <Button
+                  className={classes.buttonHoverEffect}
+                  onClick={() => setLaunchType('Non Steam')}
+                  style={buttonStyle(launchType === 'Non Steam')}
+                >
+                  Non-Steam
+                </Button>
+              </Button.Group>
+              {launchType === 'Non Steam' && (
+                <Button onClick={toggleNonSteamOptions} className={classes.buttonHoverEffect}>
+                  <IoEye size={16} />
+                </Button>
+              )}
+            </Group>
+
 
             {launchType === 'Non Steam' && (
               <>
-                <Group>
-                  <Text size="sm" style={{ fontWeight: 'bold' }}>Executable Path:</Text>
-                  <Button onClick={toggleNonSteamOptions} className={classes.buttonHoverEffect}>
-                    <IoEye size={16} />
-                  </Button>
-                </Group>
+
                 <Collapse in={isNonSteamOptionsOpen}>
+                  <Space h="xs" />
                   <Textarea
                     value={exePath}
                     onChange={(event) => setExePath(event.target.value)}
@@ -228,7 +231,6 @@ const GameLauncher: React.FC = () => {
                   )}
 
                 </Collapse>
-                <Space h="md" />
               </>
             )}
           </Paper>
@@ -237,7 +239,7 @@ const GameLauncher: React.FC = () => {
         <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
           <Paper style={{
             border: `${theme.colors.dark[4]} 1px solid`,
-            background: hexToRgba(theme.colors.dark[4], 0.2),
+            //background: hexToRgba(theme.colors.dark[4], 0.2),
             padding: '10px',
           }}>
             <Text
@@ -271,14 +273,13 @@ const GameLauncher: React.FC = () => {
                 Custom
               </Button>
             </Button.Group>
-            <Space h="xs" />
+
             {loginServer === 'Custom' && (
-              <TextInput
+              <><Space h="xs" /><TextInput
                 label="Custom Login Server"
                 placeholder="Enter custom server"
                 value={customServer}
-                onChange={(event) => setCustomServer(event.currentTarget.value)}
-              />
+                onChange={(event) => setCustomServer(event.currentTarget.value)} /></>
             )}
           </Paper>
         </Grid.Col>
@@ -286,25 +287,25 @@ const GameLauncher: React.FC = () => {
       <Space h="md" />
       <Paper style={{
         border: `${theme.colors.dark[4]} 1px solid`,
-        background: hexToRgba(theme.colors.dark[4], 0.2),
+        // background: hexToRgba(theme.colors.dark[4], 0.2),
         padding: '10px',
       }}>
         <Group>
-      <Button
-        onClick={startGame}
-        h={50}
-        style={{
-          background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
-          border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
-          flexGrow: 4, // Takes more space
-        }}
-        rightSection={<FaCirclePlay size={14} />}
-        className={classes.buttonHoverEffect}
-      >
-        Launch Tribes Ascend
-      </Button>
-      <Injector/> {/* Takes less space */}
-    </Group>
+          <Button
+            onClick={startGame}
+            h={50}
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
+              border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
+              flexGrow: 4, // Takes more space
+            }}
+            rightSection={<FaCirclePlay size={14} />}
+            className={classes.buttonHoverEffect}
+          >
+            Launch Tribes Ascend
+          </Button>
+          <Injector /> {/* Takes less space */}
+        </Group>
       </Paper>
     </div>
   );

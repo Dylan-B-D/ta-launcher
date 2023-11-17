@@ -1,14 +1,13 @@
 // HomeView.tsx
 
-import { Paper } from '@mantine/core';
 import GameLauncherCard from '../../components/GameLauncher/GameLauncher'; 
 
-
+// TODO: refactor to move stuff, so that this doesnt exist in this state
 const HomeView = () => {
   return (
-    <Paper withBorder style={{ padding: '0.75rem' }}>
+    <div>
       <GameLauncherCard />
-    </Paper>
+    </div>
   );
 };
 
