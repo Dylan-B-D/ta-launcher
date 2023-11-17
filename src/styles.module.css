@@ -7,5 +7,14 @@
 .buttonHoverEffect:hover {
     filter: hue-rotate(-20deg) contrast(120%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
+}
+
+/* Noticiation ovveride since it wasnt working, and I'm bad */
+.mantineNotificationsContainer {
+    position: fixed;
+    bottom: 5%;
+    right: 1%;
+    z-index: 1000;
+    overflow: visible;
+    width: 300px;
+}

@@ -1,7 +1,6 @@
 // theme.ts
 import { MantineTheme, createTheme } from "@mantine/core";
 import { useThemeContext } from "./context/ThemeContext";
-import classes from '../../styles.module.css';
 import { hexToRgba } from "./utils";
 
 declare module "@mantine/core" {
