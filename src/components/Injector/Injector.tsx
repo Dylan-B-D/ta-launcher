@@ -1,36 +1,47 @@
 // Injector.tsx
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
+import { path } from '@tauri-apps/api';
+import { readDir } from '@tauri-apps/api/fs';
 import { open } from '@tauri-apps/api/dialog';
 import { Button, Text, useMantineTheme, Code, Space, Paper } from '@mantine/core';
-import { BsFileEarmarkCodeFill } from'react-icons/bs';
 import { FaSyringe } from'react-icons/fa6';
 import { hexToRgba } from '../../utils.ts';
 import classes from '../../styles.module.css';
 
 const Injector: React.FC = () => {
-  const [dll, setDll] = useState<string>("");
+  const theme = useMantineTheme();
+  const defaultDllPath = 'C:\\Users\\{username}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher\\TAMods.dll';
+  const [dll, setDll] = useState<string>(defaultDllPath);
   const processName = 'TribesAscend.exe';
   const [isInjected, setIsInjected] = useState<boolean>(false);
   const [injectionStatus, setInjectionStatus] = useState<string>("");
+  const [isFileMissing, setIsFileMissing] = useState<boolean>(false);
 
-  const theme = useMantineTheme();
-
-  const openFile = async () => {
-    const selected = await open({
-      multiple: false,
-      filters: [{ name: 'DLLs', extensions: ['dll'] }],
-    });
-
-    if (selected) {
-      setDll(selected as string);
-    }
+  const getUserDocumentsPath = async () => {
+    const homeDir = await path.homeDir();
+    return `${homeDir}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher`;
   };
 
-  const getDll = (): string => {
-    return dll === "" ? "No dll selected" : "Selected: " + dll.split("\\").pop();
-  };
+  useEffect(() => {
+    const checkDefaultDll = async () => {
+      try {
+        const documentsPath = await getUserDocumentsPath();
+        const files = await readDir(documentsPath);
+        const dllExists = files.some(file => file.name === 'TAMods.dll');
+        setIsFileMissing(!dllExists);
+        if (dllExists) {
+          setDll(`${documentsPath}\\TAMods.dll`);
+        }
+      } catch (error) {
+        console.error('Error reading directory:', error);
+        setIsFileMissing(true);
+      }
+    };
+  
+    checkDefaultDll();
+  }, []);
 
   const inject = async () => {
     try {
@@ -47,6 +58,7 @@ const Injector: React.FC = () => {
       setInjectionStatus(`Unable to inject: ${error}`);
     }
   };
+  
 
   return (
     <Paper style={{
@@ -58,30 +70,20 @@ const Injector: React.FC = () => {
         DLL Injector
       </Text>
 
-      <Button.Group style={{ display: 'flex', justifyContent: 'center' }}>
-        <Button 
-          className={classes.buttonHoverEffect}
-          onClick={openFile}
-        >
-          <BsFileEarmarkCodeFill style={{ marginRight: '0.5rem' }} />
-          {getDll()}
-        </Button>
-
-        <Button 
-          className={classes.buttonHoverEffect}
-          onClick={inject}
-          disabled={isInjected}
-        >
-          <FaSyringe style={{ marginRight: '0.5rem' }} />
-          {isInjected ? 'Injected' : 'Inject'}
-        </Button>
-      </Button.Group>
+      <Button 
+        className={classes.buttonHoverEffect}
+        onClick={inject}
+        disabled={isInjected || isFileMissing}
+      >
+        <FaSyringe style={{ marginRight: '0.5rem' }} />
+        {isFileMissing ? 'Please download TAMods Core package' : (isInjected ? 'Injected' : 'Inject')}
+      </Button>
       <Space h="md" />
       {injectionStatus && (
         <>
         <Code style={{
           marginTop: '4px',
-          color: theme.colors?.lightGray?.[5] || '#B0B0B0' // Example light gray color
+          color: theme.colors?.lightGray?.[5] || '#B0B0B0'
         }} color={theme.colors?.darkGray?.[2] || 'defaultColor'}>
             {injectionStatus}
           </Code></>
