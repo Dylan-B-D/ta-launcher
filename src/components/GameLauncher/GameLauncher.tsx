@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper } from '@mantine/core';
+import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch } from 'react-icons/fa';
 import { IoEye } from "react-icons/io5";
@@ -144,8 +144,16 @@ const GameLauncher: React.FC = () => {
     };
   }, []);
 
+  const gridColStyle = {
+    transition: 'transform 0.3s ease',
+    transformOrigin: 'center top',
+  };
+
   return (
     <div>
+     <Grid>
+        {/* First Column */}
+        <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
       <Paper style={{
         border: `${theme.colors.dark[4]} 1px solid`,
         background: hexToRgba(theme.colors.dark[4], 0.2),
@@ -174,7 +182,7 @@ const GameLauncher: React.FC = () => {
           Non Steam
         </Button>
       </Button.Group>
-      <Space h="md" />
+      <Space h="xs" />
 
       {launchType === 'Non Steam' && (
         <>
@@ -222,7 +230,9 @@ const GameLauncher: React.FC = () => {
         </>
       )}
       </Paper>
+      </Grid.Col>
       <Space h="md" />
+      <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
       <Paper style={{
         border: `${theme.colors.dark[4]} 1px solid`,
         background: hexToRgba(theme.colors.dark[4], 0.2),
@@ -269,7 +279,9 @@ const GameLauncher: React.FC = () => {
         />
       )}
       </Paper>
-      <Space h="lg" />
+      </Grid.Col>
+      </Grid>
+      <Space h="md" />
       <Paper style={{
         border: `${theme.colors.dark[4]} 1px solid`,
         background: hexToRgba(theme.colors.dark[4], 0.2),
