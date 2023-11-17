@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
 import { open } from '@tauri-apps/api/dialog';
-import { Card, Button, Text, useMantineTheme, Code, Space } from '@mantine/core';
+import { Button, Text, useMantineTheme, Code, Space, Paper } from '@mantine/core';
 import { BsFileEarmarkCodeFill } from'react-icons/bs';
 import { FaSyringe } from'react-icons/fa6';
+import { hexToRgba } from '../../utils.ts';
+import classes from '../../styles.module.css';
 
 const Injector: React.FC = () => {
   const [dll, setDll] = useState<string>("");
@@ -47,13 +49,18 @@ const Injector: React.FC = () => {
   };
 
   return (
-    <Card >
+    <Paper style={{
+      border: `${theme.colors.dark[4]} 1px solid`,
+      background: hexToRgba(theme.colors.dark[4], 0.2),
+      padding: '10px',
+    }}>
       <Text  size="lg" style={{ textAlign: 'center', marginBottom: '1rem'}}>
         DLL Injector
       </Text>
 
       <Button.Group style={{ display: 'flex', justifyContent: 'center' }}>
         <Button 
+          className={classes.buttonHoverEffect}
           onClick={openFile}
         >
           <BsFileEarmarkCodeFill style={{ marginRight: '0.5rem' }} />
@@ -61,6 +68,7 @@ const Injector: React.FC = () => {
         </Button>
 
         <Button 
+          className={classes.buttonHoverEffect}
           onClick={inject}
           disabled={isInjected}
         >
@@ -78,7 +86,7 @@ const Injector: React.FC = () => {
             {injectionStatus}
           </Code></>
       )}
-    </Card>
+    </Paper>
   );
 };
 

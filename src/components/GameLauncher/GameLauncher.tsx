@@ -119,9 +119,8 @@ const GameLauncher: React.FC = () => {
 
   const buttonStyle = (selected: boolean) => ({
     color: selected ? theme.colors.gray[0] : theme.colors.dark[1],
-    backgroundColor: selected ? theme.colors[theme.primaryColor][9] : theme.colors.dark[7],
-    borderWidth: '1px 0 0 0',
-    borderColor: selected ? theme.colors[theme.primaryColor][3] : 'transparent',
+    backgroundColor: selected ? theme.colors[theme.primaryColor][9] : hexToRgba(theme.colors.dark[1], 0.1),
+    borderColor: selected ? hexToRgba(theme.colors.dark[1], 0.2) : 'transparent',
   });
 
   useEffect(() => {
@@ -161,12 +160,14 @@ const GameLauncher: React.FC = () => {
       <Space h="xs" />
       <Button.Group>
         <Button
+          className={classes.buttonHoverEffect}
           onClick={() => setLaunchType('Steam')}
           style={buttonStyle(launchType === 'Steam')}
         >
           Steam
         </Button>
         <Button
+          className={classes.buttonHoverEffect}
           onClick={() => setLaunchType('Non Steam')}
           style={buttonStyle(launchType === 'Non Steam')}
         >
@@ -179,7 +180,7 @@ const GameLauncher: React.FC = () => {
         <>
           <Group>
             <Text size="sm" style={{ fontWeight: 'bold' }}>Executable Path:</Text>
-            <Button onClick={toggleNonSteamOptions} >
+            <Button onClick={toggleNonSteamOptions} className={classes.buttonHoverEffect}>
               <IoEye size={16} />
             </Button>
           </Group>
@@ -196,11 +197,11 @@ const GameLauncher: React.FC = () => {
             />
             <Space h="xs" />
             <Group>
-              <Button onClick={handleOpenFile}>
+              <Button onClick={handleOpenFile} className={classes.buttonHoverEffect}>
                 <span style={{ marginRight: '8px' }}>Open</span>
                 <FaFolderOpen />
               </Button>
-              <Button onClick={handleSearchGame}>
+              <Button onClick={handleSearchGame} className={classes.buttonHoverEffect}>
                 <span style={{ marginRight: '8px' }}>Search</span>
                 <FaSearch />
               </Button>
@@ -267,14 +268,20 @@ const GameLauncher: React.FC = () => {
           onChange={(event) => setCustomServer(event.currentTarget.value)}
         />
       )}
+      </Paper>
       <Space h="lg" />
+      <Paper style={{
+        border: `${theme.colors.dark[4]} 1px solid`,
+        background: hexToRgba(theme.colors.dark[4], 0.2),
+        padding: '10px',
+      }}>
       <Button
         onClick={startGame}
-        variant="filled"
         fullWidth
         h={64}
-        radius="sm"
-        style={{background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,}}
+        style={{background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
+        border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
+      }}
         rightSection={<FaCirclePlay size={14} />}
         className={classes.buttonHoverEffect}
       >

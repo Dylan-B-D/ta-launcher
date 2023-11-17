@@ -2,6 +2,7 @@
 import { MantineTheme, createTheme } from "@mantine/core";
 import { useThemeContext } from "./context/ThemeContext";
 import classes from '../../styles.module.css';
+import { hexToRgba } from "./utils";
 
 declare module "@mantine/core" {
   interface MantineTheme {
@@ -137,9 +138,9 @@ const createAppTheme = () => {
             fontFamily: secondaryFontFamily,
             transition: 'background-color 0.3s, box-shadow 0.3s, color 0.3s',
             color: theme.colors.dark[1],
-            borderWidth: '1px 0 0 0',
-            borderColor: theme.colors.gray[8],
-            background: theme.colors.dark[7],
+            
+            borderColor: hexToRgba(theme.colors.dark[1], 0.2),
+            background: hexToRgba(theme.colors.dark[1], 0.1),
           },
           
         }),
