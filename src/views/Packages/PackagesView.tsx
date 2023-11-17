@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Container, Loader } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
 import PackageCard from '../../components/PackageCard/PackageCard';
-// import classes from './PackagesView.module.css';
 
 interface PackageMetadata {
   size: string;

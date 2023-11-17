@@ -2,8 +2,8 @@
 
 // Routing
 import { BrowserRouter as Router } from 'react-router-dom';
-import AppRoutes from './AppRoutes';
-import { views } from './routes';
+import AppRoutes from './Routes/AppRoutes';
+import { views } from './Routes/routes';
 
 // UI components and hooks
 import { AppShell, MantineProvider } from '@mantine/core';
@@ -14,7 +14,6 @@ import createAppTheme from './theme';
 import { NavbarNested } from './components/NavbarNested/NavbarNested';
 import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
 import HeaderComponent from './components/Header/Header';
-import { useThemeContext } from './context/ThemeContext';
 
 
 async function setMinWindowSize() {
@@ -23,8 +22,7 @@ async function setMinWindowSize() {
 
 
 function App() {
-  const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily } = useThemeContext();
-  const theme = createAppTheme(primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily);
+  const theme = createAppTheme();
   setMinWindowSize();
 
   return (

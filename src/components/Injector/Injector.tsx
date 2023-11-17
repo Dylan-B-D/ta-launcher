@@ -6,7 +6,6 @@ import { open } from '@tauri-apps/api/dialog';
 import { Card, Button, Text, useMantineTheme, Code, Space } from '@mantine/core';
 import { BsFileEarmarkCodeFill } from'react-icons/bs';
 import { FaSyringe } from'react-icons/fa6';
-import classes from './Injector.module.css';
 
 const Injector: React.FC = () => {
   const [dll, setDll] = useState<string>("");
@@ -49,14 +48,12 @@ const Injector: React.FC = () => {
 
   return (
     <Card shadow="sm" padding="lg" radius="sm" style={{ backgroundColor: '#2C3E50', maxWidth: '350px', margin: 'auto' }}>
-      <Text className={classes.title} size="lg" style={{ textAlign: 'center', marginBottom: '1rem'}}>
+      <Text  size="lg" style={{ textAlign: 'center', marginBottom: '1rem'}}>
         DLL Injector
       </Text>
 
       <Button.Group style={{ display: 'flex', justifyContent: 'center' }}>
         <Button 
-          className={classes.customButton}
-
           onClick={openFile}
         >
           <BsFileEarmarkCodeFill style={{ marginRight: '0.5rem' }} />
@@ -64,8 +61,6 @@ const Injector: React.FC = () => {
         </Button>
 
         <Button 
-          className={classes.customButton}
-
           onClick={inject}
           disabled={isInjected}
         >

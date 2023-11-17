@@ -1,10 +1,10 @@
 // NavbarNested.tsx
 
-import { Group, Code, ScrollArea, rem } from '@mantine/core';
+import { Group, Code, ScrollArea, rem, useMantineTheme } from '@mantine/core';
 import classes from './NavbarNested.module.css';
 import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
-import { PiCaretRightBold, PiCaretUpBold } from'react-icons/pi';
+import { PiCaretRightBold, PiCaretUpBold } from 'react-icons/pi';
 
 interface View {
   component?: React.ComponentType;
@@ -12,7 +12,7 @@ interface View {
   name: string;
   icon?: React.ComponentType;
   subViews?: View[];
-  isOpen?: boolean; 
+  isOpen?: boolean;
 }
 
 
@@ -21,6 +21,7 @@ interface NavbarNestedProps {
 }
 
 export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
+  const theme = useMantineTheme();
   const [views, setViews] = useState(initialViews);
 
   const toggleSubViews = (name: string) => {
@@ -37,32 +38,42 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
   const renderSubViews = (subViews: View[], isOpen: boolean) => {
     const maxHeight = isOpen ? `${subViews.length * 50}px` : '0'; // Adjust 50px to your item height
     const spaceStyle = isOpen ? { marginBottom: '20px' } : {}; // Adjust the bottom margin as needed
-  
+
     return (
       <div className={classes.subViewsContainer} style={{ ...spaceStyle, maxHeight }}>
         {subViews.map(subView => renderLink(subView, true))}
       </div>
     );
   };
-  
-  
+
+
   const renderLink = (view: View, isSubView: boolean = false) => {
     // Check if the view is a parent item (has subViews and no path)
     const isParentItem = view.subViews && !view.path;
-  
+
+    const linkStyle = (isActive: boolean) => ({
+      paddingLeft: isSubView ? '40px' : '20px',
+      cursor: 'pointer',
+      color: isActive ? theme.colors[theme.primaryColor][5] : theme.colors[theme.secondaryColor][5],
+      backgroundColor: isActive? theme.colors[theme.secondaryColor][9] : 'transparent'
+    });
+
     // Common icon rendering logic for both parent and sub-views
     const iconElement = view.icon ? (
       <div className={classes.linkIcon}>
         <view.icon />
       </div>
     ) : null;
-  
+
     return isParentItem ? (
       <div
         key={view.name}
         onClick={() => toggleSubViews(view.name)}
         className={classes.linkText}
-        style={{ paddingLeft: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        style={{
+          paddingLeft: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          color: theme.colors[theme.secondaryColor][5]
+        }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {iconElement}
@@ -78,14 +89,13 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
         className={({ isActive }) =>
           isActive ? `${classes.linkText} ${classes.linkActive}` : classes.linkText
         }
-        style={{ paddingLeft: isSubView ? '40px' : '20px' }}
-      >
+        style={({ isActive }) => linkStyle(isActive)}>
         {iconElement}
         <span>{view.name}</span>
       </NavLink>
     );
   };
-  
+
 
   const links = views.map((view, index) => {
     const isSpecialItem = view.name === 'Settings';
@@ -101,7 +111,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
       </React.Fragment>
     );
   });
-  
+
   const maxScrollHeight = 'calc(100vh - 100px)';
 
   return (

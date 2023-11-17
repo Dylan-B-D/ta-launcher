@@ -138,13 +138,10 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
 
         {packageData.metadata ? (
           <>
-            <Text style={{  opacity: 0.5 }}>
-                Size: {formatBytes(packageData.metadata.size)}
-            </Text>
             {/* Display Total Size if available */}
             {typeof totalSize === 'number' && (
               <Text style={{  opacity: 0.5 }}>
-                Total Size: {formatBytes(totalSize)}
+                Size: {formatBytes(totalSize)}
               </Text>
             )}
             <Text style={{  opacity: 0.5 }}>
