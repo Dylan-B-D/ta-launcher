@@ -12,7 +12,7 @@ use commands::{
     downloader_command,
     find_executable_command,
     get_available_fonts_command,
-    util_commands,
+    util_command,
 };
 
 
@@ -30,7 +30,7 @@ fn main() {
         downloader_command::download_package,
         find_executable_command:: find_executable,
         get_available_fonts_command::get_system_fonts,
-        util_commands::is_process_running,
+        util_command::is_process_running,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
