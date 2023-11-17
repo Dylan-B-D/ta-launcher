@@ -147,7 +147,8 @@ const createAppTheme = () => {
       Paper: {
         styles: (theme: MantineTheme) => ({
           root: {
-            backgroundColor: theme.colors[theme.tertiaryColor][9],
+            background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
+            boxShadow: theme.shadows.lg,
           },
         }),
       },

@@ -47,7 +47,7 @@ const Injector: React.FC = () => {
   };
 
   return (
-    <Card shadow="sm" padding="lg" radius="sm" style={{ backgroundColor: '#2C3E50', maxWidth: '350px', margin: 'auto' }}>
+    <Card >
       <Text  size="lg" style={{ textAlign: 'center', marginBottom: '1rem'}}>
         DLL Injector
       </Text>

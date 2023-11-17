@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Card, Image, Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme } from '@mantine/core';
+import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
-import { FaSearch, FaCog } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
+import { IoEye } from "react-icons/io5";
 import { dialog } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
 import classes from '../../styles.module.css';
@@ -143,44 +144,28 @@ const GameLauncher: React.FC = () => {
     };
   }, []);
 
+  function hexToRgba(hex: string, opacity: number) {
+    let r = parseInt(hex.slice(1, 3), 16);
+    let g = parseInt(hex.slice(3, 5), 16);
+    let b = parseInt(hex.slice(5, 7), 16);
+  
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
   return (
-    <Card
-      padding="lg"
-      radius="sm"
-      style={{  maxWidth: '350px', margin: 'auto' }}
-    >
-      <Card.Section style={{ position: 'relative' }}>
-        <Image
-          src="http://2.bp.blogspot.com/-6n4vKnqI6nw/T68hef_YuXI/AAAAAAAABEE/dSq-jfdxkdE/s640/IlyaNazarov_Tribes1.jpg"
-          alt="Tribes Ascend"
-          style={{ width: '100%', maxHeight: '80px' }}
-        />
-        <Text
-          size="lg"
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-
-            textAlign: 'center',
-            textShadow: '0 0px 4px rgba(0, 0, 0, 1)',
-            background: 'radial-gradient(closest-side, rgba(0,0,0,0.8),  transparent)',
-            padding: '24px',
-          }}
-        >
-          Tribes: Ascend Launcher
-        </Text>
-      </Card.Section>
-
+    <div>
+      <Paper style={{
+        border: `${theme.colors.dark[4]} 1px solid`,
+        background: hexToRgba(theme.colors.dark[4], 0.2),
+        padding: '10px',
+      }}>
       <Text
         size="sm"
         style={{
-          marginTop: '1rem',
-
           fontWeight: 'bold',
         }}
       >Launch Type:</Text>
+      <Space h="xs" />
       <Button.Group>
         <Button
           onClick={() => setLaunchType('Steam')}
@@ -195,13 +180,14 @@ const GameLauncher: React.FC = () => {
           Non Steam
         </Button>
       </Button.Group>
+      <Space h="md" />
 
       {launchType === 'Non Steam' && (
         <>
           <Group>
             <Text size="sm" style={{ fontWeight: 'bold' }}>Executable Path:</Text>
             <Button onClick={toggleNonSteamOptions} >
-              <FaCog size={16} />
+              <IoEye size={16} />
             </Button>
           </Group>
           <Collapse in={isNonSteamOptionsOpen}>
@@ -215,6 +201,7 @@ const GameLauncher: React.FC = () => {
               minRows={3}
               maxRows={4}
             />
+            <Space h="xs" />
             <Group>
               <Button onClick={handleOpenFile}>
                 <span style={{ marginRight: '8px' }}>Open</span>
@@ -237,18 +224,19 @@ const GameLauncher: React.FC = () => {
             )}
 
           </Collapse>
+          <Space h="md" />
         </>
       )}
-
+      </Paper>
+      <Space h="md" />
       <Text
         size="sm"
         style={{
-          marginTop: '1rem',
-
           fontWeight: 'bold',
         }}
       >
         Login Server:</Text>
+      <Space h="xs" />
       <Button.Group>
         <Button
           onClick={() => setLoginServer('Community')}
@@ -272,7 +260,7 @@ const GameLauncher: React.FC = () => {
           Custom
         </Button>
       </Button.Group>
-
+      <Space h="xs" />
       {loginServer === 'Custom' && (
         <TextInput
           label="Custom Login Server"
@@ -281,19 +269,20 @@ const GameLauncher: React.FC = () => {
           onChange={(event) => setCustomServer(event.currentTarget.value)}
         />
       )}
-
+      <Space h="lg" />
       <Button
         onClick={startGame}
         variant="filled"
         fullWidth
-        mt="md"
+        h={64}
         radius="sm"
+        style={{background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,}}
         rightSection={<FaCirclePlay size={14} />}
         className={classes.buttonHoverEffect}
       >
         Launch Tribes Ascend
       </Button>
-    </Card>
+      </div>
   );
 };
 
