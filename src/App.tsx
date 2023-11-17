@@ -17,7 +17,7 @@ import HeaderComponent from './components/Header/Header';
 
 
 async function setMinWindowSize() {
-  await appWindow.setMinSize(new PhysicalSize(600, 550));
+  await appWindow.setMinSize(new PhysicalSize(600, 500));
 }
 
 

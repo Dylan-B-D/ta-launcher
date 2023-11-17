@@ -5,30 +5,7 @@
 }
 
 .buttonHoverEffect:hover {
-    filter: contrast(110%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-  }
-
-  .gradient-border-button {
-    position: relative;
-    border: 1px solid transparent; /* Default border */
-  }
-  
-  .gradient-border-button::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: inherit; /* Match the border-radius of the button if any */
-    z-index: -1;
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--primary-color-3),
-      transparent
-    );
-    opacity: 0; /* Initially hidden */
+    filter: hue-rotate(-20deg) contrast(120%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
