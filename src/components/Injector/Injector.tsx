@@ -10,8 +10,10 @@ import { FaSyringe } from 'react-icons/fa6';
 
 import classes from '../../styles.module.css';
 import { notifications } from '@mantine/notifications';
+import { useSettingsContext } from '../../context/SettingsContext';
 
 const Injector: React.FC = () => {
+  const { manualInjection } = useSettingsContext();
   const defaultDllPath = 'C:\\Users\\{username}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher\\TAMods.dll';
   const [dll, setDll] = useState<string>(defaultDllPath);
   const processName = 'TribesAscend.exe';
@@ -82,6 +84,9 @@ const Injector: React.FC = () => {
     return () => clearInterval(interval);
   }, [isInjected, processName]);
 
+  if (!manualInjection) {
+    return null; // Don't render anything if manual injection is disabled
+  }
 
   return (
     <Button

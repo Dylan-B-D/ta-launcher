@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { TextInput, Switch, Select, Paper, Title, Box, useMantineTheme, Space, MantineTheme } from '@mantine/core';
 import { useThemeContext } from '../../context/ThemeContext';
 import { invoke } from '@tauri-apps/api/tauri';
+import { useSettingsContext } from '../../context/SettingsContext';
 
 interface SettingsProps {
   // Add props
@@ -58,7 +59,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const [selectedSecondaryFontFamily, setSelectedSecondaryFontFamily] = useState<string>(secondaryFontFamily);
 
 
-  const [manualInjection, setManualInjection] = useState<boolean>(false);
+  const { manualInjection, setManualInjection } = useSettingsContext();
   //const [injectionOrder, setInjectionOrder] = useState<string>('default');
   const [executableOverride, setExecutableOverride] = useState<string>('');
   const [multiInjection, setMultiInjection] = useState<boolean>(false);
@@ -115,7 +116,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
       <Paper withBorder style={{ ...paperStyles.root, ...theme.components.Paper.styles(theme).root }}>
         <Title order={3}>General Settings</Title>
-        <TextInput
+        {/* <TextInput
           label="Executable Override"
           placeholder="Path to executable"
           value={executableOverride}
@@ -134,28 +135,16 @@ const SettingsView: React.FC<SettingsProps> = () => {
           placeholder="URL"
           value={additionalLoginServer}
           onChange={(event) => setAdditionalLoginServer(event.currentTarget.value)}
-        />
+        /> */}
       </Paper>
 
       <Paper withBorder style={{ ...paperStyles.root, ...theme.components.Paper.styles(theme).root }}>
         <Title order={3}>Injection Settings</Title>
+        <Space h="xs" />
         <Switch
           label="Manual Injection"
           checked={manualInjection}
           onChange={(event) => setManualInjection(event.currentTarget.checked)}
-        />
-        <Space h="md" />
-        <Switch
-          label="Multi Injection"
-          checked={multiInjection}
-          onChange={(event) => setMultiInjection(event.currentTarget.checked)}
-        />
-        <Space h="md" />
-        <Select
-          label="Injection Order"
-          //value={injectionOrder}
-          //onChange={setInjectionOrder}
-          data={['default', 'option1', 'option2']}
         />
       </Paper>
 
