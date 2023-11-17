@@ -112,15 +112,11 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     );
   });
 
-  const maxScrollHeight = 'calc(100vh - 100px)';
+  const maxScrollHeight = 'calc(100vh - 10px)';
 
   return (
     <nav className={classes.navbar}>
       <div className={classes.header}>
-        <Group justify="space-between">
-          <span className={classes.name} style={{ fontSize: rem(24), fontWeight: 'bold', color: 'rgba(255,255,255,0.8)' }}>T:A Launcher</span>
-          <Code fw={700} >Alpha v0.0.1</Code>
-        </Group>
       </div>
 
       <ScrollArea className={classes.links} style={{ maxHeight: maxScrollHeight }}>

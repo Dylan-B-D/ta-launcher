@@ -158,6 +158,7 @@ const GameLauncher: React.FC = () => {
         <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
           <Paper style={{
             border: `${theme.colors.dark[4]} 1px solid`,
+            borderRadius: '8px',
             //background: hexToRgba(theme.colors.dark[4], 0.2),
             padding: '10px',
           }}>
@@ -239,6 +240,7 @@ const GameLauncher: React.FC = () => {
         <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
           <Paper style={{
             border: `${theme.colors.dark[4]} 1px solid`,
+            borderRadius: '8px',
             //background: hexToRgba(theme.colors.dark[4], 0.2),
             padding: '10px',
           }}>
@@ -286,6 +288,7 @@ const GameLauncher: React.FC = () => {
       </Grid>
       <Space h="md" />
       <Paper style={{
+        borderRadius: '8px',
         border: `${theme.colors.dark[4]} 1px solid`,
         // background: hexToRgba(theme.colors.dark[4], 0.2),
         padding: '10px',

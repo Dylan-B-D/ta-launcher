@@ -1,7 +1,7 @@
 // SettingsView.tsx
 
 import React, { useEffect, useState } from 'react';
-import { TextInput, Switch, Select, Paper, Title, Box, useMantineTheme, Space, MantineTheme } from '@mantine/core';
+import { Switch, Select, Paper, Title, Box, useMantineTheme, Space, MantineTheme } from '@mantine/core';
 import { useThemeContext } from '../../context/ThemeContext';
 import { invoke } from '@tauri-apps/api/tauri';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -61,10 +61,10 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
   const { manualInjection, setManualInjection } = useSettingsContext();
   //const [injectionOrder, setInjectionOrder] = useState<string>('default');
-  const [executableOverride, setExecutableOverride] = useState<string>('');
-  const [multiInjection, setMultiInjection] = useState<boolean>(false);
-  const [customConfigPath, setCustomConfigPath] = useState<string>('');
-  const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
+  // const [executableOverride, setExecutableOverride] = useState<string>('');
+  // const [multiInjection, setMultiInjection] = useState<boolean>(false);
+  // const [customConfigPath, setCustomConfigPath] = useState<string>('');
+  // const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
 
 
 
