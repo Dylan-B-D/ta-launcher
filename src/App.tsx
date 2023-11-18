@@ -19,7 +19,7 @@ import classes from './styles.module.css';
 
 
 async function setMinWindowSize() {
-  await appWindow.setMinSize(new PhysicalSize(580, 327));
+  await appWindow.setMinSize(new PhysicalSize(560, 330));
 }
 
 

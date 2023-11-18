@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid } from '@mantine/core';
+import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid, rgba } from '@mantine/core';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch } from 'react-icons/fa';
 import { IoEye } from "react-icons/io5";
@@ -120,9 +120,16 @@ const GameLauncher: React.FC = () => {
 
   const buttonStyle = (selected: boolean) => ({
     color: selected ? theme.colors.gray[0] : theme.colors.dark[1],
-    background: selected ? `linear-gradient(45deg, ${theme.colors.dark[3]} 0%, ${theme.colors[theme.primaryColor][3]} 100%)` : hexToRgba(theme.colors.dark[1], 0.1),
-    borderWidth: '0px',
-    borderColor: selected ? hexToRgba(theme.colors.dark[1], 0.2) : 'transparent',
+    background: selected ? 
+      `linear-gradient(45deg, 
+        ${theme.colors.dark[6]} 0%, 
+        ${theme.colors[theme.primaryColor][9]} 50%, 
+        ${theme.colors.dark[6]} 100%)` 
+      : 
+      hexToRgba(theme.colors.dark[1], 0.1),
+    boxShadow: selected ? `0 1px 4px 2px ${hexToRgba(theme.colors.dark[9], 0.3)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][6], 0.3)}`: 'none',
+    borderWidth: '1px',
+    borderColor: selected ? 'rgba(255,255,255,0.1)' : 'transparent',
   });
 
   useEffect(() => {
@@ -299,6 +306,7 @@ const GameLauncher: React.FC = () => {
             h={50}
             style={{
               background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
+              boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.5)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
               border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
               flexGrow: 4, // Takes more space
             }}
