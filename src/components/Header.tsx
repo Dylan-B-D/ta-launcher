@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { AppShell, Badge, Code, Paper, Progress, useMantineTheme } from '@mantine/core';
 import { invoke } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
-import { formatSpeed } from '../utils.ts';
+import { formatSpeed, hexToRgba } from '../utils.ts';
 
 interface DownloadProgress {
   download_id: number;
@@ -70,6 +70,7 @@ const HeaderComponent: React.FC = () => {
           alignItems: 'center', 
           justifyContent: 'space-between',
           background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
+          boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.2)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
         },
       })}
     >
@@ -78,10 +79,12 @@ const HeaderComponent: React.FC = () => {
       <Badge 
           variant="gradient"
           style={{
+            borderRadius: '4px',
             background: `linear-gradient(90deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][7]} 50%, ${theme.colors.dark[4]} 100%)`,
             marginLeft: '10px', 
             color: theme.colors.gray[3],
-            fontWeight:"normal"
+            fontWeight:"normal",
+            boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.4)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
           }}
         >
           Community: <strong><span style={{ color: theme.colors.green[4] }}>{playerCounts.Community}</span></strong>
@@ -89,10 +92,12 @@ const HeaderComponent: React.FC = () => {
         <Badge 
           variant="gradient"
           style={{
+            borderRadius: '4px',
             background: `linear-gradient(90deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][7]} 50%, ${theme.colors.dark[4]} 100%)`,
             marginLeft: '10px', 
             color: theme.colors.gray[3],
-            fontWeight:"normal"
+            fontWeight:"normal",
+            boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.4)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
           }}
         >
           PUG: <strong><span style={{ color: theme.colors.green[4] }}>{playerCounts.PUG}</span></strong>
@@ -119,7 +124,8 @@ const HeaderComponent: React.FC = () => {
       <div style={{ paddingRight: '10px' }}>
         <Code fw={700} style={{
           color: theme.colors.gray[4],
-        }}>Alpha v0.0.1</Code>
+          background: `linear-gradient(90deg, ${theme.colors.dark[5]} 0%, ${theme.colors[theme.primaryColor][9]} 50%, ${theme.colors.dark[5]} 100%)`,
+        }}>Alpha v0.1.3</Code>
       </div>
     </AppShell.Header>
   );
