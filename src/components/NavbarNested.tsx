@@ -59,7 +59,18 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
       paddingLeft: isSubView ? '48px' : '16px',
       cursor: 'pointer',
       color: theme.colors.gray[4],
+      background: isActive ? 
+      `linear-gradient(45deg, 
+        ${theme.colors.dark[6]} 0%, 
+        ${theme.colors[theme.primaryColor][9]} 50%, 
+        ${theme.colors.dark[6]} 100%)` 
+      : 
+      `linear-gradient(106deg, transparent 0%, rgba(0,0,0,0.15) 100%)`,
+      borderWidth: '1px',
+      boxShadow: isActive ? `0 1px 4px 2px ${hexToRgba(theme.colors.dark[9], 0.2)}`: 'none',
+      borderRadius: '8px',
       backgroundColor: isActive? theme.colors[theme.primaryColor][9] : 'transparent',
+      
     });
 
     // Common icon rendering logic for both parent and sub-views
@@ -76,7 +87,10 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
         className={classes.linkText}
         style={{
           paddingLeft: '16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          color: theme.colors.gray[4]
+          color: theme.colors.gray[4],
+          borderRadius: '8px',
+          background: 
+            `linear-gradient(106deg, transparent 0%, rgba(0,0,0,0.15) 100%)`,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -114,9 +128,9 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
       flexDirection: 'column',
       boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 1)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
     }}>
-      <nav className={classes.navbar} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <nav className={classes.navbar} style={{ display: 'flex', flexDirection: 'column', height: '100%',padding: '0' }}>
         {/* Scrollable Area for Regular Links */}
-        <ScrollArea className={classes.links} scrollbarSize={2} style={{ overflowY: 'auto', flex: 1 }}>
+        <ScrollArea className={classes.links} scrollbarSize={2} style={{ overflowY: 'auto', flex: 1}}>
           <div className={classes.linksInner}>
             {regularLinks.map(view => (
               <React.Fragment key={view.name}>
