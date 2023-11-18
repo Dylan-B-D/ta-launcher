@@ -20,6 +20,7 @@ const Injector: React.FC = () => {
   const [isInjected, setIsInjected] = useState<boolean>(false);
   const [, setInjectionStatus] = useState<string>("");
   const [isFileMissing, setIsFileMissing] = useState<boolean>(false);
+  const [processPID, setProcessPID] = useState<number | null>(null);
 
 
   const getInitialDllPath = async () => {
@@ -76,31 +77,39 @@ const Injector: React.FC = () => {
     }
   };
 
-  const isProcessRunning = async (processName: string) => {
-    try {
-      const res = await invoke('is_process_running', { processName });
-      return res;
-    } catch (error) {
-      console.error('Error checking process status:', error);
-      return false;
-    }
-  };
+  
+
+  useEffect(() => {
+    const fetchProcessPID = async () => {
+      try {
+        // Explicitly cast the result of invoke to number or null
+        const pid = await invoke('get_process_pid', { processName }) as number | null;
+  
+        setProcessPID(pid);
+      } catch (error) {
+        console.error('Error getting process PID:', error);
+        setProcessPID(null);
+      }
+    };
+  
+    fetchProcessPID();
+  }, [processName]);
+
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const running = await isProcessRunning(processName);
-      if (!running && isInjected) {
-        setIsInjected(false);
-        setInjectionStatus('');
+      if (processPID) {
+        const running = await invoke('is_pid_running', { pid: processPID });
+        if (!running) {
+          setIsInjected(false);
+          setInjectionStatus('');
+          setProcessPID(null); // Reset PID when the process is no longer running
+        }
       }
     }, 5000);
-
+  
     return () => clearInterval(interval);
-  }, [isInjected, processName]);
-
-  if (!manualInjection) {
-    return null; // Don't render anything if manual injection is disabled
-  }
+  }, [processPID]);
 
   return (
     <Button

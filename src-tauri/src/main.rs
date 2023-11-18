@@ -31,6 +31,8 @@ fn main() {
         find_executable_command:: find_executable,
         get_available_fonts_command::get_system_fonts,
         util_command::is_process_running,
+        util_command::is_pid_running,
+        util_command::get_process_pid,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
