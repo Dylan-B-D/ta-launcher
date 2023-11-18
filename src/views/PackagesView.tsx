@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Loader } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
-import PackageCard from '../components/PackageCard/PackageCard';
+import PackageCard from '../components/PackageCard';
 
 interface PackageMetadata {
   size: string;

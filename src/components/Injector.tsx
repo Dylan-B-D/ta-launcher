@@ -9,9 +9,9 @@ import { listen } from '@tauri-apps/api/event';
 import { Button } from '@mantine/core';
 import { FaSyringe } from 'react-icons/fa6';
 
-import classes from '../../styles.module.css';
+import classes from '../styles.module.css';
 import { notifications } from '@mantine/notifications';
-import { useSettingsContext } from '../../context/SettingsContext';
+import { useSettingsContext } from '../context/SettingsContext';
 
 const Injector: React.FC = () => {
   const { manualInjection } = useSettingsContext();

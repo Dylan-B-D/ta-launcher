@@ -1,11 +1,11 @@
 // PackageCard.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, Text, Badge, Button } from '@mantine/core';
-import { PackageData } from '../../views/PackagesView.tsx';
+import { PackageData } from '../views/PackagesView.tsx';
 import { PiCaretRightBold, PiCaretUpBold } from 'react-icons/pi';
 import { BiSolidDownload } from 'react-icons/bi';
-import { formatBytes } from '../../utils.ts';
-import { formatDate } from '../../utils.ts';
+import { formatBytes } from '../utils.ts';
+import { formatDate } from '../utils.ts';
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen } from '@tauri-apps/api/event';
 

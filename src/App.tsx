@@ -12,9 +12,9 @@ import { AppShell, MantineProvider } from '@mantine/core';
 // Styling
 import "@mantine/core/styles.css";
 import createAppTheme from './theme';
-import { NavbarNested } from './components/NavbarNested/NavbarNested';
+import { NavbarNested } from './components/NavbarNested';
 import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
-import HeaderComponent from './components/Header/Header';
+import HeaderComponent from './components/Header';
 import classes from './styles.module.css';
 
 

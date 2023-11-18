@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { AppShell, Badge, Code, Progress, useMantineTheme } from '@mantine/core';
 import { invoke } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
-import { formatSpeed } from '../../utils.ts';
+import { formatSpeed } from '../utils.ts';
 
 interface DownloadProgress {
   download_id: number;

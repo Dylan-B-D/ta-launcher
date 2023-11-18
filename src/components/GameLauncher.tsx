@@ -8,9 +8,9 @@ import { FaSearch } from 'react-icons/fa';
 import { IoEye } from "react-icons/io5";
 import { dialog } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
-import { hexToRgba } from '../../utils.ts';
-import classes from '../../styles.module.css';
-import Injector from '../Injector/Injector.tsx';
+import { hexToRgba } from '../utils.ts';
+import classes from '../styles.module.css';
+import Injector from './Injector.tsx';
 
 const GameLauncher: React.FC = () => {
   const theme = useMantineTheme();
