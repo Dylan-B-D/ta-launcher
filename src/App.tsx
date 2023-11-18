@@ -30,13 +30,11 @@ function App() {
   return (
     <Router>
       <MantineProvider theme={theme} defaultColorScheme="dark">
-        <Notifications className={classes.mantineNotificationsContainer}/>
+        <Notifications className={classes.mantineNotificationsContainer} />
         <AppShell header={{ height: 30 }} navbar={{ width: 220, breakpoint: 'none' }} padding="md">
           <HeaderComponent />
-          <AppShell.Navbar>
-            <NavbarNested views={views} />
-          </AppShell.Navbar>
-          <AppShell.Main>
+          <NavbarNested views={views} />
+          <AppShell.Main style={{marginLeft: '16px'}}>
             <AppRoutes />
           </AppShell.Main>
         </AppShell>

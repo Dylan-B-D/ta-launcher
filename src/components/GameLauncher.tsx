@@ -279,7 +279,7 @@ const GameLauncher: React.FC = () => {
             {loginServer === 'Custom' && (
               <><Space h="xs" /><TextInput
                 label="Custom Login Server"
-                placeholder="Enter custom server"
+                placeholder="Enter server IP address"
                 value={customServer}
                 onChange={(event) => setCustomServer(event.currentTarget.value)} /></>
             )}

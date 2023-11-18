@@ -5,6 +5,7 @@ import classes from './NavbarNested.module.css';
 import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
 import { PiCaretRightBold, PiCaretUpBold } from 'react-icons/pi';
+import { hexToRgba } from '../utils';
 
 interface View {
   component?: React.ComponentType;
@@ -57,8 +58,8 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     const linkStyle = (isActive: boolean) => ({
       paddingLeft: isSubView ? '48px' : '16px',
       cursor: 'pointer',
-      color: isActive ? theme.colors[theme.primaryColor][5] : theme.colors[theme.secondaryColor][5],
-      backgroundColor: isActive? theme.colors[theme.secondaryColor][9] : 'transparent',
+      color: theme.colors.gray[4],
+      backgroundColor: isActive? theme.colors[theme.primaryColor][9] : 'transparent',
     });
 
     // Common icon rendering logic for both parent and sub-views
@@ -74,8 +75,8 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
         onClick={() => toggleSubViews(view.name)}
         className={classes.linkText}
         style={{
-          paddingLeft: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          color: theme.colors[theme.secondaryColor][5]
+          paddingLeft: '16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          color: theme.colors.gray[4]
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -111,6 +112,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
       height: maxScrollHeight,
       display: 'flex',
       flexDirection: 'column',
+      boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 1)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
     }}>
       <nav className={classes.navbar} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {/* Scrollable Area for Regular Links */}

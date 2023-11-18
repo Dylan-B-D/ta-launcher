@@ -137,7 +137,6 @@ const createAppTheme = () => {
             fontFamily: secondaryFontFamily,
             transition: 'background-color 0.3s, box-shadow 0.3s, color 0.3s',
             color: theme.colors.dark[1],
-            
             borderColor: hexToRgba(theme.colors.dark[1], 0.2),
             background: hexToRgba(theme.colors.dark[1], 0.1),
           },
@@ -147,8 +146,8 @@ const createAppTheme = () => {
       Paper: {
         styles: (theme: MantineTheme) => ({
           root: {
-            background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
-            boxShadow: theme.shadows.lg,
+            background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 30%, ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.7)} 100%)`,
+            boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 1)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
           },
         }),
       },
@@ -156,7 +155,8 @@ const createAppTheme = () => {
         styles: (theme: MantineTheme) => ({
           root: {
             background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
-            boxShadow: theme.shadows.lg,
+            boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 1)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
+            borderRadius: '8px',
           },
         }),
       }
