@@ -3,11 +3,12 @@ import HomeView from '../views/HomeView';
 import PackagesView from '../views/PackagesView';
 import { LuPackage } from 'react-icons/lu';
 import { IoGitNetworkSharp } from 'react-icons/io5';
-import { GiLevelFourAdvanced } from 'react-icons/gi';
 import SettingsView from '../views/SettingsView';
 import { TiCog, TiSpanner } from 'react-icons/ti';
 import { CiRoute } from 'react-icons/ci';
 import { AiOutlineUser } from 'react-icons/ai';
+import { FaMicrochip } from "react-icons/fa6";
+
 import ServerBrowser from '../views/ServerBrowserView';
 
 
@@ -33,7 +34,7 @@ export const views: View[] = [
     },
     {
       name: 'Advanced',
-      icon: GiLevelFourAdvanced,
+      icon: FaMicrochip,
       subViews: [
         { name: 'Config', path: '/advanced/config', component: HomeView, icon: TiSpanner },
         { name: 'Routes', path: '/advanced/routes', component: ServerBrowser, icon: CiRoute },
