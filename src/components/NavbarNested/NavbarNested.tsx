@@ -112,7 +112,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     );
   });
 
-  const maxScrollHeight = 'calc(100vh - 10px)';
+  const maxScrollHeight = 'calc(100vh - 100px)';
 
   return (
     <nav className={classes.navbar}>

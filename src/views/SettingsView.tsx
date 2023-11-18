@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Switch, Select, Paper, Title, Box, useMantineTheme, Space, MantineTheme } from '@mantine/core';
-import { useThemeContext } from '../../context/ThemeContext';
+import { useThemeContext } from '../context/ThemeContext';
 import { invoke } from '@tauri-apps/api/tauri';
-import { useSettingsContext } from '../../context/SettingsContext';
+import { useSettingsContext } from '../context/SettingsContext';
 
 interface SettingsProps {
   // Add props

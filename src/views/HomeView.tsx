@@ -1,6 +1,6 @@
 // HomeView.tsx
 
-import GameLauncherCard from '../../components/GameLauncher/GameLauncher'; 
+import GameLauncherCard from '../components/GameLauncher/GameLauncher'; 
 
 // TODO: refactor to move stuff, so that this doesnt exist in this state
 const HomeView = () => {

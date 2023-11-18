@@ -1,7 +1,7 @@
 // PackageCard.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, Text, Badge, Button } from '@mantine/core';
-import { PackageData } from '../../views/Packages/PackagesView';
+import { PackageData } from '../../views/PackagesView.tsx';
 import { PiCaretRightBold, PiCaretUpBold } from 'react-icons/pi';
 import { BiSolidDownload } from 'react-icons/bi';
 import { formatBytes } from '../../utils.ts';
