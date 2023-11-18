@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid, rgba } from '@mantine/core';
+import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch } from 'react-icons/fa';
 import { IoEye } from "react-icons/io5";
@@ -22,6 +23,7 @@ const GameLauncher: React.FC = () => {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searchProgress, setSearchProgress] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [isGameRunning, setIsGameRunning] = useState(false);
 
 
   useEffect(() => {
@@ -44,9 +46,35 @@ const GameLauncher: React.FC = () => {
     localStorage.setItem('customServer', customServer);
   }, [launchType, loginServer, exePath, customServer]);
 
+  const checkIfGameIsRunning = async () => {
+    try {
+      const pid = await invoke('get_process_pid', { processName: 'TribesAscend.exe' });
+      setIsGameRunning(pid !== null);
+    } catch (error) {
+      console.error("Error checking if game is running:", error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkIfGameIsRunning();
+    }, 5000); // Check every 5 seconds
+  
+    return () => clearInterval(interval);
+  }, []);
+  
 
   const startGame = async () => {
     try {
+      // Checking if the exePath is set for Non-Steam launch
+    if (launchType === 'Non Steam' && !exePath) {
+      notifications.show({
+        title: 'Error',
+        message: 'Executable path is not set.',
+        color: 'red',
+      });
+      return;
+    }
       let launchArg;
       if (loginServer === 'Custom' && customServer) {
         // Append '-hostx=' to the custom server IP
@@ -81,6 +109,17 @@ const GameLauncher: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to launch Tribes Ascend", error);
+  
+      let errorMessage = 'An unexpected error occurred.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+  
+      notifications.show({
+        title: 'Launch Failed',
+        message: `Failed to launch Tribes Ascend: ${errorMessage}`,
+        color: 'red',
+      });
     }
   };
 
@@ -303,12 +342,13 @@ const GameLauncher: React.FC = () => {
         <Group>
           <Button
             onClick={startGame}
+            disabled={isGameRunning}
             h={50}
             style={{
               background: `linear-gradient(135deg, ${theme.colors[theme.primaryColor][9]} 0%, ${theme.colors.dark[7]} 100%)`,
               boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.5)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
               border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
-              flexGrow: 4, // Takes more space
+              flexGrow: 4,
             }}
             rightSection={<FaCirclePlay size={14} />}
             className={classes.buttonHoverEffect}

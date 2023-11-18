@@ -146,7 +146,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
         {/* Fixed Area for Special Links */}
         <div>
           {/* Divider */}
-          <div className={classes.navDivider} style={{marginTop: '0px'}}></div>
+          <div className={classes.navDivider} style={{ margin: '0 5% 0'}}></div>
 
           {specialLinks.map(view => (
             <div key={view.name} onClick={() => view.subViews && toggleSubViews(view.name)}>
