@@ -1,11 +1,14 @@
-// ServerBrowser.tsx
+// ServerBrowserView.tsx
 
-const HomeView = () => {
+const ServersView = () => {
   return (
     <div style={{ padding: '1rem' }}>
-      Test
+      <a href="https://browserbench.org/Speedometer2.0/">
+        Go to Speedometer 2.0
+      </a>
     </div>
   );
 };
 
-export default HomeView;
+export default ServersView;
+

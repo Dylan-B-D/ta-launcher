@@ -1,6 +1,6 @@
 // HeaderComponent.tsx
 import React, { useEffect, useState } from 'react';
-import { AppShell, Badge, Code, Progress, useMantineTheme } from '@mantine/core';
+import { AppShell, Badge, Code, Paper, Progress, useMantineTheme } from '@mantine/core';
 import { invoke } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
 import { formatSpeed } from '../utils.ts';
@@ -69,20 +69,33 @@ const HeaderComponent: React.FC = () => {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between',
+          background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
         },
       })}
     >
       {/* Left-aligned badges */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Badge color="mutedBlue" variant="filled" style={{
-          marginLeft: '10px', color: theme.colors?.darkGray?.[3] || '#B0B0B0'
-        }}>
-          Community: {playerCounts.Community}
+      <Badge 
+          variant="gradient"
+          style={{
+            background: `linear-gradient(90deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][7]} 50%, ${theme.colors.dark[4]} 100%)`,
+            marginLeft: '10px', 
+            color: theme.colors.gray[3],
+            fontWeight:"normal"
+          }}
+        >
+          Community: <strong><span style={{ color: theme.colors.green[4] }}>{playerCounts.Community}</span></strong>
         </Badge>
-        <Badge color="mutedBlue" variant="filled" style={{
-          marginLeft: '10px', color: theme.colors?.darkGray?.[3] || '#B0B0B0'
-        }}>
-          PUG: {playerCounts.PUG}
+        <Badge 
+          variant="gradient"
+          style={{
+            background: `linear-gradient(90deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][7]} 50%, ${theme.colors.dark[4]} 100%)`,
+            marginLeft: '10px', 
+            color: theme.colors.gray[3],
+            fontWeight:"normal"
+          }}
+        >
+          PUG: <strong><span style={{ color: theme.colors.green[4] }}>{playerCounts.PUG}</span></strong>
         </Badge>
       </div>
   
@@ -105,7 +118,7 @@ const HeaderComponent: React.FC = () => {
       {/* Right-aligned version code */}
       <div style={{ paddingRight: '10px' }}>
         <Code fw={700} style={{
-          color: theme.colors[theme.primaryColor][4],
+          color: theme.colors.gray[4],
         }}>Alpha v0.0.1</Code>
       </div>
     </AppShell.Header>

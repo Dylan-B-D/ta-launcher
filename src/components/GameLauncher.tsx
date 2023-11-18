@@ -168,7 +168,7 @@ const GameLauncher: React.FC = () => {
                 fontWeight: 'bold',
               }}
             >Launch Type:</Text>
-            <Space h="xs" />
+            <Space h='2' />
             <Group style={{ width: '100%' }}>
               <Button.Group>
                 <Button
@@ -251,7 +251,7 @@ const GameLauncher: React.FC = () => {
               }}
             >
               Login Server:</Text>
-            <Space h="xs" />
+            <Space h='2' />
             <Button.Group>
               <Button
                 onClick={() => setLoginServer('Community')}

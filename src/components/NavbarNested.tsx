@@ -1,6 +1,6 @@
 // NavbarNested.tsx
 
-import { Group, Code, ScrollArea, rem, useMantineTheme } from '@mantine/core';
+import { ScrollArea, useMantineTheme } from '@mantine/core';
 import classes from './NavbarNested.module.css';
 import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
@@ -36,8 +36,8 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
   };
 
   const renderSubViews = (subViews: View[], isOpen: boolean) => {
-    const maxHeight = isOpen ? `${subViews.length * 50}px` : '0'; // Adjust 50px to your item height
-    const spaceStyle = isOpen ? { marginBottom: '20px' } : {}; // Adjust the bottom margin as needed
+    const maxHeight = isOpen ? `${subViews.length * 50}px` : '0'; 
+    const spaceStyle = isOpen ? { marginBottom: '20px' } : {}; 
 
     return (
       <div className={classes.subViewsContainer} style={{ ...spaceStyle, maxHeight }}>
@@ -112,14 +112,14 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     );
   });
 
-  const maxScrollHeight = 'calc(100vh - 100px)';
+  const maxScrollHeight = 'calc(100vh - 40px)';
 
   return (
     <nav className={classes.navbar}>
       <div className={classes.header}>
       </div>
 
-      <ScrollArea className={classes.links} style={{ maxHeight: maxScrollHeight }}>
+      <ScrollArea className={classes.links} scrollbarSize={2} style={{ maxHeight: maxScrollHeight }}>
         <div className={classes.linksInner}>{links}</div>
       </ScrollArea>
     </nav>

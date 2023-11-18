@@ -111,6 +111,10 @@ const Injector: React.FC = () => {
     return () => clearInterval(interval);
   }, [processPID]);
 
+  if (!manualInjection) {
+    return null;
+  }
+
   return (
     <Button
       className={classes.buttonHoverEffect}
