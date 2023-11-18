@@ -1,15 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,500;6..12,600&display=swap');
 
 .navbar {
-    height: rem(800px);
-    width: rem(300px);
     padding: var(--mantine-spacing-xs);
-    padding-bottom: 0;
     display: flex;
     flex-direction: column;
-    border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-    justify-content: space-between;
-    
   }
 
   .linkText {
@@ -28,11 +22,12 @@
     position: relative; /* Needed for absolute positioning of pseudo-elements */
     overflow: hidden; /* Ensures the pseudo-element doesn't extend outside */
     transition: margin 0.1 ease, background-color 0.8s ease, color 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease;
+    margin-bottom: 2px;
   }
 
 
 .linkText:hover {
-  color: white; /* Optional: Change text color on hover */
+  color: var(--mantine-color-gray-3) !important; /* Optional: Change text color on hover */
 }
 
 .linkIcon {

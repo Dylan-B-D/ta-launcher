@@ -1,6 +1,6 @@
 // NavbarNested.tsx
 
-import { ScrollArea, useMantineTheme } from '@mantine/core';
+import { AppShell, ScrollArea, useMantineTheme } from '@mantine/core';
 import classes from './NavbarNested.module.css';
 import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
@@ -24,6 +24,9 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
   const theme = useMantineTheme();
   const [views, setViews] = useState(initialViews);
 
+  const regularLinks = views.filter(view => view.name !== 'Login' && view.name !== 'Settings');
+  const specialLinks = views.filter(view => view.name === 'Login' || view.name === 'Settings');
+
   const toggleSubViews = (name: string) => {
     const updatedViews = views.map(view => {
       if (view.name === name) {
@@ -37,7 +40,7 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
 
   const renderSubViews = (subViews: View[], isOpen: boolean) => {
     const maxHeight = isOpen ? `${subViews.length * 50}px` : '0'; 
-    const spaceStyle = isOpen ? { marginBottom: '20px' } : {}; 
+    const spaceStyle = isOpen ? { marginBottom: '12px' } : {}; 
 
     return (
       <div className={classes.subViewsContainer} style={{ ...spaceStyle, maxHeight }}>
@@ -52,10 +55,10 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     const isParentItem = view.subViews && !view.path;
 
     const linkStyle = (isActive: boolean) => ({
-      paddingLeft: isSubView ? '40px' : '20px',
+      paddingLeft: isSubView ? '48px' : '16px',
       cursor: 'pointer',
       color: isActive ? theme.colors[theme.primaryColor][5] : theme.colors[theme.secondaryColor][5],
-      backgroundColor: isActive? theme.colors[theme.secondaryColor][9] : 'transparent'
+      backgroundColor: isActive? theme.colors[theme.secondaryColor][9] : 'transparent',
     });
 
     // Common icon rendering logic for both parent and sub-views
@@ -96,32 +99,46 @@ export function NavbarNested({ views: initialViews }: NavbarNestedProps) {
     );
   };
 
-
-  const links = views.map((view, index) => {
-    const isSpecialItem = view.name === 'Settings';
-    return (
-      <React.Fragment key={view.name}>
-        {isSpecialItem && index !== 0 && ( // Add a separator before 'Login' and 'Settings', but not at the very start
-          <div className={classes.navDivider}></div>
-        )}
-        <div onClick={() => view.subViews && toggleSubViews(view.name)}>
-          {renderLink(view)}
-        </div>
-        {view.subViews && renderSubViews(view.subViews, view.isOpen || false)}
-      </React.Fragment>
-    );
-  });
-
-  const maxScrollHeight = 'calc(100vh - 40px)';
+  const maxScrollHeight = 'calc(100vh - 60px)'; // This can probably be done better
 
   return (
-    <nav className={classes.navbar}>
-      <div className={classes.header}>
-      </div>
+    <AppShell.Navbar style={{
+      background: `linear-gradient(180deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
+      margin: '16px 16px 0 16px',
+      border: '1px solid',
+      borderColor: theme.colors.dark[4],
+      borderRadius: '8px',
+      height: maxScrollHeight,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      <nav className={classes.navbar} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        {/* Scrollable Area for Regular Links */}
+        <ScrollArea className={classes.links} scrollbarSize={2} style={{ overflowY: 'auto', flex: 1 }}>
+          <div className={classes.linksInner}>
+            {regularLinks.map(view => (
+              <React.Fragment key={view.name}>
+                <div onClick={() => view.subViews && toggleSubViews(view.name)}>
+                  {renderLink(view)}
+                </div>
+                {view.subViews && renderSubViews(view.subViews, view.isOpen || false)}
+              </React.Fragment>
+            ))}
+          </div>
+        </ScrollArea>
 
-      <ScrollArea className={classes.links} scrollbarSize={2} style={{ maxHeight: maxScrollHeight }}>
-        <div className={classes.linksInner}>{links}</div>
-      </ScrollArea>
-    </nav>
+        {/* Fixed Area for Special Links */}
+        <div>
+          {/* Divider */}
+          <div className={classes.navDivider} style={{marginTop: '0px'}}></div>
+
+          {specialLinks.map(view => (
+            <div key={view.name} onClick={() => view.subViews && toggleSubViews(view.name)}>
+              {renderLink(view)}
+            </div>
+          ))}
+        </div>
+      </nav>
+    </AppShell.Navbar>
   );
 }
