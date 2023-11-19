@@ -35,6 +35,7 @@ fn main() {
         util_command::is_pid_running,
         util_command::get_process_pid,
         log_cleaner_command::check_directory_stats,
+        log_cleaner_command::clear_log_folder,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

@@ -66,3 +66,25 @@ fn format_size(bytes: u64) -> String {
         format!("{:.2} GB", bytes as f64 / GIB as f64)
     }
 }
+
+#[tauri::command]
+pub fn clear_log_folder() -> Result<(), String> {
+    let username = match std::env::var("USERNAME") {
+        Ok(username) => username,
+        Err(_) => "default".to_string(),
+    };
+
+    let log_folder_path = format!(
+        r"C:\Users\{}\Documents\My Games\Tribes Ascend\TribesGame\Logs",
+        username
+    );
+
+    let path = Path::new(&log_folder_path);
+
+    if path.exists() && path.is_dir() {
+        fs::remove_dir_all(path).map_err(|e| e.to_string())?;
+        fs::create_dir_all(path).map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
+}
