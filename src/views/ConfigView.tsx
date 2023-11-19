@@ -32,7 +32,7 @@ const ConfigView = () => {
           onChange={handleModeToggle}
           size="md"
         />
-        <Divider my="sm" />
+        <Space h='md' />
         <ConfigToggleSection isAdvancedMode={isAdvancedMode} />
       </Paper>
     </div>

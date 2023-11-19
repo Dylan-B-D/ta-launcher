@@ -1,12 +1,13 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import { TextInput, Text, Switch, Space, Group } from '@mantine/core';
+import { TextInput, Text, Switch, Space, Group, Paper, useMantineTheme } from '@mantine/core';
 
 interface SensitivityConverterProps {
-  FOVSetting: number | null;
-  mouseSensitivity: number | null;
+    FOVSetting: number | null;
+    mouseSensitivity: number | null;
 }
 
 const SensitivityConverter: React.FC<SensitivityConverterProps> = ({ FOVSetting, mouseSensitivity }) => {
+    const theme = useMantineTheme();
     const [dpi, setDpi] = useState<number | null>(null);
     const [cmPer360, setCmPer360] = useState<number | null>(null);
     const [useInches, setUseInches] = useState<boolean>(false);
@@ -31,16 +32,16 @@ const SensitivityConverter: React.FC<SensitivityConverterProps> = ({ FOVSetting,
     }, [mouseSensitivity, FOVSetting, dpi]);
 
     const handleDpiChange = (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      const numericValue = value ? parseFloat(value) : null;
-      setDpi(numericValue);
+        const value = event.target.value;
+        const numericValue = value ? parseFloat(value) : null;
+        setDpi(numericValue);
 
-      // Save DPI to local storage
-      if (numericValue !== null) {
-          localStorage.setItem(localStorageKey, numericValue.toString());
-      } else {
-          localStorage.removeItem(localStorageKey);
-      }
+        // Save DPI to local storage
+        if (numericValue !== null) {
+            localStorage.setItem(localStorageKey, numericValue.toString());
+        } else {
+            localStorage.removeItem(localStorageKey);
+        }
     };
 
     const displayValue = cmPer360 !== null ? cmPer360.toFixed(2) : 'N/A';
@@ -48,14 +49,20 @@ const SensitivityConverter: React.FC<SensitivityConverterProps> = ({ FOVSetting,
     const unit = useInches ? "inches" : "cm";
 
     return (
-        <div>
-            <Group>
-                <Switch
-                    checked={useInches}
-                    onChange={() => setUseInches(!useInches)}
-                    label={useInches ? "inches" : "cm"}
-                />
-            </Group>
+        <Paper style={{
+            border: `${theme.colors.dark[4]} 1px solid`,
+            borderRadius: '8px',
+            padding: '10px',
+          }}>
+            <Text component="span" size="md" style={{ alignSelf: 'center' }}>
+                Sensitivity Calculator
+            </Text>
+            <Space h="xs" />
+            <Switch
+                checked={useInches}
+                onChange={() => setUseInches(!useInches)}
+                label={useInches ? "inches" : "cm"}
+            />
             <Space h="xs" />
             <TextInput
                 label="DPI"
@@ -67,7 +74,7 @@ const SensitivityConverter: React.FC<SensitivityConverterProps> = ({ FOVSetting,
             <Text component="span" size="md" style={{ alignSelf: 'center' }}>
                 Sensitivity: {convertedValue} {unit} per 360°
             </Text>
-        </div>
+        </Paper>
     );
 };
 
