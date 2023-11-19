@@ -1,7 +1,6 @@
 // fetch_players.rs
 use tauri::command;
-use reqwest::Error as ReqwestError;
-use serde_json::{Error as SerdeError, Value};
+use serde_json::Value;
 
 #[command]
 pub async fn fetch_players_online() -> Result<String, String> {

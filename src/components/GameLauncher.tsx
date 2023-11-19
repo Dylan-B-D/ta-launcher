@@ -13,6 +13,8 @@ import { hexToRgba } from '../utils.ts';
 import classes from '../styles.module.css';
 import Injector from './Injector.tsx';
 
+// TODO: Optimze game running check/use the check from the injector
+
 const GameLauncher: React.FC = () => {
   const theme = useMantineTheme();
   const [launchType, setLaunchType] = useState(localStorage.getItem('launchType') || 'Steam');

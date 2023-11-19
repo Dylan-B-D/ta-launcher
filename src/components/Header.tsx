@@ -1,6 +1,6 @@
 // HeaderComponent.tsx
 import React, { useEffect, useState } from 'react';
-import { AppShell, Badge, Code, Paper, Progress, useMantineTheme } from '@mantine/core';
+import { AppShell, Badge, Code, Progress, useMantineTheme } from '@mantine/core';
 import { invoke } from '@tauri-apps/api';
 import { listen } from '@tauri-apps/api/event';
 import { formatSpeed, hexToRgba } from '../utils.ts';

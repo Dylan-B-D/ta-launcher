@@ -6,7 +6,7 @@ use sysinfo::{System, SystemExt, ProcessExt, Pid, PidExt};
 pub fn is_process_running(process_name: &str) -> bool {
     let s = System::new_all();
     // Loop though all process names to check if it's running (inneficient, due to large process lists)
-    for (pid, process) in s.processes() {
+    for (_pid, process) in s.processes() {
         if process.name() == process_name {
             return true;
         }
