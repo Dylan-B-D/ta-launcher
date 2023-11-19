@@ -194,16 +194,12 @@ const GameLauncher: React.FC = () => {
     };
   }, []);
 
-  const gridColStyle = {
-    transition: 'transform 0.3s ease',
-    transformOrigin: 'center top',
-  };
 
   return (
     <div>
-      <Grid>
+      <Grid  style={{overflow:'visible'}}>
         {/* First Column */}
-        <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
+        <Grid.Col span={{ base: 12, md: 6 }}>
           <Paper style={{
             border: `${theme.colors.dark[4]} 1px solid`,
             borderRadius: '8px',
@@ -285,7 +281,7 @@ const GameLauncher: React.FC = () => {
           </Paper>
         </Grid.Col>
         <Space h="md" />
-        <Grid.Col span={{ base: 12, md: 6 }} style={gridColStyle}>
+        <Grid.Col span={{ base: 12, md: 6 }} >
           <Paper style={{
             border: `${theme.colors.dark[4]} 1px solid`,
             borderRadius: '8px',

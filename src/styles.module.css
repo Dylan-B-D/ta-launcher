@@ -5,8 +5,8 @@
 }
 
 .buttonHoverEffect:hover {
-    filter: hue-rotate(-20deg) contrast(120%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    filter: hue-rotate(-20deg) contrast(110%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Noticiation ovveride since it wasnt working, and I'm bad */

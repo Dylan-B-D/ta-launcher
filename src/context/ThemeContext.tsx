@@ -33,7 +33,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     );
 
     const [tertiaryColor, setTertiaryColor] = useState<string>(
-      () => localStorage.getItem('tertiaryColor') ||'mutedTeal'
+      () => localStorage.getItem('tertiaryColor') ||'mutedAmber'
     );
 
     const [primaryFontFamily, setPrimaryFontFamily] = useState<string>(

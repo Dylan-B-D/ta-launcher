@@ -70,7 +70,7 @@ const HeaderComponent: React.FC = () => {
           alignItems: 'center', 
           justifyContent: 'space-between',
           background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
-          boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.2)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
+          boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.6)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
         },
       })}
     >
