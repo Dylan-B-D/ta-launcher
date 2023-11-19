@@ -1,7 +1,8 @@
-import { Paper, Button, Group } from '@mantine/core';
+import { Paper, Button, Group, useMantineTheme } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
 
 const DirectoryButtonsSection = () => {
+  const theme = useMantineTheme();
   const handleOpenFolder = async (folderType: string) => {
     try {
       if (folderType === 'config') {
@@ -22,7 +23,11 @@ const DirectoryButtonsSection = () => {
   };
 
   return (
-    <Paper style={{ padding: '1rem', marginBottom: '1rem' }}>
+    <Paper style={{
+      border: `${theme.colors.dark[4]} 1px solid`,
+      borderRadius: '8px',
+      padding: '10px',
+    }}>
       <Group>
         <Button onClick={() => handleOpenFolder('config')}>Open Config Dir</Button>
         <Button onClick={() => handleOpenFolder('routes')}>Open Routes Sub-Dir</Button>

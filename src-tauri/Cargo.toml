@@ -33,6 +33,7 @@ futures = "0.3"
 font-loader = "0.11.0"
 sysinfo = "0.29.10"
 directories = "5.0.1"
+rust-ini = "0.20.0"
 
 [features]
 # by default Tauri runs in production mode

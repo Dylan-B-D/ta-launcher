@@ -56,13 +56,14 @@ const SensitivityConverter: React.FC<SensitivityConverterProps> = ({ FOVSetting,
                     label={useInches ? "inches" : "cm"}
                 />
             </Group>
-            <Space h="md" />
+            <Space h="xs" />
             <TextInput
                 label="DPI"
                 type="number"
                 value={dpi ?? ''}
                 onChange={handleDpiChange}
             />
+            <Space h="xs" />
             <Text component="span" size="md" style={{ alignSelf: 'center' }}>
                 Sensitivity: {convertedValue} {unit} per 360°
             </Text>

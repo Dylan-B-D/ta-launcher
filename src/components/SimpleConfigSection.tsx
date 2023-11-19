@@ -1,34 +1,82 @@
-import { useState } from 'react';
-import { TextInput } from '@mantine/core';
+import { useState, useEffect } from 'react';
+import { TextInput, Switch, Space, Divider } from '@mantine/core';
+import { invoke } from '@tauri-apps/api/tauri';
+import SensitivityConverter from './SensitivityConverter';
+
+interface ConfigValues {
+  'Engine.PlayerInput:MouseSensitivity'?: string;
+  'Engine.PlayerInput:FOVSetting'?: string;
+  [key: string]: string | undefined;
+}
+
+type IniDataEntry = [string, string];
+
 
 const SimpleConfigSection = () => {
-  const [configValues, setConfigValues] = useState({
-    resolution: '1920x1080', // Placeholder value
-    volume: '75',            // Placeholder value
-    language: 'English'      // Placeholder value
-  });
+  const [configValues, setConfigValues] = useState<ConfigValues>({});
+  const mouseSensitivity = configValues['Engine.PlayerInput:MouseSensitivity'];
+  const FOVSetting = configValues['Engine.PlayerInput:FOVSetting'];
 
-  const handleConfigChange = (field: string) => (event: { target: { value: any; }; }) => {
-    setConfigValues({ ...configValues, [field]: event.target.value });
+  useEffect(() => {
+    const fetchIniData = async () => {
+      try {
+        const tribesIniData = await invoke('parse_tribes_ini') as IniDataEntry[];
+        const tribesInputIniData = await invoke('parse_tribes_input_ini') as IniDataEntry[];
+        const combinedData = {
+          ...Object.fromEntries(tribesIniData), 
+          ...Object.fromEntries(tribesInputIniData)
+        };
+        setConfigValues(combinedData as ConfigValues);
+      } catch (error) {
+        console.error('Error fetching INI data:', error);
+      }
+    };
+    fetchIniData();
+  }, []);
+
+  const handleConfigChange = (compositeKey: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.currentTarget.type === 'checkbox' 
+      ? (event.currentTarget.checked ? 'True' : 'False') // Maintain original casing
+      : event.target.value;
+    setConfigValues({ ...configValues, [compositeKey]: newValue });
+  };
+
+  const renderInput = (key: string, value: string) => {
+    const isBoolean = value.toLowerCase() === 'true' || value.toLowerCase() === 'false';
+    if (isBoolean) {
+      return (
+        <>
+          <Switch
+            key={key}
+            label={key.split(':')[1]}
+            checked={value === 'True'}
+            onChange={handleConfigChange(key)} 
+          />
+          <Space h='md' />
+        </>
+      );
+    } else {
+      return (
+        <TextInput
+          key={key}
+          label={key.split(':')[1]}
+          value={value}
+          onChange={handleConfigChange(key)}
+        />
+      );
+    }
   };
 
   return (
     <div>
-      <TextInput
-        label="Resolution"
-        value={configValues.resolution}
-        onChange={handleConfigChange('resolution')}
+      <SensitivityConverter
+        FOVSetting={parseFloat(FOVSetting || '')}
+        mouseSensitivity={parseFloat(mouseSensitivity || '')}
       />
-      <TextInput
-        label="Volume"
-        value={configValues.volume}
-        onChange={handleConfigChange('volume')}
-      />
-      <TextInput
-        label="Language"
-        value={configValues.language}
-        onChange={handleConfigChange('language')}
-      />
+      <Divider my="sm" />
+      {Object.entries(configValues).map(([compositeKey, value]) => 
+        value ? renderInput(compositeKey, value) : null
+      )}
     </div>
   );
 };
