@@ -1,7 +1,7 @@
 // ConfigView.tsx
 
 import { useState } from 'react';
-import { Divider, Paper, Space, Switch, useMantineTheme } from '@mantine/core';
+import { Paper, Space, Switch, useMantineTheme } from '@mantine/core';
 import LogFileCleanup from '../components/LogFileCleanup';
 import DirectoryShortcuts from '../components/DirectoryShortcuts';
 import ConfigToggleSection from '../components/ConfigToggleSection';

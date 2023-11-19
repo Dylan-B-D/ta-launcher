@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import { TextInput, Text, Switch, Space, Group, Paper, useMantineTheme } from '@mantine/core';
+import { TextInput, Text, Switch, Space, Paper, useMantineTheme } from '@mantine/core';
 
 interface SensitivityConverterProps {
     FOVSetting: number | null;
