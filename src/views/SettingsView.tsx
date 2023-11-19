@@ -152,22 +152,22 @@ const SettingsView: React.FC<SettingsProps> = () => {
         <Title order={3}>Theme Customization</Title>
         <Title order={5}>Colors</Title>
         <Select
-          label="Primary Color"
+          label="Action Color"
           value={selectedColor}
           onChange={changePrimaryColor}
           data={groupedColorOptions}
         />
         <Space h="md" />
-        <Select
+        {/* <Select
           label="Secondary Color"
           value={selectedColorSecondary}
           onChange={changeSecondaryColor}
           data={groupedColorOptions}
           searchable
         />
-        <Space h="md" />
+        <Space h="md" /> */}
         <Select
-          label="Tertiary Color"
+          label="Background Color"
           value={selectedColorTertiary}
           onChange={changeTertiaryColor}
           data={groupedColorOptions}

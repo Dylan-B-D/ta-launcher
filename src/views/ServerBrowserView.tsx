@@ -1,11 +1,15 @@
 // ServerBrowserView.tsx
 
+import { Paper, Text } from "@mantine/core";
+
 const ServersView = () => {
   return (
     <div style={{ padding: '1rem' }}>
-      <a href="https://browserbench.org/Speedometer2.0/">
-        Go to Speedometer 2.0
-      </a>
+     <Paper style={{ padding: '1rem' }}>
+      <Text>
+          Servers [Under construction]
+      </Text>
+     </Paper>
     </div>
   );
 };

@@ -10,6 +10,9 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { FaMicrochip } from "react-icons/fa6";
 
 import ServerBrowser from '../views/ServerBrowserView';
+import ConfigView from '../views/ConfigView';
+import RoutesView from '../views/RoutesView';
+import LoginView from '../views/LoginView';
 
 
 export interface View {
@@ -28,7 +31,7 @@ export const views: View[] = [
       name: 'Servers',
       icon: BiServer,
       subViews: [
-        { name: 'PUG', path: '/servers/pug', component: HomeView, icon: IoGitNetworkSharp },
+        { name: 'PUG', path: '/servers/pug', component: ServerBrowser, icon: IoGitNetworkSharp },
         { name: 'Community', path: '/servers/community', component: ServerBrowser, icon: IoGitNetworkSharp },
       ]
     },
@@ -36,10 +39,10 @@ export const views: View[] = [
       name: 'Advanced',
       icon: FaMicrochip,
       subViews: [
-        { name: 'Config', path: '/advanced/config', component: HomeView, icon: TiSpanner },
-        { name: 'Routes', path: '/advanced/routes', component: ServerBrowser, icon: CiRoute },
+        { name: 'Config', path: '/advanced/config', component: ConfigView, icon: TiSpanner },
+        { name: 'Routes', path: '/advanced/routes', component: RoutesView, icon: CiRoute },
       ]
     },
     { component: SettingsView, path: '/settings', name: 'Settings', icon: TiCog, },
-    { component: ServerBrowser, path: '/Login', name: 'Login', icon: AiOutlineUser, },
+    { component: LoginView, path: '/Login', name: 'Login', icon: AiOutlineUser, },
   ];
