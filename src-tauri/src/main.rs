@@ -15,6 +15,7 @@ use commands::{
     util_command,
     log_cleaner_command,
     directory_shortcuts_command,
+    config_parser_command,
 };
 
 
@@ -41,6 +42,9 @@ fn main() {
         directory_shortcuts_command::open_routes_sub_dir,
         directory_shortcuts_command::open_hud_modules_sub_dir,
         directory_shortcuts_command::open_launcher_dir,
+        config_parser_command::parse_tribes_ini,
+        config_parser_command::parse_tribes_input_ini,
+        
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

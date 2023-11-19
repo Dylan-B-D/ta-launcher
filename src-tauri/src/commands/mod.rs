@@ -8,3 +8,4 @@ pub mod get_available_fonts_command;
 pub mod util_command;
 pub mod log_cleaner_command;
 pub mod directory_shortcuts_command;
+pub mod config_parser_command;
