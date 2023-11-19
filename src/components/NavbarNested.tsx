@@ -16,7 +16,6 @@ interface View {
   isOpen?: boolean;
 }
 
-
 interface NavbarNestedProps {
   views: View[];
 }
