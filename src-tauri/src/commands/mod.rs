@@ -6,3 +6,4 @@ pub mod downloader_command;
 pub mod find_executable_command;
 pub mod get_available_fonts_command;
 pub mod util_command;
+pub mod log_cleaner_command;

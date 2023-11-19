@@ -1,7 +1,7 @@
 // ConfigView.tsx
 
 import { useState } from 'react';
-import { Paper, Switch } from '@mantine/core';
+import { Paper, Space, Switch } from '@mantine/core';
 import LogFileCleanup from '../components/LogFileCleanup';
 import DirectoryShortcuts from '../components/DirectoryShortcuts';
 import ConfigToggleSection from '../components/ConfigToggleSection';
@@ -14,8 +14,9 @@ const ConfigView = () => {
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div>
       <LogFileCleanup />
+      <Space h='md' />
       <DirectoryShortcuts />
       
       <Paper style={{ padding: '1rem' }}>

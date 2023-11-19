@@ -13,6 +13,7 @@ use commands::{
     find_executable_command,
     get_available_fonts_command,
     util_command,
+    log_cleaner_command,
 };
 
 
@@ -33,6 +34,7 @@ fn main() {
         util_command::is_process_running,
         util_command::is_pid_running,
         util_command::get_process_pid,
+        log_cleaner_command::check_directory_stats,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
