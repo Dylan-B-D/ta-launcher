@@ -125,7 +125,7 @@ const HeaderComponent: React.FC = () => {
         <Code fw={700} style={{
           color: theme.colors.gray[4],
           background: `linear-gradient(90deg, ${theme.colors.dark[5]} 0%, ${theme.colors[theme.primaryColor][9]} 50%, ${theme.colors.dark[5]} 100%)`,
-        }}>Alpha v0.1.3</Code>
+        }}>Alpha v0.1.0</Code>
       </div>
     </AppShell.Header>
   );

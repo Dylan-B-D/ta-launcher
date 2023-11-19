@@ -40,3 +40,10 @@ default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort" # Strip expensive panic cleanup logic
+codegen-units = 1 # Comiles creates one after another
+lto = true # Enable link to optimisations
+opts-level = "s" # Optimise for binary size
+# strip = true strip symbols from the binary
