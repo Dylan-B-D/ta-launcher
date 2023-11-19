@@ -18,3 +18,7 @@
     overflow: visible;
     width: 300px;
 }
+
+.mask {
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 48% 78%, black 20%, transparent 50%);
+}

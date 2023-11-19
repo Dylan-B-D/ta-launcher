@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid } from '@mantine/core';
+import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid, Image  } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch } from 'react-icons/fa';
@@ -351,10 +351,40 @@ const GameLauncher: React.FC = () => {
               boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.5)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
               border: `${hexToRgba(theme.colors.dark[3], 0.8)} 1px solid`,
               flexGrow: 4,
+              position: 'relative',
+              overflow: 'hidden',
+              color: theme.colors.gray[1],
+              textShadow: `0 1px 0 ${(theme.colors.dark[9])}`,
             }}
             rightSection={<FaCirclePlay size={14} />}
             className={classes.buttonHoverEffect}
           >
+            <Image
+              src="https://i.ibb.co/QM564R3/arx.jpg"
+              className={classes.mask}
+              style={{
+                position: 'absolute',
+                top: '5%',
+                left: '3.5rem',
+                height: '100px',
+                width: 'auto',
+                transform: 'translate(-50%, -50%)',
+                opacity: '0.3',
+              }}
+            />
+            <Image
+              src="https://i.ibb.co/zGyhfgg/kata.jpg"
+              className={classes.mask}
+              style={{
+                position: 'absolute',
+                top: '5%',
+                right: '-8.5rem',
+                height: '100px',
+                width: 'auto',
+                transform: 'translate(-50%, -50%)',
+                opacity: '0.3',
+              }}
+            />
             Launch Tribes Ascend
           </Button>
           <Injector /> {/* Takes less space */}
