@@ -44,6 +44,7 @@ fn main() {
         directory_shortcuts_command::open_launcher_dir,
         config_parser_command::parse_tribes_ini,
         config_parser_command::parse_tribes_input_ini,
+        config_parser_command::update_ini_file,
         
     ])
     .run(tauri::generate_context!())
