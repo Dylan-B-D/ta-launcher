@@ -41,8 +41,8 @@ const SettingsView: React.FC<SettingsProps> = () => {
   const { setPrimaryColor } = useThemeContext();
   const [selectedColor, setSelectedColor] = useState<string>(theme.primaryColor);
 
-  const { setSecondaryColor } = useThemeContext();
-  const [selectedColorSecondary, setSelectedColorSecondary] = useState<string>(theme.secondaryColor);
+  // const { setSecondaryColor } = useThemeContext();
+  // const [selectedColorSecondary, setSelectedColorSecondary] = useState<string>(theme.secondaryColor);
 
   const { setTertiaryColor } = useThemeContext();
   const [selectedColorTertiary, setSelectedColorTertiary] = useState<string>(theme.tertiaryColor);
@@ -91,7 +91,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
   };
 
   const changePrimaryColor = handleColorChange(setPrimaryColor, setSelectedColor);
-  const changeSecondaryColor = handleColorChange(setSecondaryColor, setSelectedColorSecondary);
+  // const changeSecondaryColor = handleColorChange(setSecondaryColor, setSelectedColorSecondary);
   const changeTertiaryColor = handleColorChange(setTertiaryColor, setSelectedColorTertiary);
   const changePrimaryFontFamily = handleColorChange(setPrimaryFontFamily, setSelectedFontFamily);
   const changeSecondaryFontFamily = handleColorChange(setSecondaryFontFamily, setSelectedSecondaryFontFamily);
