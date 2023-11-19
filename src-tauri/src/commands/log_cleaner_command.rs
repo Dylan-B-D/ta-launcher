@@ -1,8 +1,8 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
-use std::env;
+use directories::UserDirs;
 
 #[derive(Serialize, Deserialize)]
 pub struct DirectoryStats {
@@ -14,11 +14,11 @@ pub struct DirectoryStats {
 
 #[tauri::command]
 pub fn check_directory_stats() -> Result<DirectoryStats, String> {
-    // Determine the log file path using a generalized approach
-    let username = env::var("USERNAME").unwrap_or_else(|_| "default".into());
-    let log_file_path = format!(r"C:\Users\{}\Documents\My Games\Tribes Ascend\TribesGame\Logs", username);
+    let user_dirs = UserDirs::new().ok_or("Unable to find user directories")?;
+    let documents_dir = user_dirs.document_dir().ok_or("Unable to find documents directory")?;
+    let log_folder_path = documents_dir.join("My Games/Tribes Ascend/TribesGame/Logs");
 
-    let path = Path::new(&log_file_path);
+    let path = Path::new(&log_folder_path);
     let mut total_size: u64 = 0;
     let mut stats = DirectoryStats {
         exists: path.exists() && path.is_dir(),
@@ -69,21 +69,13 @@ fn format_size(bytes: u64) -> String {
 
 #[tauri::command]
 pub fn clear_log_folder() -> Result<(), String> {
-    let username = match std::env::var("USERNAME") {
-        Ok(username) => username,
-        Err(_) => "default".to_string(),
-    };
+    let user_dirs = UserDirs::new().ok_or("Unable to find user directories")?;
+    let documents_dir = user_dirs.document_dir().ok_or("Unable to find documents directory")?;
+    let log_folder_path = documents_dir.join("My Games/Tribes Ascend/TribesGame/Logs");
 
-    let log_folder_path = format!(
-        r"C:\Users\{}\Documents\My Games\Tribes Ascend\TribesGame\Logs",
-        username
-    );
-
-    let path = Path::new(&log_folder_path);
-
-    if path.exists() && path.is_dir() {
-        fs::remove_dir_all(path).map_err(|e| e.to_string())?;
-        fs::create_dir_all(path).map_err(|e| e.to_string())?;
+    if log_folder_path.exists() && log_folder_path.is_dir() {
+        fs::remove_dir_all(&log_folder_path).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&log_folder_path).map_err(|e| e.to_string())?;
     }
 
     Ok(())

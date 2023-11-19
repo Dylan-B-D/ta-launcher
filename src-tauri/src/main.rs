@@ -14,6 +14,7 @@ use commands::{
     get_available_fonts_command,
     util_command,
     log_cleaner_command,
+    directory_shortcuts_command,
 };
 
 
@@ -36,8 +37,11 @@ fn main() {
         util_command::get_process_pid,
         log_cleaner_command::check_directory_stats,
         log_cleaner_command::clear_log_folder,
+        directory_shortcuts_command::open_config_dir,
+        directory_shortcuts_command::open_routes_sub_dir,
+        directory_shortcuts_command::open_hud_modules_sub_dir,
+        directory_shortcuts_command::open_launcher_dir,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
-
 }
