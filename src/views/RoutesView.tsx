@@ -22,6 +22,8 @@ const RoutesView = () => {
   const controlsRef = useRef<HTMLDivElement>(null);
   const [scrollAreaHeight, setScrollAreaHeight] = useState<number>(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const [filters, setFilters] = useState({
     gameMode: '',
@@ -32,8 +34,6 @@ const RoutesView = () => {
     routeName: '',
     routeTime: '',
   });
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchRoutes();
@@ -67,6 +67,17 @@ const RoutesView = () => {
     return () => window.removeEventListener('resize', updateScrollAreaHeight);
   }, []);
 
+  const resetFilters = () => {
+    setFilters({
+      gameMode: '',
+      map: '',
+      side: '',
+      class: '',
+      username: '',
+      routeName: '',
+      routeTime: '',
+    });
+  };
 
   const confirmDelete = async () => {
     try {
@@ -81,7 +92,6 @@ const RoutesView = () => {
     }
   };
 
-
   const handleDeleteClick = () => {
     if (selectedRows.size > 0) {
       setIsDeleteModalOpen(true);
@@ -89,8 +99,6 @@ const RoutesView = () => {
       console.error("No files selected for deletion.");
     }
   };
-
-
 
   const handleFilterChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilters({ ...filters, [field]: event.target.value });
@@ -135,6 +143,7 @@ const RoutesView = () => {
           <Group> {/* Adjust the spacing value as needed */}
             <Button disabled>View Selected</Button>
             <Button disabled>Mirror Selected</Button>
+            <Button onClick={resetFilters}>Reset Filters</Button>
             <Button onClick={deselectAll}>Deselect All</Button>
             <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>
               Delete Selected
@@ -146,10 +155,13 @@ const RoutesView = () => {
       <Space h="md" />
 
       <Paper>
-        <Text>Click on a row to select or deselect it.</Text>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text>Click on a row to select or deselect it</Text>
+          <Text>{filteredRoutes.length} routes displayed</Text>
+        </div>
         <Divider my="sm" />
         <div>
-        <ScrollArea style={{ height: `${scrollAreaHeight}px` }}>
+        <ScrollArea style={{ height: `${scrollAreaHeight}px`,padding: '12px'}}>
           <Table>
             <thead>
               <tr style={{textAlign: 'left'}}>
