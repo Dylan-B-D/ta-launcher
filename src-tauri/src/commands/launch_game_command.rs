@@ -16,6 +16,9 @@ pub struct LaunchOptions {
 
 #[tauri::command]
 pub async fn launch_game(options: LaunchOptions, window: Window) -> Result<()> {
+    // Hide window // TODO: Allow user to disable & return window when game closes.
+    window.hide().unwrap();
+
     let app_id = "17080"; // App ID for Tribes: Ascend on Steam
     let steam_url = format!("steam://rungameid/{}//{}", app_id, options.launchArg);
 
@@ -41,6 +44,9 @@ pub async fn launch_game(options: LaunchOptions, window: Window) -> Result<()> {
 
 #[tauri::command]
 pub fn launch_game_non_steam(options: LaunchOptions, window: Window) -> Result<()> {
+    // Hide window // TODO: Allow user to disable & return window when game closes.
+    window.hide().unwrap();
+
     let exe_path = options.exePath.unwrap_or_else(|| "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Tribes\\Binaries\\Win32\\TribesAscend.exe".to_string());
 
     let mut child = Command::new(&exe_path)

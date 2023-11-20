@@ -17,16 +17,62 @@ use commands::{
     directory_shortcuts_command,
     config_parser_command,
 };
-
+use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent};
+use tauri::Manager;
 
 fn main() {
+    // Quit, show, launch game.
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let show = CustomMenuItem::new("show".to_string(), "Show");
+    let tray_menu = SystemTrayMenu::new()
+    .add_item(show)
+    .add_native_item(SystemTrayMenuItem::Separator)
+    .add_item(quit);
+
+    let system_tray = SystemTray::new()
+
+    .with_menu(tray_menu);
     // Tauri app builder and run
-    tauri::Builder::default()
+    tauri::Builder::default().on_window_event(|event| match event.event() {
+        tauri::WindowEvent::CloseRequested { api, .. } => {
+        event.window().hide().unwrap();
+        api.prevent_close();
+        }
+        _ => {}
+    })
+    .system_tray(system_tray)
+    .on_system_tray_event(|app, event| match event {
+        SystemTrayEvent::LeftClick {
+            position: _,
+            size: _,
+            ..
+            } => {
+                //TODO Toggle visiblity instead of just showing
+                let window = app.get_window("main").unwrap();
+                window.show().unwrap();
+                window.set_focus().unwrap();
+            }
+        SystemTrayEvent::MenuItemClick { id, .. } => {
+            match id.as_str() {
+            "quit" => {
+                std::process::exit(0);
+            }
+            "show" => {
+                let window = app.get_window("main").unwrap();
+                window.show().unwrap();
+                window.set_focus().unwrap();
+            }
+            //TODO Add "play" option which grabs launchType and starts game
+            _ => {}
+            }
+        }
+        _ => {}
+    })
     .invoke_handler(tauri::generate_handler![
-        inject_command::inject, 
+        inject_command::inject,
         launch_game_command::launch_game,
         launch_game_command::launch_game_non_steam,
-        fetch_players_command::fetch_players_online, 
+        fetch_players_command::fetch_players_online,
         fetch_packages_command::fetch_package_metadata,
         fetch_packages_command::fetch_packages,
         fetch_packages_command::fetch_dependency_tree,
@@ -45,7 +91,6 @@ fn main() {
         config_parser_command::parse_tribes_ini,
         config_parser_command::parse_tribes_input_ini,
         config_parser_command::update_ini_file,
-        
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
