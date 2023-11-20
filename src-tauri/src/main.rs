@@ -17,6 +17,7 @@ use commands::{
     directory_shortcuts_command,
     config_parser_command,
     route_parser_command,
+    route_decoder_command,
 };
 
 
@@ -48,6 +49,7 @@ fn main() {
         config_parser_command::update_ini_file,
         route_parser_command::get_route_files,
         route_parser_command::delete_route_file,
+        route_decoder_command::decode_route
         
     ])
     .run(tauri::generate_context!())

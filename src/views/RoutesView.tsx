@@ -120,6 +120,25 @@ const RoutesView = () => {
     });
   };
 
+  const decodeSelectedRoutes = async () => {
+    try {
+      const decodedRoutes = [];
+  
+      for (const fileName of selectedRows) {
+        const decodedData = await invoke('decode_route', { file: fileName });
+        decodedRoutes.push(decodedData);
+        // Optionally process each decodedData here as well
+      }
+  
+      console.log(decodedRoutes);
+      // Process the array of decoded routes as needed
+      // Example: Update state to display the decoded routes in the UI
+    } catch (error) {
+      console.error('Error decoding routes:', error);
+    }
+  };
+  
+
   const filteredRoutes = routes.filter(route =>
     route.game_mode.toLowerCase().includes(filters.gameMode.toLowerCase()) &&
     route.map.toLowerCase().includes(filters.map.toLowerCase()) &&
@@ -143,6 +162,7 @@ const RoutesView = () => {
           <Group> {/* Adjust the spacing value as needed */}
             <Button disabled>View Selected</Button>
             <Button disabled>Mirror Selected</Button>
+            <Button onClick={decodeSelectedRoutes}>Decode Selected</Button>
             <Button onClick={resetFilters}>Reset Filters</Button>
             <Button onClick={deselectAll}>Deselect All</Button>
             <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>
