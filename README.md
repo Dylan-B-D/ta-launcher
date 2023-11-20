@@ -34,11 +34,15 @@ Before you begin, ensure you have the following installed:
    ```bash
    rustup override set nightly
 
-3. **Run in Development Mode:**
+4. **Install Tauri CLI:**
+   ```bash
+   npm install -g @tauri-apps/cli
+
+5. **Run in Development Mode:**
    ```bash
    npx tauri dev
 
-3. **Build Executable:**
+6. **Build Executable:**
    ```bash
    npx tauri build
   
