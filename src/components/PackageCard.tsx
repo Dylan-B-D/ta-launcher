@@ -102,7 +102,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ packageData, onToggleDependen
       <Card.Section>
         <div style={{ padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={{ fontWeight: 'bold' }}>{packageData.displayName}</Text>
-          <Badge color="red" variant="light">Not Installed</Badge>
+          <Badge color="red" variant="light">Unknown</Badge>
         </div>
       </Card.Section>
 

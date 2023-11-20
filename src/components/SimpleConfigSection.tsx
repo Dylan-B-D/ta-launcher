@@ -44,6 +44,7 @@ const SimpleConfigSection = () => {
     setConfigValues({ ...configValues, [compositeKey]: newValue });
   };
 
+  // TODO check if file is readonly
   const saveConfigChanges = async () => {
     try {
       const updatedValues = Object.entries(configValues);

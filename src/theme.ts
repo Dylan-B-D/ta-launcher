@@ -161,6 +161,12 @@ const createAppTheme = () => {
           root: {
             background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 30%, ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.7)} 100%)`,
             boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 1)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
+            borderRadius: '8px',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: theme.colors.dark[4],
+            margin: '0',
+            padding: '10px',
           },
         }),
       },
