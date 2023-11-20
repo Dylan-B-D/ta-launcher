@@ -17,8 +17,18 @@ use commands::{
     directory_shortcuts_command,
     config_parser_command,
 };
-use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent};
+use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent, Window};
 use tauri::Manager;
+
+fn toggle_visibility( window : Window){
+    if window.is_visible().expect("winvis") {
+        window.hide().unwrap();
+    } else {
+        window.show().unwrap();
+        window.unminimize().unwrap();
+        window.set_focus().unwrap();
+    }
+}
 
 fn main() {
     // Quit, show, launch game.
@@ -47,10 +57,8 @@ fn main() {
             size: _,
             ..
             } => {
-                //TODO Toggle visiblity instead of just showing
                 let window = app.get_window("main").unwrap();
-                window.show().unwrap();
-                window.set_focus().unwrap();
+                toggle_visibility(window)
             }
         SystemTrayEvent::MenuItemClick { id, .. } => {
             match id.as_str() {
@@ -59,8 +67,7 @@ fn main() {
             }
             "show" => {
                 let window = app.get_window("main").unwrap();
-                window.show().unwrap();
-                window.set_focus().unwrap();
+                toggle_visibility(window)
             }
             //TODO Add "play" option which grabs launchType and starts game
             _ => {}
