@@ -180,6 +180,7 @@ const createAppTheme = () => {
             borderStyle: 'solid',
             borderColor: theme.colors.dark[4],
             margin: '0',
+            marginTop: '-10px',
             padding: '10px',
             overflow: 'hidden',
           },

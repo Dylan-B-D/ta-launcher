@@ -1,6 +1,6 @@
 // RouteFilters.tsx
 import React from 'react';
-import { Fieldset, TextInput } from '@mantine/core';
+import { Fieldset, TextInput, Group } from '@mantine/core';
 
 interface RouteFiltersProps {
   filters: {
@@ -17,16 +17,18 @@ interface RouteFiltersProps {
 
 const RouteFilters: React.FC<RouteFiltersProps> = ({ filters, handleFilterChange }) => {
   return (
-    <Fieldset legend="Filters" >
-      {Object.keys(filters).map((filterKey) => (
-        <TextInput
-          key={filterKey}
-          placeholder={filterKey}
-          value={filters[filterKey as keyof typeof filters]}
-          onChange={handleFilterChange(filterKey)}
-          style={{ marginBottom: '1rem' }}
-        />
-      ))}
+    <Fieldset legend="Filters">
+      <Group grow>
+        {Object.keys(filters).map((filterKey) => (
+          <TextInput
+            key={filterKey}
+            placeholder={filterKey}
+            value={filters[filterKey as keyof typeof filters]}
+            onChange={handleFilterChange(filterKey)}
+            style={{ flex: 1, minWidth: '150px'}}
+          />
+        ))}
+      </Group>
     </Fieldset>
   );
 };

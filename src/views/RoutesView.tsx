@@ -1,8 +1,9 @@
 // RoutesView.tsx
-import { useState, useEffect } from 'react';
-import { Paper, Button, Table, Text } from '@mantine/core';
+import { useState, useEffect, useRef } from 'react';
+import { Button, Table, Text, Space, Fieldset, Divider, useMantineTheme, ScrollArea, Paper } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
-import RouteFilters from '../components/RouteFilters'; // Ensure this path is correct
+import RouteFilters from '../components/RouteFilters';
+import { hexToRgba } from '../utils';
 
 interface Route {
   game_mode: string;
@@ -16,6 +17,12 @@ interface Route {
 }
 
 const RoutesView = () => {
+  const theme = useMantineTheme();
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const controlsRef = useRef<HTMLDivElement>(null);
+  const [scrollAreaHeight, setScrollAreaHeight] = useState<number>(0);
+
   const [filters, setFilters] = useState({
     gameMode: '',
     map: '',
@@ -40,6 +47,25 @@ const RoutesView = () => {
       console.error('Error fetching routes:', error);
     }
   };
+
+  useEffect(() => {
+    const updateScrollAreaHeight = () => {
+      const windowHeight = window.innerHeight;
+      const filtersHeight = filtersRef.current?.offsetHeight || 0;
+      const controlsHeight = controlsRef.current?.offsetHeight || 0;
+      const otherElementsHeight = filtersHeight + controlsHeight;
+
+      if (mainContainerRef.current) {
+        const mainContainerTopOffset = mainContainerRef.current.getBoundingClientRect().top;
+        setScrollAreaHeight(windowHeight - mainContainerTopOffset - otherElementsHeight-133);
+      }
+    };
+
+    window.addEventListener('resize', updateScrollAreaHeight);
+    updateScrollAreaHeight();
+
+    return () => window.removeEventListener('resize', updateScrollAreaHeight);
+  }, []);
 
   const handleFilterChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilters({ ...filters, [field]: event.target.value });
@@ -71,59 +97,82 @@ const RoutesView = () => {
     route.time.toLowerCase().includes(filters.routeTime.toLowerCase())
   );
 
+  const columnWidths = {
+    gameMode: '15%',
+    map: '15%',
+    side: '10%',
+    class: '10%',
+    username: '15%',
+    routeName: '20%',
+    routeTime: '15%',
+  };
+
   return (
-    <div style={{ padding: '1rem' }}>
-      <RouteFilters filters={filters} handleFilterChange={handleFilterChange} />
+    <div ref={mainContainerRef}>
+      <div ref={filtersRef}>
+        <RouteFilters filters={filters} handleFilterChange={handleFilterChange} />
+      </div>
+  
+      <Space h="md" />
+  
+      <div ref={controlsRef}>
+        <Fieldset legend='Controls'>
+          <Button>View Selected</Button>
+          <Button>Mirror Selected</Button>
+          <Button onClick={deselectAll}>Deselect All</Button>
+          <Button style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>Delete Selected</Button>
+        </Fieldset>
+      </div>
 
-      <Paper style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <Button>Button 1</Button>
-        <Button>Button 2</Button>
-        <Button>Button 3</Button>
-        <Button>Button 4</Button>
-        <Button onClick={deselectAll}>Deselect All</Button>
-      </Paper>
-
-      <Paper style={{ padding: '1rem', marginBottom: '1rem' }}>
+      <Space h="md" />
+  
+      <Paper>
         <Text>Click on a row to select or deselect it.</Text>
-      </Paper>
-
-      <Paper style={{ padding: '1rem' }}>
-        <Table>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Game Mode</th>
-              <th style={{ textAlign: 'left' }}>Map</th>
-              <th style={{ textAlign: 'left' }}>Side</th>
-              <th style={{ textAlign: 'left' }}>Class</th>
-              <th style={{ textAlign: 'left' }}>Username</th>
-              <th style={{ textAlign: 'left' }}>Route Name</th>
-              <th style={{ textAlign: 'left' }}>Route Time</th>
-            </tr>
-          </thead>
-          <tbody style={{ userSelect: 'none' }}>
-            {filteredRoutes.map((route, index) => (
-              <tr
-                key={index}
-                style={{
-                  backgroundColor: selectedRows.has(route.file_name) ? '#f0f0f0' : 'transparent',
-                  cursor: 'pointer'
-                }}
-                onClick={() => handleRowSelect(route.file_name)}
-              >
-                <td>{route.game_mode}</td>
-                <td>{route.map}</td>
-                <td>{route.side}</td>
-                <td>{route.class}</td>
-                <td>{route.username}</td>
-                <td>{route.route_name}</td>
-                <td>{route.time}</td>
+        <Divider my="sm" />
+        <div>
+          <Table>
+            <thead>
+              <tr>
+                <th style={{ width: '15%', textAlign: 'left' }}>Game Mode</th>
+                <th style={{ width: '15%', textAlign: 'left' }}>Map</th>
+                <th style={{ width: '10%', textAlign: 'left' }}>Side</th>
+                <th style={{ width: '10%', textAlign: 'left' }}>Class</th>
+                <th style={{ width: '15%', textAlign: 'left' }}>Username</th>
+                <th style={{ width: '20%', textAlign: 'left' }}>Route Name</th>
+                <th style={{ width: '15%', textAlign: 'left' }}>Route Time</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+          </Table>
+          <ScrollArea style={{ height: `${scrollAreaHeight}px` }}>
+  <Table>
+    <tbody style={{ userSelect: 'none' }}>
+      {filteredRoutes.map((route, index) => (
+        <tr 
+          key={index}
+          style={{
+            backgroundColor: selectedRows.has(route.file_name) ? '#f0f0f0' : 'transparent',
+            cursor: 'pointer'
+          }}
+          onClick={() => handleRowSelect(route.file_name)} // Ensure this handler is set correctly
+        >
+          <td style={{ width: columnWidths.gameMode }}>{route.game_mode}</td>
+          <td style={{ width: columnWidths.map }}>{route.map}</td>
+          <td style={{ width: columnWidths.side }}>{route.side}</td>
+          <td style={{ width: columnWidths.class }}>{route.class}</td>
+          <td style={{ width: columnWidths.username }}>{route.username}</td>
+          <td style={{ width: columnWidths.routeName }}>{route.route_name}</td>
+          <td style={{ width: columnWidths.routeTime }}>{route.time}</td>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
+</ScrollArea>
+
+        </div>
       </Paper>
     </div>
   );
+  
 };
 
 export default RoutesView;
