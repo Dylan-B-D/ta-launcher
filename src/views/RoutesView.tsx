@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api';
 import RouteFilters from '../components/RouteFilters';
 import { Filters } from '../components/RouteFilters';
 import RouteControls from '../components/RouteControls';
@@ -6,16 +7,8 @@ import RouteTable from '../components/RouteTable';
 import { Modal, Checkbox, Text, Button, Space } from '@mantine/core';
 
 
-const initialRoutes = [
-  // Add your initial hardcoded routes here
-  // Example:
-  { id: 1, gameMode: 'TrCTF', map: 'Raindance', side: 'DS', class: 'SLD', username: 'jp', routeName: 'backright', time: '43s', selected: false },
-  { id: 2, gameMode: 'TrCTF', map: 'SunStar', side: 'BE', class: 'LHT', username: 'Kigabit', routeName: 'LtR-LoopSetup', time: '51s', selected: false },
-  // ...
-];
-
 const RoutesView = () => {
-  const [routes, setRoutes] = useState(initialRoutes);
+  const [routes, setRoutes] = useState([]);
   const [filters, setFilters] = useState({
     gameMode: '',
     map: '',
@@ -27,6 +20,25 @@ const RoutesView = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const fetchedRoutes = await invoke('get_route_files');
+        const formattedRoutes = fetchedRoutes.map(route => ({
+          ...route,
+          gameMode: route.game_mode,
+          routeName: route.route_name,
+        }));
+        setRoutes(formattedRoutes);
+      } catch (error) {
+        console.error('Failed to fetch routes:', error);
+      }
+    };
+
+    fetchRoutes();
+  }, []);
+
+
   // Function to handle selection of a route
   const handleSelectRoute = (routeId: number) => {
     const updatedRoutes = routes.map(route =>
@@ -36,7 +48,7 @@ const RoutesView = () => {
   };
 
   // Function to handle filter change
-  const handleFilterChange = (filterName: string, value: string) => {
+ const handleFilterChange = (filterName: string, value: string) => {
     if (filterName in filters) {
       setFilters(prev => ({ ...prev, [filterName as keyof Filters]: value }));
     }
