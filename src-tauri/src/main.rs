@@ -47,6 +47,7 @@ fn main() {
         config_parser_command::parse_tribes_input_ini,
         config_parser_command::update_ini_file,
         route_parser_command::get_route_files,
+        route_parser_command::delete_route_file,
         
     ])
     .run(tauri::generate_context!())

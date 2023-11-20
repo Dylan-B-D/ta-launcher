@@ -82,10 +82,6 @@ fn parse_route_format(file_name: &str) -> Option<Route> {
         }
     }
 
-    // Printing for validation
-    println!("Parsed route: Game Mode: {}, Map: {}, Side: {}, Class: {}, Username: {}, Route Name: {}, Time: {}", 
-        game_mode, map, side, class, username, route_name, time);
-
     Some(Route {
         game_mode: game_mode.to_string(),
         map: map.to_string(),
@@ -96,4 +92,24 @@ fn parse_route_format(file_name: &str) -> Option<Route> {
         time: time.to_string(),
         file_name: file_name.to_string(),
     })
+}
+
+#[command]
+pub fn delete_route_file(file: String) -> Result<(), String> {
+    let user_dirs = UserDirs::new().ok_or("Unable to find user directories")?;
+    let documents_path = user_dirs.document_dir().ok_or("Unable to find documents directory")?;
+    let routes_path = documents_path.join("My Games/Tribes Ascend/TribesGame/config/routes");
+
+    let file_path = routes_path.join(file);
+
+    // Check if the file exists
+    if !file_path.exists() {
+        return Err("File does not exist".into());
+    }
+
+    // Attempt to delete the file
+    match fs::remove_file(file_path) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("Failed to delete file: {}", e)),
+    }
 }
