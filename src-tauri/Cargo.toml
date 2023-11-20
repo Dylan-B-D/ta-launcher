@@ -49,6 +49,3 @@ codegen-units = 1 # Comiles creates one after another
 lto = true # Enable link to optimisations
 opt-level = "s" # Optimise for binary size
 # strip = true strip symbols from the binary
-
-[target.'cfg(target_arch = "x86_64")'.rustflags]
-flags = ["-C", "target-cpu=native"]
