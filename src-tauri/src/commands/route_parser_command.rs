@@ -11,6 +11,7 @@ pub struct Route {
     username: String,
     route_name: String,
     time: String,
+    file_name: String,
 }
 
 #[command]
@@ -93,5 +94,6 @@ fn parse_route_format(file_name: &str) -> Option<Route> {
         username: username.to_string(),
         route_name: route_name.to_string(),
         time: time.to_string(),
+        file_name: file_name.to_string(),
     })
 }
