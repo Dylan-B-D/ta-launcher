@@ -11,7 +11,9 @@ declare module "@mantine/core" {
 }
 
 const createAppTheme = () => {
-  const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily, secondaryFontFamily } = useThemeContext();
+  const { primaryColor, secondaryColor, tertiaryColor, primaryFontFamily } = useThemeContext();
+
+  // TODO: set up header to usesecondaryFontFamily
 
   return createTheme({
     fontFamily: primaryFontFamily,

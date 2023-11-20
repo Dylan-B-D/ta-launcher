@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Paper, Button, TableData, Table, useMantineTheme } from '@mantine/core';
+import { Button, TableData, Table, useMantineTheme, Fieldset } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
 
 interface Stats {
@@ -54,14 +54,14 @@ const LogFileSection = () => {
     };
 
     return (
-        <Paper style={{
+        <Fieldset legend='Log Folder Info' style={{
             border: `${theme.colors.dark[4]} 1px solid`,
             borderRadius: '8px',
             padding: '10px',
         }}>
             <Table data={tableData} style={{ background: 'transparent' }} /> {/* Remove background color */}
             <Button onClick={handleClearLog}>Delete all Logs</Button>
-        </Paper>
+        </Fieldset>
     );
 };
 

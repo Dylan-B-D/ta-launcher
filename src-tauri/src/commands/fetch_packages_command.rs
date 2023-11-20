@@ -5,6 +5,8 @@ use serde::{Serialize, Deserialize};
 use std::collections::{HashMap, HashSet};
 
 #[derive(Serialize, Deserialize, Debug)]
+
+#[allow(non_snake_case)]
 struct Package {
     id: String,
     displayName: String,

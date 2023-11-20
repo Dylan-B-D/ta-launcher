@@ -9,6 +9,8 @@ use tokio::time::{sleep, Duration};
 use crate::commands::util_command::is_process_running; 
 
 #[derive(serde::Deserialize)]
+
+#[allow(non_snake_case)]
 pub struct LaunchOptions {
     exePath: Option<String>,
     launchArg: String,

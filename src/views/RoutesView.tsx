@@ -22,7 +22,6 @@ const RoutesView = () => {
   const controlsRef = useRef<HTMLDivElement>(null);
   const [scrollAreaHeight, setScrollAreaHeight] = useState<number>(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [fileToDelete, setFileToDelete] = useState('');
 
   const [filters, setFilters] = useState({
     gameMode: '',
@@ -58,7 +57,7 @@ const RoutesView = () => {
 
       if (mainContainerRef.current) {
         const mainContainerTopOffset = mainContainerRef.current.getBoundingClientRect().top;
-        setScrollAreaHeight(windowHeight - mainContainerTopOffset - otherElementsHeight - 133);
+        setScrollAreaHeight(windowHeight - mainContainerTopOffset - otherElementsHeight - 110); //probably shouldn't be 110 hardcoded
       }
     };
 
@@ -134,8 +133,8 @@ const RoutesView = () => {
       <div ref={controlsRef}>
         <Fieldset legend='Controls' style={{ padding: '1rem' }}>
           <Group> {/* Adjust the spacing value as needed */}
-            <Button>View Selected</Button>
-            <Button>Mirror Selected</Button>
+            <Button disabled>View Selected</Button>
+            <Button disabled>Mirror Selected</Button>
             <Button onClick={deselectAll}>Deselect All</Button>
             <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>
               Delete Selected

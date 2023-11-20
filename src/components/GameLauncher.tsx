@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid, Image  } from '@mantine/core';
+import { Button, Text, Group, TextInput, Textarea, Collapse, Code, useMantineTheme, Space, Paper, Grid, Image, Fieldset  } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { FaCirclePlay, FaFolderOpen } from 'react-icons/fa6';
 import { FaSearch } from 'react-icons/fa';
@@ -200,19 +200,7 @@ const GameLauncher: React.FC = () => {
       <Grid  style={{overflow:'visible'}}>
         {/* First Column */}
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper style={{
-            border: `${theme.colors.dark[4]} 1px solid`,
-            borderRadius: '8px',
-            //background: hexToRgba(theme.colors.dark[4], 0.2),
-            padding: '10px',
-          }}>
-            <Text
-              size="sm"
-              style={{
-                fontWeight: 'bold',
-              }}
-            >Launch Type:</Text>
-            <Space h='2' />
+          <Fieldset legend='Launch Type'>
             <Group style={{ width: '100%' }}>
               <Button.Group>
                 <Button
@@ -278,24 +266,11 @@ const GameLauncher: React.FC = () => {
                 </Collapse>
               </>
             )}
-          </Paper>
+          </Fieldset>
         </Grid.Col>
         <Space h="md" />
         <Grid.Col span={{ base: 12, md: 6 }} >
-          <Paper style={{
-            border: `${theme.colors.dark[4]} 1px solid`,
-            borderRadius: '8px',
-            //background: hexToRgba(theme.colors.dark[4], 0.2),
-            padding: '10px',
-          }}>
-            <Text
-              size="sm"
-              style={{
-                fontWeight: 'bold',
-              }}
-            >
-              Login Server:</Text>
-            <Space h='2' />
+          <Fieldset legend='Login Server'>
             <Button.Group>
               <Button
                 onClick={() => setLoginServer('Community')}
@@ -327,7 +302,7 @@ const GameLauncher: React.FC = () => {
                 value={customServer}
                 onChange={(event) => setCustomServer(event.currentTarget.value)} /></>
             )}
-          </Paper>
+          </Fieldset>
         </Grid.Col>
       </Grid>
       <Space h="md" />
