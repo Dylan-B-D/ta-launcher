@@ -60,14 +60,18 @@ const SettingsView: React.FC<SettingsProps> = () => {
 
 
   const { manualInjection, setManualInjection } = useSettingsContext();
+  const { tamodsVersion, setTAModsVersion } = useSettingsContext();
   //const [injectionOrder, setInjectionOrder] = useState<string>('default');
   // const [executableOverride, setExecutableOverride] = useState<string>('');
   // const [multiInjection, setMultiInjection] = useState<boolean>(false);
   // const [customConfigPath, setCustomConfigPath] = useState<string>('');
   // const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
 
-
-
+  const handleTAModsVersionChange = (setValue: any) => (dllValue: any) => {
+    if (dllValue !== null) {
+      setValue(dllValue);
+    }
+  };
 
   const handleColorChange = (setValue: any, setSelectedValue: any) => (colorValue: any) => {
     if (colorValue !== null) {
@@ -89,6 +93,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
       { group: 'Other Colors', items: otherColors },
     ];
   };
+  const changeTAModsVersion = handleTAModsVersionChange(setTAModsVersion);
 
   const changePrimaryColor = handleColorChange(setPrimaryColor, setSelectedColor);
   // const changeSecondaryColor = handleColorChange(setSecondaryColor, setSelectedColorSecondary);
@@ -146,6 +151,14 @@ const SettingsView: React.FC<SettingsProps> = () => {
           checked={manualInjection}
           onChange={(event) => setManualInjection(event.currentTarget.checked)}
         />
+        <Space h="xs" />
+        <Select
+          label="Select TA Mods version"
+          placeholder="Pick value"
+          data={['Release', 'Beta', 'Edge']}
+          defaultValue={tamodsVersion}
+          onChange={changeTAModsVersion}
+      />
       </Paper>
 
       <Paper withBorder style={{ ...paperStyles.root, ...theme.components.Paper.styles(theme).root }}>
