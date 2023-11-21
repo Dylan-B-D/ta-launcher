@@ -76,7 +76,7 @@ const SimpleConfigSection = () => {
       return (
         <>
           <Switch
-            key={key}
+            key={`${key}-switch`}
             label={key.split(':')[1]}
             checked={value === 'True'}
             onChange={handleConfigChange(key)} 
@@ -86,14 +86,19 @@ const SimpleConfigSection = () => {
       );
     } else {
       return (
-        <><TextInput
-          key={key}
-          label={key.split(':')[1]}
-          value={value}
-          onChange={handleConfigChange(key)} /><Space h={'6'} /></>
+        <>
+          <TextInput
+            key={`${key}-input`}
+            label={key.split(':')[1]}
+            value={value}
+            onChange={handleConfigChange(key)} 
+          />
+          <Space h='md' />
+        </>
       );
     }
   };
+  
 
   return (
     <div>
@@ -102,9 +107,13 @@ const SimpleConfigSection = () => {
         mouseSensitivity={parseFloat(mouseSensitivity || '')}
       />
       <Space my="md" />
-      {Object.entries(configValues).map(([compositeKey, value]) => 
-        value ? renderInput(compositeKey, value) : null
-      )}
+        {Object.entries(configValues).map(([compositeKey, value]) => 
+          value ? (
+            <div key={compositeKey}>
+              {renderInput(compositeKey, value)}
+            </div>
+          ) : null
+        )}
       <Space h={'md'}/>
       <Button className={classes.buttonHoverEffect} onClick={saveConfigChanges} style={{
         color: theme.colors.gray[0],
