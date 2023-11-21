@@ -1,6 +1,6 @@
 // RoutesView.tsx
 import { useState, useEffect, useRef } from 'react';
-import { Button, Table, Text, Space, Fieldset, Divider, useMantineTheme, ScrollArea, Paper, Group, Modal } from '@mantine/core';
+import { Button, Table, Text, Space, Fieldset, Divider, useMantineTheme, ScrollArea, Paper, Group, Modal, Tooltip } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
 import RouteFilters from '../components/RouteFilters';
 import LocationChart from '../components/RoutesGraph';
@@ -24,6 +24,8 @@ interface Position {
   loc: [number, number, number];
 }
 
+type MirroringAxis = 'xy' | 'x' | 'y';
+
 const RoutesView = () => {
   const theme = useMantineTheme();
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -36,6 +38,9 @@ const RoutesView = () => {
   const [decodedRoutes, setDecodedRoutes] = useState<DecodedRoute[]>([]);
   const locations = decodedRoutes.map(route => route.positions.map(pos => ({ x: pos.loc[0], y: pos.loc[1], z: pos.loc[2] })));
   const [isGraphModalOpen, setIsGraphModalOpen] = useState(false);
+  const [isMirrorModalOpen, setIsMirrorModalOpen] = useState(false);
+  const [selectedAxis, setSelectedAxis] = useState('xy');
+
 
 
   const [filters, setFilters] = useState({
@@ -154,20 +159,29 @@ const RoutesView = () => {
     setIsGraphModalOpen(true);
   };
   
-  const mirrorSelectedRoutes = async () => {
+
+
+  const mirrorSelectedRoutesWithAxis = async (axis: string) => {
+    setIsMirrorModalOpen(false); // Close the modal
+  
     try {
       for (const fileName of selectedRows) {
-        const response = await invoke('python_route_decoder', { file: fileName });
-        // Optionally handle the response, e.g., display a success message or update state
+        const response = await invoke('python_route_decoder', { 
+          file: fileName, 
+          axis: axis 
+        });
         console.log('Mirrored route:', response);
       }
   
-      // Optionally, refresh the list of routes after mirroring
       fetchRoutes();
-  
     } catch (error) {
       console.error('Error mirroring routes:', error);
     }
+  };
+  
+  
+  const openMirrorModal = () => {
+    setIsMirrorModalOpen(true);
   };
   
 
@@ -181,6 +195,13 @@ const RoutesView = () => {
     route.time.toLowerCase().includes(filters.routeTime.toLowerCase())
   );
 
+  const mirroringDescriptions: Record<MirroringAxis, string> = {
+    'xy': 'Mirrors on both axis. Use on symetrical maps such as Arx Novena',
+    'x': 'Mirrors on only the X axis. Use on maps that are symetrical along the X axis.',
+    'y': 'Mirrors on only the Y axis. Use on maps that are symetrical along the Y axis.'
+  };
+  
+
   return (
     <><Modal
       opened={isGraphModalOpen}
@@ -190,6 +211,32 @@ const RoutesView = () => {
       radius={0}
     >
       <LocationChart locations={locations} />
+    </Modal>
+    <Modal
+      opened={isMirrorModalOpen}
+      onClose={() => setIsMirrorModalOpen(false)}
+      title="Select Mirroring Type"
+    >
+      <div>
+          {(['xy', 'x', 'y'] as MirroringAxis[]).map(axis => (
+            <Tooltip
+              key={axis}
+              label={mirroringDescriptions[axis]}
+              withArrow
+            >
+              <Button
+                onClick={() => {
+                  setSelectedAxis(axis);
+                  mirrorSelectedRoutesWithAxis(axis);
+                }}
+                style={selectedAxis === axis ? { fontWeight: 'bold' } : {}}
+              >
+                {axis.toUpperCase()} Mirroring
+              </Button>
+            </Tooltip>
+          ))}
+        </div>
+
     </Modal>
     <div ref={mainContainerRef}>
         <div ref={filtersRef}>
@@ -202,7 +249,7 @@ const RoutesView = () => {
           <Fieldset legend='Controls' style={{ padding: '1rem' }}>
             <Group> {/* Adjust the spacing value as needed */}
               <Button onClick={decodeSelectedRoutes}>View Selected</Button>
-              <Button onClick={mirrorSelectedRoutes}>Mirror Selected</Button>
+              <Button onClick={openMirrorModal}>Mirror Selected</Button>
               <Button onClick={resetFilters}>Reset Filters</Button>
               <Button onClick={deselectAll}>Deselect All</Button>
               <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>

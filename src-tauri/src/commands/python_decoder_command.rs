@@ -6,7 +6,9 @@ use std::fs;
 use std::env;
 
 #[command]
-pub fn python_route_decoder(file: String) -> Result<String, String> {
+pub fn python_route_decoder(file: String, axis: Option<String>) -> Result<String, String> {
+    // Default to "xy" if axis is not provided
+    let axis = axis.unwrap_or_else(|| "xy".to_string());
     // Get the project root directory
     let project_root = Path::new(env!("CARGO_MANIFEST_DIR"));
 
@@ -34,13 +36,14 @@ pub fn python_route_decoder(file: String) -> Result<String, String> {
     let file_name = file_path.file_name().ok_or("Failed to get file name")?
         .to_str().ok_or("Failed to convert file name to string")?;
 
-    // Execute the Python script with directory path and file name as separate arguments
+    // Execute the Python script with directory path, file name, and axis as arguments
     let output = Command::new("python")
-    .arg(script_path.to_str().ok_or("Failed to convert script path to string")?)
-    .arg(dir_path.to_str().ok_or("Failed to convert directory path to string")?)
-    .arg(file_name)
-    .output()
-    .map_err(|e| e.to_string())?;
+        .arg(script_path.to_str().ok_or("Failed to convert script path to string")?)
+        .arg(dir_path.to_str().ok_or("Failed to convert directory path to string")?)
+        .arg(file_name)
+        .arg(&axis) 
+        .output()
+        .map_err(|e| e.to_string())?;
 
     // Check execution status
     if !output.status.success() {

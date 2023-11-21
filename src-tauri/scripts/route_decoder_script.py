@@ -26,14 +26,14 @@ def switch_team_in_filename(filename):
     else:
         return filename  # If neither is found, return the original filename
 
-def process_and_save_route(filepath, filename):
+def process_and_save_route(filepath, filename, axis='xy'):
     full_path = os.path.join(filepath, filename)
 
     # Decode the route file
     data, positions = decode_route_file(full_path)
 
     # Mirror the route
-    mirrored_data, mirrored_positions = mirror_route(data, positions)
+    mirrored_data, mirrored_positions = mirror_route(data, positions, axis)
 
     # Switch the team in the filename
     new_filename = switch_team_in_filename(filename)
@@ -107,35 +107,22 @@ def decode_route_file(filename):
 
     return data, positions
 
-def save_decoded_route(filename, data, positions):
-    """
-    Save the decoded route data and positions to a text file named 'routename_decoded'.
-    """
-    # Construct the new filename
-    output_filename = filename.rsplit('.', 1)[0] + "_decoded.txt"
-    
-    with open(output_filename, 'w') as file:
-        # Write the metadata
-        for key, value in data.items():
-            file.write(f"{key}: {value}\n")
-        
-        # Write positions
-        file.write('-' * 50 + '\n')
-        for pos in positions:
-            file.write(str(pos) + '\n')
-    
-    return output_filename
 
-
-def mirror_route(data, positions):
+def mirror_route(data, positions, axis='xy'):
     """
-    Mirror the route on x and y axes, and swap the team number.
+    Mirror the route on specified axes.
+    axis: 'x', 'y', 'xy', or 'yx'
     """
-    # Negate x and y values of positions
     for pos in positions:
         x, y, z = pos.loc
-        pos.loc = (-x, -y, z)
-    
+
+        if 'x' in axis:
+            x = -x
+        if 'y' in axis:
+            y = -y
+
+        pos.loc = (x, y, z)
+
     # Swap team number
     data['teamNum'] = 1 if data['teamNum'] == 0 else 0
 
@@ -181,11 +168,12 @@ def reencrypt_route_file(filepath, data, positions):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) < 3:
-        print("Usage: python route_decoder_script.py <filepath> <filename>")
+    if len(sys.argv) < 4:
+        print("Usage: python route_decoder_script.py <filepath> <filename> <axis>")
         sys.exit(1)
 
     filepath = sys.argv[1]
     filename = sys.argv[2]
-    result_filepath = process_and_save_route(filepath, filename)
+    axis = sys.argv[3]  # Axis for mirroring
+    result_filepath = process_and_save_route(filepath, filename, axis)
     print(f"Processed route saved as {result_filepath}")
