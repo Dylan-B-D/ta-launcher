@@ -62,7 +62,7 @@ const LocationChart: React.FC<LocationChartProps> = ({ locations }) => {
         title: 'Z Axis',
         color: 'rgba(0,0,0,0)',
       },
-      aspectratio: { x: 1, y: 1, z: 0.33 }
+      aspectratio: { x: 1, y: 1, z: 0.30 }
     }
   };
   

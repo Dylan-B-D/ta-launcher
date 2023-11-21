@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::{self, Read, BufReader};
 use serde::Serialize;
 use directories::UserDirs;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::convert::TryInto;
 
 #[derive(Debug, Serialize)]
@@ -161,3 +160,4 @@ pub fn decode_route(file: String) -> Result<RouteData, String> {
     // Call decode_route_file and convert any io::Error into a String
     decode_route_file(file_path_str).map_err(|e| e.to_string())
 }
+

@@ -18,7 +18,8 @@ use commands::{
     config_parser_command,
     route_parser_command,
     route_decoder_command,
-    fetch_available_dlls
+    fetch_available_dlls,
+    python_decoder_command
 };
 
 
@@ -51,7 +52,8 @@ fn main() {
         route_parser_command::get_route_files,
         route_parser_command::delete_route_file,
         route_decoder_command::decode_route,
-        fetch_available_dlls::get_available_dlls
+        fetch_available_dlls::get_available_dlls,
+        python_decoder_command::python_route_decoder,
         
     ])
     .run(tauri::generate_context!())
