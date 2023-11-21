@@ -2,9 +2,11 @@ use std::fs::File;
 use std::io::{self, Read, BufReader};
 use serde::Serialize;
 use directories::UserDirs;
+use byteorder::{LittleEndian, ReadBytesExt};
+use std::convert::TryInto;
 
 #[derive(Debug, Serialize)]
-struct Position {
+pub struct Position {
     time: f32,
     loc: (f32, f32, f32),
     vel: (f32, f32, f32),
@@ -68,15 +70,16 @@ fn decode_route_file(filename: &str) -> io::Result<RouteData> {
     // Decode positions
     let mut positions = Vec::new();
     loop {
-        let mut pos_buf = [0u8; 52];
-        if file.read(&mut pos_buf)? < 52 {
-            break;
+        let mut pos_buf = vec![0u8; 52];
+        if file.read_exact(&mut pos_buf).is_err() {
+            break; // Break if less than 52 bytes are available
         }
+
 
         // Unpack position
         let time = f32::from_le_bytes(pos_buf[0..4].try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?);
         let loc = (
-            f32::from_le_bytes(pos_buf[4..8].try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?),
+            -f32::from_le_bytes(pos_buf[4..8].try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?),
             f32::from_le_bytes(pos_buf[8..12].try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?),
             f32::from_le_bytes(pos_buf[12..16].try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?),
         );
