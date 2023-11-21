@@ -217,26 +217,27 @@ const RoutesView = () => {
       onClose={() => setIsMirrorModalOpen(false)}
       title="Select Mirroring Type"
     >
-      <div>
-          {(['xy', 'x', 'y'] as MirroringAxis[]).map(axis => (
-            <Tooltip
-              key={axis}
-              label={mirroringDescriptions[axis]}
-              withArrow
+      <div style={{ paddingTop: '20px' }}>
+        {(['xy', 'x', 'y'] as MirroringAxis[]).map(axis => (
+          <Tooltip
+            key={axis}
+            label={mirroringDescriptions[axis]}
+            withArrow
+          >
+            <Button
+              onClick={() => {
+                setSelectedAxis(axis);
+                mirrorSelectedRoutesWithAxis(axis);
+              }}
+              style={{
+                marginRight: '10px',
+              }}
             >
-              <Button
-                onClick={() => {
-                  setSelectedAxis(axis);
-                  mirrorSelectedRoutesWithAxis(axis);
-                }}
-                style={selectedAxis === axis ? { fontWeight: 'bold' } : {}}
-              >
-                {axis.toUpperCase()} Mirroring
-              </Button>
-            </Tooltip>
-          ))}
-        </div>
-
+              {axis.toUpperCase()} Mirroring
+            </Button>
+          </Tooltip>
+        ))}
+      </div>
     </Modal>
     <div ref={mainContainerRef}>
         <div ref={filtersRef}>
