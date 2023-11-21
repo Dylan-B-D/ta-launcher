@@ -216,6 +216,7 @@ const SettingsView: React.FC<SettingsProps> = () => {
           label="TA Mods version"
           placeholder="Pick value"
           data={dlls}
+          value={tamodsVersion}
           defaultValue={tamodsVersion}
           onChange={changeTAModsVersion}
         />

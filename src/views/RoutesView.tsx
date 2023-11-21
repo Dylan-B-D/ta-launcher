@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button, Table, Text, Space, Fieldset, Divider, useMantineTheme, ScrollArea, Paper, Group, Modal } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/tauri';
 import RouteFilters from '../components/RouteFilters';
+import LocationChart from '../components/RoutesGraph';
 
 interface Route {
   game_mode: string;
@@ -24,6 +25,10 @@ const RoutesView = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [decodedRoutes, setDecodedRoutes] = useState([]);
+  const locations = decodedRoutes.map(route => route.positions.map(pos => ({ x: pos.loc[0], y: pos.loc[1], z: pos.loc[2] })));
+  const [isGraphModalOpen, setIsGraphModalOpen] = useState(false);
+
 
   const [filters, setFilters] = useState({
     gameMode: '',
@@ -122,20 +127,23 @@ const RoutesView = () => {
 
   const decodeSelectedRoutes = async () => {
     try {
-      const decodedRoutes = [];
+      const newDecodedRoutes = [];
   
       for (const fileName of selectedRows) {
         const decodedData = await invoke('decode_route', { file: fileName });
-        decodedRoutes.push(decodedData);
-        // Optionally process each decodedData here as well
+        newDecodedRoutes.push(decodedData);
       }
   
-      console.log(decodedRoutes);
-      // Process the array of decoded routes as needed
-      // Example: Update state to display the decoded routes in the UI
+      setDecodedRoutes(newDecodedRoutes);
+      openGraphModal();
+      console.log(newDecodedRoutes);
     } catch (error) {
       console.error('Error decoding routes:', error);
     }
+  };
+  
+  const openGraphModal = () => {
+    setIsGraphModalOpen(true);
   };
   
 
@@ -173,6 +181,15 @@ const RoutesView = () => {
       </div>
 
       <Space h="md" />
+      <Modal
+        opened={isGraphModalOpen}
+        onClose={() => setIsGraphModalOpen(false)}
+        title="Route Locations Graph"
+        size="lg"
+      >
+        <LocationChart locations={locations} />
+      </Modal>
+
 
       <Paper>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -205,7 +222,7 @@ const RoutesView = () => {
                       borderBottom: '1px solid',
                       borderColor: 'rgba(255, 255, 255,0.075)',
                     }}
-                    onClick={() => handleRowSelect(route.file_name)} // Ensure this handler is set correctly
+                    onClick={() => handleRowSelect(route.file_name)}
                   >
                     <td>{route.game_mode}</td>
                     <td>{route.map}</td>

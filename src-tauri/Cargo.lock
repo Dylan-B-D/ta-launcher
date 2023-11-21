@@ -77,6 +77,7 @@ checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "byteorder",
  "chrono",
  "ctor 0.2.5",
  "directories",
