@@ -13,8 +13,25 @@ import classes from '../styles.module.css';
 import { notifications } from '@mantine/notifications';
 import { useSettingsContext } from '../context/SettingsContext';
 
+function parseDLL(dllToParse : string) {
+  if (!dllToParse) return false;
+  switch (dllToParse) {
+    case "Release":
+      console.log("TAMods Release version selected.");
+      return "TAMods.dll"
+    case "Beta":
+      console.log("TAMods Beta version selected.");
+      return "tamods-beta.dll"
+    case "Edge":
+      console.log("TAMods Edge version selected.");
+      return "tamods-edge.dll"
+    default:
+      return dllToParse
+  }
+}
+
 const Injector: React.FC = () => {
-  const { manualInjection } = useSettingsContext();
+  const { manualInjection, tamodsVersion } = useSettingsContext();
   const defaultDllPath = '';
   const processName = 'TribesAscend.exe';
   const [isInjected, setIsInjected] = useState<boolean>(false);
@@ -28,9 +45,10 @@ const Injector: React.FC = () => {
       const homeDir = await path.homeDir();
       const documentsPath = `${homeDir}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\TALauncher`;
       const files = await readDir(documentsPath);
-      const dllExists = files.some(file => file.name === 'TAMods.dll');
+      const dllToUse = parseDLL(tamodsVersion);
+      const dllExists = files.some(file => file.name === dllToUse);
       setIsFileMissing(!dllExists);
-      return dllExists ? `${documentsPath}\\TAMods.dll` : defaultDllPath;
+      return dllExists ? `${documentsPath}\\${dllToUse}` : defaultDllPath;
     } catch (error) {
       console.error('Error accessing DLL path:', error);
       setIsFileMissing(true);
