@@ -11,3 +11,4 @@ pub mod directory_shortcuts_command;
 pub mod config_parser_command;
 pub mod route_parser_command;
 pub mod route_decoder_command;
+pub mod fetch_available_dlls;
