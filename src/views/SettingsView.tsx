@@ -15,16 +15,13 @@ import { useThemeContext } from "../context/ThemeContext";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useSettingsContext } from "../context/SettingsContext";
 
-interface SettingsProps {
-  // Add props
-}
 
 interface FontOption {
   value: string;
   label: string;
 }
 
-const SettingsView: React.FC<SettingsProps> = () => {
+const SettingsView: React.FC = () => {
   async function fetchSystemFonts(): Promise<string[]> {
     try {
       const fonts: string[] = await invoke("get_system_fonts");
@@ -45,7 +42,8 @@ const SettingsView: React.FC<SettingsProps> = () => {
     });
   }, []);
 
-  const [dlls, setDlls] = React.useState([]);
+  const [dlls, setDlls] = useState<string[]>([]);
+
   async function loadDlls() {
     try {
       const dlls: string[] = await invoke("get_available_dlls");
@@ -57,8 +55,13 @@ const SettingsView: React.FC<SettingsProps> = () => {
     }
   }
   useEffect(() => {
-    loadDlls().then(setDlls);
+    loadDlls().then((dlls) => {
+      if (dlls) {
+        setDlls(dlls);
+      }
+    });
   }, []);
+  
 
   // State hooks for each setting
   const theme = useMantineTheme();
@@ -95,12 +98,6 @@ const SettingsView: React.FC<SettingsProps> = () => {
   // const [customConfigPath, setCustomConfigPath] = useState<string>('');
   // const [additionalLoginServer, setAdditionalLoginServer] = useState<string>('');
 
-  const handleTAModsVersionChange = (setValue: any) => (dllValue: any) => {
-    if (dllValue !== null) {
-      setValue(dllValue);
-    }
-  };
-
   const handleColorChange =
     (setValue: any, setSelectedValue: any) => (colorValue: any) => {
       if (colorValue !== null) {
@@ -127,7 +124,12 @@ const SettingsView: React.FC<SettingsProps> = () => {
       { group: "Other Colors", items: otherColors },
     ];
   };
-  const changeTAModsVersion = handleTAModsVersionChange(setTAModsVersion);
+  const changeTAModsVersion = (dllValue: React.SetStateAction<string> | null) => {
+    if (dllValue !== null) {
+      setTAModsVersion(dllValue);
+    }
+  };
+  
 
   const changePrimaryColor = handleColorChange(
     setPrimaryColor,
