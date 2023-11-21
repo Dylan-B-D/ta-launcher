@@ -18,6 +18,14 @@ class Position:
     def __str__(self):
         return str(self.__dict__)
     
+def switch_team_in_filename(filename):
+    if '_DS_' in filename:
+        return filename.replace('_DS_', '_BE_', 1)
+    elif '_BE_' in filename:
+        return filename.replace('_BE_', '_DS_', 1)
+    else:
+        return filename  # If neither is found, return the original filename
+
 def process_and_save_route(filepath, filename):
     full_path = os.path.join(filepath, filename)
 
@@ -27,12 +35,15 @@ def process_and_save_route(filepath, filename):
     # Mirror the route
     mirrored_data, mirrored_positions = mirror_route(data, positions)
 
+    # Switch the team in the filename
+    new_filename = switch_team_in_filename(filename)
+
     # Reencrypt the mirrored route file
-    mirrored_filename = 'm_' + filename
-    mirrored_full_path = os.path.join(filepath, mirrored_filename)
+    mirrored_full_path = os.path.join(filepath, new_filename)
     reencrypt_route_file(mirrored_full_path, mirrored_data, mirrored_positions)
 
     return mirrored_full_path
+
 def read_cstring(file):
     """Read a C-style string from the binary file."""
     chars = []

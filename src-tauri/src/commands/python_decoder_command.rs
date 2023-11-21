@@ -11,7 +11,6 @@ pub fn python_route_decoder(file: String) -> Result<String, String> {
     let project_root = Path::new(env!("CARGO_MANIFEST_DIR"));
 
     // Construct the path to the Python script
-    // Assuming your script is in the 'scripts' folder directly under 'src-tauri'
     let script_path = project_root.join("scripts\\route_decoder_script.py");
 
     println!("{}", script_path.display());
