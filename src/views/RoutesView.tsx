@@ -154,6 +154,22 @@ const RoutesView = () => {
     setIsGraphModalOpen(true);
   };
   
+  const mirrorSelectedRoutes = async () => {
+    try {
+      for (const fileName of selectedRows) {
+        const response = await invoke('python_route_decoder', { file: fileName });
+        // Optionally handle the response, e.g., display a success message or update state
+        console.log('Mirrored route:', response);
+      }
+  
+      // Optionally, refresh the list of routes after mirroring
+      fetchRoutes();
+  
+    } catch (error) {
+      console.error('Error mirroring routes:', error);
+    }
+  };
+  
 
   const filteredRoutes = routes.filter(route =>
     route.game_mode.toLowerCase().includes(filters.gameMode.toLowerCase()) &&
@@ -186,7 +202,7 @@ const RoutesView = () => {
           <Fieldset legend='Controls' style={{ padding: '1rem' }}>
             <Group> {/* Adjust the spacing value as needed */}
               <Button onClick={decodeSelectedRoutes}>View Selected</Button>
-              <Button disabled>Mirror Selected</Button>
+              <Button onClick={mirrorSelectedRoutes}>Mirror Selected</Button>
               <Button onClick={resetFilters}>Reset Filters</Button>
               <Button onClick={deselectAll}>Deselect All</Button>
               <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>
