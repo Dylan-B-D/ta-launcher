@@ -16,6 +16,14 @@ interface Route {
   file_name: string;
 }
 
+interface DecodedRoute {
+  positions: Position[];
+}
+
+interface Position {
+  loc: [number, number, number];
+}
+
 const RoutesView = () => {
   const theme = useMantineTheme();
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -25,7 +33,7 @@ const RoutesView = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [decodedRoutes, setDecodedRoutes] = useState([]);
+  const [decodedRoutes, setDecodedRoutes] = useState<DecodedRoute[]>([]);
   const locations = decodedRoutes.map(route => route.positions.map(pos => ({ x: pos.loc[0], y: pos.loc[1], z: pos.loc[2] })));
   const [isGraphModalOpen, setIsGraphModalOpen] = useState(false);
 
@@ -134,7 +142,7 @@ const RoutesView = () => {
         newDecodedRoutes.push(decodedData);
       }
   
-      setDecodedRoutes(newDecodedRoutes);
+      setDecodedRoutes(newDecodedRoutes as DecodedRoute[]);
       openGraphModal();
       console.log(newDecodedRoutes);
     } catch (error) {
@@ -158,108 +166,106 @@ const RoutesView = () => {
   );
 
   return (
+    <><Modal
+      opened={isGraphModalOpen}
+      onClose={() => setIsGraphModalOpen(false)}
+      title="Route Graphs"
+      fullScreen
+      radius={0}
+    >
+      <LocationChart locations={locations} />
+    </Modal>
     <div ref={mainContainerRef}>
-      <div ref={filtersRef}>
-        <RouteFilters filters={filters} handleFilterChange={handleFilterChange} />
-      </div>
-
-      <Space h="md" />
-
-      <div ref={controlsRef}>
-        <Fieldset legend='Controls' style={{ padding: '1rem' }}>
-          <Group> {/* Adjust the spacing value as needed */}
-            <Button disabled>View Selected</Button>
-            <Button disabled>Mirror Selected</Button>
-            <Button onClick={decodeSelectedRoutes}>Decode Selected</Button>
-            <Button onClick={resetFilters}>Reset Filters</Button>
-            <Button onClick={deselectAll}>Deselect All</Button>
-            <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>
-              Delete Selected
-            </Button>
-          </Group>
-        </Fieldset>
-      </div>
-
-      <Space h="md" />
-      <Modal
-        opened={isGraphModalOpen}
-        onClose={() => setIsGraphModalOpen(false)}
-        title="Route Locations Graph"
-        size="lg"
-      >
-        <LocationChart locations={locations} />
-      </Modal>
-
-
-      <Paper>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text>Click on a row to select or deselect it</Text>
-          <Text>{filteredRoutes.length} routes displayed</Text>
+        <div ref={filtersRef}>
+          <RouteFilters filters={filters} handleFilterChange={handleFilterChange} />
         </div>
-        <Divider my="sm" />
-        <div>
-        <ScrollArea style={{ height: `${scrollAreaHeight}px`,padding: '12px'}}>
-          <Table>
-            <thead>
-              <tr style={{textAlign: 'left'}}>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Game Mode</th>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Map</th>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Side</th>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Class</th>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Username</th>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Route Name</th>
-                <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6]}}>Route Time</th>
-              </tr>
-            </thead>
-              <tbody style={{ userSelect: 'none' }}>
-                {filteredRoutes.map((route, index) => (
-                  <tr
-                    key={index}
-                    style={{
-                      textShadow: selectedRows.has(route.file_name) ? '1px 1px 2px black, 0 0 1em black, 0 0 0.2em black': 'none',
-                      backgroundColor: selectedRows.has(route.file_name) ? theme.colors.mutedGreen[6] : 'transparent',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid',
-                      borderColor: 'rgba(255, 255, 255,0.075)',
-                    }}
-                    onClick={() => handleRowSelect(route.file_name)}
-                  >
-                    <td>{route.game_mode}</td>
-                    <td>{route.map}</td>
-                    <td>{route.side}</td>
-                    <td>{route.class}</td>
-                    <td>{route.username}</td>
-                    <td>{route.route_name}</td>
-                    <td>{route.time}</td>
+
+        <Space h="md" />
+
+        <div ref={controlsRef}>
+          <Fieldset legend='Controls' style={{ padding: '1rem' }}>
+            <Group> {/* Adjust the spacing value as needed */}
+              <Button onClick={decodeSelectedRoutes}>View Selected</Button>
+              <Button disabled>Mirror Selected</Button>
+              <Button onClick={resetFilters}>Reset Filters</Button>
+              <Button onClick={deselectAll}>Deselect All</Button>
+              <Button onClick={handleDeleteClick} style={{ background: theme.colors.mutedRed[2], color: theme.colors.dark[6] }}>
+                Delete Selected
+              </Button>
+            </Group>
+          </Fieldset>
+        </div>
+
+        <Space h="md" />
+        <Paper>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text>Click on a row to select or deselect it</Text>
+            <Text>{filteredRoutes.length} routes displayed</Text>
+          </div>
+          <Divider my="sm" />
+          <div>
+            <ScrollArea style={{ height: `${scrollAreaHeight}px`, padding: '12px' }}>
+              <Table>
+                <thead>
+                  <tr style={{ textAlign: 'left' }}>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Game Mode</th>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Map</th>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Side</th>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Class</th>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Username</th>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Route Name</th>
+                    <th style={{ position: 'sticky', top: 0, background: theme.colors.dark[6] }}>Route Time</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody style={{ userSelect: 'none' }}>
+                  {filteredRoutes.map((route, index) => (
+                    <tr
+                      key={index}
+                      style={{
+                        textShadow: selectedRows.has(route.file_name) ? '1px 1px 2px black, 0 0 1em black, 0 0 0.2em black' : 'none',
+                        backgroundColor: selectedRows.has(route.file_name) ? theme.colors.mutedGreen[6] : 'transparent',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid',
+                        borderColor: 'rgba(255, 255, 255,0.075)',
+                      }}
+                      onClick={() => handleRowSelect(route.file_name)}
+                    >
+                      <td>{route.game_mode}</td>
+                      <td>{route.map}</td>
+                      <td>{route.side}</td>
+                      <td>{route.class}</td>
+                      <td>{route.username}</td>
+                      <td>{route.route_name}</td>
+                      <td>{route.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </ScrollArea>
+
+          </div>
+        </Paper>
+        <Modal
+          opened={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          title="Confirm Deletion"
+          size="lg" // Adjust the size to large
+        >
+          <Text>Are you sure you want to delete the following route files?</Text>
+          <ScrollArea style={{ maxHeight: '200px' }}> {/* Adjust height as needed */}
+            <ul>
+              {Array.from(selectedRows).map((file, index) => (
+                <li key={index}>{file}</li>
+              ))}
+            </ul>
           </ScrollArea>
+          <Group mt="md">
+            <Button variant="default" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+            <Button color="red" onClick={confirmDelete}>Delete</Button>
+          </Group>
+        </Modal>
 
-        </div>
-      </Paper>
-      <Modal
-        opened={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirm Deletion"
-        size="lg" // Adjust the size to large
-      >
-        <Text>Are you sure you want to delete the following route files?</Text>
-        <ScrollArea style={{ maxHeight: '200px' }}> {/* Adjust height as needed */}
-          <ul>
-            {Array.from(selectedRows).map((file, index) => (
-              <li key={index}>{file}</li>
-            ))}
-          </ul>
-        </ScrollArea>
-        <Group mt="md">
-          <Button variant="default" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
-          <Button color="red" onClick={confirmDelete}>Delete</Button>
-        </Group>
-      </Modal>
-
-    </div>
+      </div></>
   );
 };
 
