@@ -38,11 +38,18 @@ const SimpleConfigSection = () => {
   }, []);
 
   const handleConfigChange = (compositeKey: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.currentTarget.type === 'checkbox' 
-      ? (event.currentTarget.checked ? 'True' : 'False') // Maintain original casing
-      : event.target.value;
+    let newValue = event.target.value;
+  
+    // Check if the input is of number type and if the value is empty
+    if (event.target.type === 'text' && newValue === '') {
+      newValue = '0'; // Set default value to '0' when input is empty
+    } else if (event.currentTarget.type === 'checkbox') {
+      newValue = event.currentTarget.checked ? 'True' : 'False'; // Handle checkbox values
+    }
+  
     setConfigValues({ ...configValues, [compositeKey]: newValue });
   };
+  
 
   // TODO check if file is readonly
   const saveConfigChanges = async () => {

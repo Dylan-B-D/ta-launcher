@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Select, Textarea } from '@mantine/core';
+import { Paper, Select, Text, Textarea } from '@mantine/core';
 
 const AdvancedConfigSection = () => {
   // const [selectedIni, setSelectedIni] = useState('config.ini');
@@ -7,6 +7,11 @@ const AdvancedConfigSection = () => {
 
   return (
     <div>
+      <Paper>
+        <Text>
+          [Under Contruction]
+        </Text>
+      </Paper>
       <Select
         label="Select INI File"
         // value={selectedIni}
