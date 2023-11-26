@@ -22,21 +22,21 @@ pub fn inject(process: &str, dll_path: &str) -> Result<(), String> {
     let result = instance.inject(dll_path)
         .map_err(|e| format!("Failed to inject DLL: {}", e))?;
 
-    // Create a log folder
-    std::fs::create_dir_all("sola").map_err(|e| format!("Failed to create log folder: {}", e))?;
-    let mut file = File::create(format!(
-        "sola\\log-{}.txt",
-        chrono::Local::now().format("%Y-%m-%d %H-%M-%S")
-    ))
-    .map_err(|e| format!("Failed to create log file: {}", e))?;
+    // // Create a log folder
+    // std::fs::create_dir_all("sola").map_err(|e| format!("Failed to create log folder: {}", e))?;
+    // let mut file = File::create(format!(
+    //     "sola\\log-{}.txt",
+    //     chrono::Local::now().format("%Y-%m-%d %H-%M-%S")
+    // ))
+    // .map_err(|e| format!("Failed to create log file: {}", e))?;
 
-    // Write the header to the file
-    file.write_all(format!("Process: {}\r", process).as_bytes())
-        .map_err(|e| format!("Failed to write to log file: {}", e))?;
-    file.write_all(format!("DLL: {}\r", dll_path).as_bytes())
-        .map_err(|e| format!("Failed to write to log file: {}", e))?;
-    file.write_all(format!("Result: {}\r", format!("{:?}", result)).as_bytes())
-        .map_err(|e| format!("Failed to write to log file: {}", e))?;
+    // // Write the header to the file
+    // file.write_all(format!("Process: {}\r", process).as_bytes())
+    //     .map_err(|e| format!("Failed to write to log file: {}", e))?;
+    // file.write_all(format!("DLL: {}\r", dll_path).as_bytes())
+    //     .map_err(|e| format!("Failed to write to log file: {}", e))?;
+    // file.write_all(format!("Result: {}\r", format!("{:?}", result)).as_bytes())
+    //     .map_err(|e| format!("Failed to write to log file: {}", e))?;
 
     Ok(())
 }

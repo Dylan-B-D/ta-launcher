@@ -39,7 +39,7 @@ const RoutesView = () => {
   const locations = decodedRoutes.map(route => route.positions.map(pos => ({ x: pos.loc[0], y: pos.loc[1], z: pos.loc[2] })));
   const [isGraphModalOpen, setIsGraphModalOpen] = useState(false);
   const [isMirrorModalOpen, setIsMirrorModalOpen] = useState(false);
-  const [selectedAxis, setSelectedAxis] = useState('xy');
+  const [, setSelectedAxis] = useState('xy');
 
 
 

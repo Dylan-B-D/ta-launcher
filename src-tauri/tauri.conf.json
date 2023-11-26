@@ -53,7 +53,15 @@
       "csp": "default-src blob: data: filesystem: ws: http: https: 'unsafe-eval' 'unsafe-inline'; img-src 'self' data:;"
     },
     "updater": {
-      "active": false
+      "active": true,
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENEQzgwNDQ3NzhFRkZGQ0QKUldUTi8rOTRSd1RJelV4Z210ei9ZVzZncnZxeGxJRTV5Sm16RW1hSXNJL1ZvQW9XU0tEM0ZGVisK",
+      "endpoints": [
+        "https://gist.githubusercontent.com/Dylan-B-D/GIST_ID/raw"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
     },
     "windows": [
       {
