@@ -57,7 +57,7 @@
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENEQzgwNDQ3NzhFRkZGQ0QKUldUTi8rOTRSd1RJelV4Z210ei9ZVzZncnZxeGxJRTV5Sm16RW1hSXNJL1ZvQW9XU0tEM0ZGVisK",
       "endpoints": [
-        "https://gist.githubusercontent.com/Dylan-B-D/GIST_ID/raw"
+        "https://gist.github.com/Dylan-B-D/716f9e40e5916b20d7551f1f1414142f"
       ],
       "windows": {
         "installMode": "passive"
