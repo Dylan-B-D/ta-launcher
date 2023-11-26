@@ -1,8 +1,5 @@
-use chrono;
 use dll_syringe::process::OwnedProcess;
 use dll_syringe::Syringe;
-use std::fs::File;
-use std::io::prelude::*;
 
 /// Injects a dll into a process
 /// # Arguments
@@ -19,7 +16,7 @@ pub fn inject(process: &str, dll_path: &str) -> Result<(), String> {
     let instance = Syringe::for_process(target_process);
 
     // Injects the dll into the process
-    let result = instance.inject(dll_path)
+    instance.inject(dll_path)
         .map_err(|e| format!("Failed to inject DLL: {}", e))?;
 
     // // Create a log folder
