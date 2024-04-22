@@ -24,7 +24,7 @@ struct PackageConfig {
 
 #[tauri::command]
 pub async fn fetch_dependency_tree() -> Result<String, String> {
-    let yaml_url = "https://tamods-update.s3.ap-southeast-2.amazonaws.com/packageconfig.yaml";
+    let yaml_url = "https://client.update.tamods.org/packageconfig.yaml";
     let response = reqwest::get(yaml_url).await.map_err(|e| e.to_string())?;
     let yaml_content = response.text().await.map_err(|e| e.to_string())?;
 
@@ -63,7 +63,7 @@ pub async fn fetch_dependency_tree() -> Result<String, String> {
 
 #[tauri::command]
 pub async fn fetch_packages() -> Result<String, String> {
-    let yaml_url = "https://tamods-update.s3.ap-southeast-2.amazonaws.com/packageconfig.yaml";
+    let yaml_url = "https://client.update.tamods.org/packageconfig.yaml";
     let response = reqwest::get(yaml_url).await.map_err(|e| e.to_string())?;
     let yaml_content = response.text().await.map_err(|e| e.to_string())?;
 
