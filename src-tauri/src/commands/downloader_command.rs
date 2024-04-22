@@ -55,7 +55,7 @@ pub async fn download_package(
     filesize: u64, 
     handle: AppHandle
 ) -> Result<String, String> {
-    let base_url = "https://tamods-update.s3.ap-southeast-2.amazonaws.com/";
+    let base_url = "https://client.update.tamods.org/";
     let object_key = format!("packages/{}.zip", package_id);
     let download_url = format!("{}{}", base_url, object_key);
 

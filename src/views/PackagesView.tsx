@@ -95,10 +95,9 @@ const PackageView: React.FC = () => {
 
       // Fetch metadata for each package
       const packagesWithMetadata = await Promise.all(packageList.packages.map(async (pkg) => {
-        const metadata = await fetchPackageMetadata(`https://tamods-update.s3.ap-southeast-2.amazonaws.com/${pkg.objectKey}`);
+        const metadata = await fetchPackageMetadata(`https://client.update.tamods.org/${pkg.objectKey}`);
         return { ...pkg, metadata };
       }));
-
       setPackages(packagesWithMetadata);
     } catch (error) {
       console.error('Error fetching packages:', error);
