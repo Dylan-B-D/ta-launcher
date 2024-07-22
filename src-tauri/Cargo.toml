@@ -22,23 +22,23 @@ dll-syringe = "0.15.2"
 ctor = "0.2.5"
 winapi = { version = "0.3.9", features = ["consoleapi", "minwindef"] }
 chrono = "0.4.19"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.12.5", features = ["json", "stream"] }
 serde_yaml = "0.9.27"
 tokio = { version = "1", features = ["full"] }
 walkdir = "2.3.2"
 regex = "1"
-zip = "0.6.6"
+zip = "2.1.5"
 tempfile = "3.8.1"
 futures = "0.3"
 font-loader = "0.11.0"
-sysinfo = "0.29.10"
+sysinfo = "0.30.13"
 directories = "5.0.1"
-rust-ini = "0.20.0"
+rust-ini = "0.21.0"
 
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = ["custom-protocol"]
+# default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]
