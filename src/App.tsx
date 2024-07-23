@@ -1,44 +1,37 @@
-// App.tsx
+// src/App.tsx
 
-// Routing
-import { BrowserRouter as Router } from 'react-router-dom';
-import AppRoutes from './Routes/AppRoutes';
-import { views } from './Routes/routes';
-import { Notifications } from '@mantine/notifications';
-
-// UI components and hooks
-import { AppShell, MantineProvider } from '@mantine/core';
-
-// Styling
-import "@mantine/core/styles.css";
-import createAppTheme from './theme';
-import { NavbarNested } from './components/NavbarNested';
-import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
-import HeaderComponent from './components/Header';
-import classes from './styles.module.css';
-
-
-async function setMinWindowSize() {
-  await appWindow.setMinSize(new PhysicalSize(570, 330));
-}
-
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import Home from "./components/pages/Home";
+import FirstTimeSetup from "./components/pages/FirstTimeSetup";
 
 function App() {
-  const theme = createAppTheme();
-  setMinWindowSize();
+  const [isFirstTime, setIsFirstTime] = useState(true);
+
+  useEffect(() => {
+    const firstTime = localStorage.getItem("isFirstTime");
+    if (firstTime === "false") {
+      setIsFirstTime(false);
+    }
+  }, []);
+
+  const handleSetupComplete = () => {
+    setIsFirstTime(false);
+  };
 
   return (
     <Router>
-      <MantineProvider theme={theme} defaultColorScheme="dark">
-        <Notifications className={classes.mantineNotificationsContainer} />
-        <AppShell header={{ height: 30 }} navbar={{ width: 220, breakpoint: 'none' }} padding="md">
-          <HeaderComponent />
-          <NavbarNested views={views} />
-          <AppShell.Main style={{marginLeft: '16px'}}>
-            <AppRoutes />
-          </AppShell.Main>
-        </AppShell>
-      </MantineProvider>
+      <Routes>
+        {isFirstTime ? (
+          <Route path="/" element={<FirstTimeSetup onComplete={handleSetupComplete} />} />
+        ) : (
+          <>
+            <Route path="/" element={<Home />} />
+            {/* Add more routes here */}
+          </>
+        )}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </Router>
   );
 }

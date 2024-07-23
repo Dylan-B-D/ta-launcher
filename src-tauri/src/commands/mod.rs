@@ -1,15 +1,1 @@
-pub mod inject_command;
-pub mod launch_game_command;
-pub mod fetch_players_command;
-pub mod fetch_packages_command;
-pub mod downloader_command;
-pub mod find_executable_command;
-pub mod get_available_fonts_command;
-pub mod util_command;
-pub mod log_cleaner_command;
-pub mod directory_shortcuts_command;
-pub mod config_parser_command;
-pub mod route_parser_command;
-pub mod route_decoder_command;
-pub mod fetch_available_dlls;
-pub mod python_decoder_command;
+pub mod find_game_path;

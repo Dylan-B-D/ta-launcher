@@ -1,51 +1,24 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "TA-Launcher"
-authors = ["dbd"]
-license = ""
-repository = ""
-default-run = "app"
+name = "ta-launcherv2"
+version = "0.0.0"
+description = "A Tauri App"
+authors = ["you"]
 edition = "2021"
-rust-version = "1.60"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.0", features = [] }
+tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.2", features = [ "updater", "api-all"] }
-dll-syringe = "0.15.2"
-ctor = "0.2.5"
-winapi = { version = "0.3.9", features = ["consoleapi", "minwindef"] }
-chrono = "0.4.19"
-reqwest = { version = "0.12.5", features = ["json", "stream"] }
-serde_yaml = "0.9.27"
-tokio = { version = "1", features = ["full"] }
-walkdir = "2.3.2"
-regex = "1"
-zip = "2.1.5"
-tempfile = "3.8.1"
-futures = "0.3"
-font-loader = "0.11.0"
-sysinfo = "0.30.13"
-directories = "5.0.1"
-rust-ini = "0.21.0"
-
-[features]
-# by default Tauri runs in production mode
-# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-# default = ["custom-protocol"]
-# this feature is used used for production builds where `devPath` points to the filesystem
-# DO NOT remove this
-custom-protocol = ["tauri/custom-protocol"]
-
-[profile.release]
-panic = "abort" # Strip expensive panic cleanup logic
-codegen-units = 1 # Comiles creates one after another
-lto = true # Enable link to optimisations
-opt-level = "s" # Optimise for binary size
-# strip = true strip symbols from the binary
+tauri = { version = "2.0.0-beta", features = [] }
+tauri-plugin-shell = "2.0.0-beta"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0.120"
+tauri-plugin-fs = "2.0.0-beta.11"
+tauri-plugin-dialog = "2.0.0-beta.11"
+dirs = "5.0.1"          # Used to get the user's home directory
+winreg = "0.52.0"       # Used to read steam install path
+env_logger = "0.11.4"   # Used to log to console
+log = "0.4.14"          # Used to log to console
+vdf = "0.1.0"           # Used to parse steam libraryfolders.vdf
