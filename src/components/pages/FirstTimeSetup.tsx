@@ -137,7 +137,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
           <Stepper.Step label="Welcome">
             <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
               <Title order={2}>First-time Setup</Title>
-              <Text size="sm" c="dimmed">
+              <Text size="sm" mt="md" c="dimmed">
                 Any options changed here can be modified later. For additional assistance, ask for help in the Discord server or message 'evxl.' on Discord. Here are some links that may be useful:
               </Text>
               <Grid mt="md">

@@ -21,18 +21,20 @@ export function CardGradient({ icon: Icon, gradient, title, description, link }:
       target="_blank"
       style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
-      <ThemeIcon
-        size="xl"
-        radius="md"
-        variant="gradient"
-        gradient={gradient}
-      >
-        <Icon style={{ width: rem(28), height: rem(28) }} />
-      </ThemeIcon>
-      <Text size="md" fw={500} mt="xs">
-        {title}
-      </Text>
-      <Text size="sm" mt="xs" c="dimmed">
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <ThemeIcon
+          size="xl"
+          radius="md"
+          variant="gradient"
+          gradient={gradient}
+        >
+          <Icon style={{ width: rem(28), height: rem(28) }} />
+        </ThemeIcon>
+        <Text size="md" fw={500} ml="xs">
+          {title}
+        </Text>
+      </div>
+      <Text size="sm" mt="md" c="dimmed">
         {description}
       </Text>
     </Paper>

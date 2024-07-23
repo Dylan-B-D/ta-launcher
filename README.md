@@ -1,5 +1,5 @@
 # T:A Launcher V2
-[W.I.P] A launcher for Tribes: Ascend that has a firt time setup to streamline the installation.
+[W.I.P] A launcher for Tribes: Ascend that has a first time setup to streamline the installation.
 
 ## Improvements
 
