@@ -113,11 +113,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     } catch (error) {
       setNotification({
         visible: true,
-        message: 'Error handling the configuration file. Please check the console for more details.',
+        message: 'Error handling the configuration file.',
         icon: <IconX />,
         color: 'red',
         title: "Error",
       });
+      console.error('Error handling the configuration file:', error);
     }
   };
   

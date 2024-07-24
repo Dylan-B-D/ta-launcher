@@ -1,4 +1,4 @@
-use std::fs::{self, copy};
+use std::fs::{self, copy, create_dir_all};
 use std::path::PathBuf;
 use tauri::{path::BaseDirectory, Manager};
 use dirs;
@@ -54,9 +54,17 @@ fn handle_readonly(path: &PathBuf, action: impl FnOnce() -> Result<(), String>) 
 pub fn check_config(handle: tauri::AppHandle, config_variant: String) -> Result<ConfigCheckResult, String> {
     let (new_config_path, user_config_path) = get_config_paths(&handle, &config_variant)?;
 
+    // Create the directory structure if it doesn't exist
+    if let Some(parent) = user_config_path.parent() {
+        create_dir_all(parent).map_err(|e| format!("Failed to create directory structure: {}", e))?;
+    }
+
     if user_config_path.exists() {
         Ok(ConfigCheckResult { exists: true })
     } else {
+        // If the file doesn't exist, we can create it and then use handle_readonly
+        fs::File::create(&user_config_path).map_err(|e| format!("Failed to create config file: {}", e))?;
+        
         handle_readonly(&user_config_path, || {
             copy(&new_config_path, &user_config_path).map(|_| ()).map_err(|e| e.to_string())
         })?;
@@ -71,6 +79,16 @@ pub fn check_config(handle: tauri::AppHandle, config_variant: String) -> Result<
 #[tauri::command]
 pub fn replace_config(handle: tauri::AppHandle, config_variant: String) -> Result<ReplaceResult, String> {
     let (new_config_path, user_config_path) = get_config_paths(&handle, &config_variant)?;
+
+    // Create the directory structure if it doesn't exist
+    if let Some(parent) = user_config_path.parent() {
+        create_dir_all(parent).map_err(|e| format!("Failed to create directory structure: {}", e))?;
+    }
+
+    // If the file doesn't exist, create it
+    if !user_config_path.exists() {
+        fs::File::create(&user_config_path).map_err(|e| format!("Failed to create config file: {}", e))?;
+    }
 
     handle_readonly(&user_config_path, || {
         copy(&new_config_path, &user_config_path).map(|_| ()).map_err(|e| e.to_string())
