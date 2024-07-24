@@ -2,7 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
-use commands::find_game_path;
+use commands::{ 
+    find_game_path::find_path,
+    packages::fetch_packages
+};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -18,7 +21,11 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, find_game_path::find_path])
+        .invoke_handler(tauri::generate_handler![
+            greet, 
+            find_path,
+            fetch_packages
+            ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

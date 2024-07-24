@@ -1,7 +1,7 @@
 use std::path::{PathBuf, MAIN_SEPARATOR};
 use winreg::enums::*;
 use winreg::RegKey;
-use log::{info, warn, error};
+use log::{warn, debug, error};
 use std::fs;
 use serde_json::Value;
 
@@ -25,7 +25,7 @@ pub fn find_path() -> Option<String> {
     {
         if let Ok(steam_path) = hkey.get_value::<String, &str>("SteamPath") {
             let mut steam_path = PathBuf::from(steam_path);
-            info!("Steam installation path found: {:?}", steam_path);
+            debug!("Steam installation path found: {:?}", steam_path);
 
             // Normalize the path separators
             steam_path = steam_path.iter().collect();
@@ -69,7 +69,7 @@ pub fn find_path() -> Option<String> {
     for dir in possible_dirs {
         let game_path = dir.join("TribesAscend.exe");
         if game_path.exists() {
-            info!("Game found at: {:?}", game_path);
+            debug!("Game found at: {:?}", game_path);
             return Some(game_path.to_string_lossy().to_string());
         }
     }

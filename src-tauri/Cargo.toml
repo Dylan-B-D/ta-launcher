@@ -22,3 +22,5 @@ winreg = "0.52.0"       # Used to read steam install path
 env_logger = "0.11.4"   # Used to log to console
 log = "0.4.14"          # Used to log to console
 vdf = "0.1.0"           # Used to parse steam libraryfolders.vdf
+serde_yaml = "0.9.34"   # Used to parse the config file
+reqwest = "0.12.5"      # Used to get package info
