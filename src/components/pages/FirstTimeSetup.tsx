@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification } from "@mantine/core";
+import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification, rem } from "@mantine/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
@@ -7,7 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { resources } from "../../utils/usefulResources";
 import { formatSize } from "../../utils/formatters";
 import { confirm } from '@tauri-apps/plugin-dialog';
-import { IconCheck, IconX } from '@tabler/icons-react';
+import { IconAlertCircle, IconCheck, IconCircleX, IconX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../utils/configPresets";
 
@@ -58,6 +58,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [, setFileFound] = useState<null | boolean>(null);
   const [packages, setPackages] = useState<Packages>({});
   const [, setSelectedConfig] = useState<string | null>(null);
+  const [gamePathError, setGamePathError] = useState(false);
   const [notification, setNotification] = useState<{
     visible: boolean;
     message: string;
@@ -71,7 +72,18 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     color: '',
     icon: null,
   });
-  
+
+  const handleGamePathChange = (value: string) => {
+    const trimmedValue = value.trim();
+    setConfig({ ...config, gamePath: value });
+    setGamePathError(trimmedValue === '');
+  };
+
+  useEffect(() => {
+    if (active === 1) {
+      setGamePathError(config.gamePath.trim() === '');
+    }
+  }, [active, config.gamePath]);
 
   const handleSelectConfig = async (configVariant: string) => {
     setSelectedConfig(configVariant);
@@ -98,7 +110,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             message: 'Canceled loading preset',
             icon: <IconX />,
             color: 'yellow',
-            title: "Loading Canceled",
+            title: "Canceled",
           });
         }
       } else {
@@ -121,7 +133,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       console.error('Error handling the configuration file:', error);
     }
   };
-  
+
 
   const nextStep = () => {
     checkAndFindGamePath();
@@ -134,9 +146,23 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   };
 
   const handleSetup = async (e: React.FormEvent) => {
-    checkAndFindGamePath();
     e.preventDefault();
-    // Save configuration to config.json in Local AppData
+    checkAndFindGamePath();
+    // Check for empty config values
+    const emptyFields = Object.entries(config)
+      .filter(([, value]) => value === "")
+      .map(([key]) => key);
+
+    if (emptyFields.length > 0) {
+      setNotification({
+        visible: true,
+        message: `You cannot continue without: ${emptyFields.join(", ")}`,
+        title: "Missing Configuration",
+        color: "red",
+        icon: <IconAlertCircle />,
+      });
+      return;
+    }
     await saveConfig(config);
     // localStorage.setItem("isFirstTime", "false");
     onComplete();
@@ -237,7 +263,11 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             </Stepper.Step>
 
             {/* ----------- Game Path ----------- */}
-            <Stepper.Step label="Game Path">
+            <Stepper.Step
+              label="Game Path"
+              color={gamePathError ? "red" : "teal"}
+              completedIcon={gamePathError ? <IconCircleX style={{ width: rem(20), height: rem(20) }} /> : undefined}
+            >
               <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
                 <Text size="sm" mt="md" c="dimmed">
                   A Tribes: Ascend installation is required. (<strong>Recommended:</strong> Steam version)
@@ -270,15 +300,22 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Text>
               </Center>
               <Space h="xl" />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <TextInput
-                  style={{ flexGrow: 1 }}
-                  value={config.gamePath}
-                  onChange={(e) => setConfig({ ...config, gamePath: e.currentTarget.value })}
-                  placeholder="Enter game path..." />
-                <Button color="cyan" onClick={selectFile}>Choose File</Button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <TextInput
+                    style={{ flexGrow: 1 }}
+                    value={config.gamePath}
+                    onChange={(e) => handleGamePathChange(e.currentTarget.value)}
+                    placeholder="Enter game path..."
+                   error={gamePathError}
+                  />
+                  <Button color="cyan" onClick={selectFile}>Choose File</Button>
+                </div>
+                <div style={{ minHeight: '20px' }}>
+                  {gamePathError && <Text size="sm" c="red">*Game path is required</Text>}
+                </div>
               </div>
-              <Space h="xl" />
+              <Space h="sm" />
               <Center>
                 <Button color="cyan" onClick={findGamePath}>Find Steam Game Path</Button>
               </Center>
@@ -390,6 +427,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Text>
                 <Text mt="xs" c="dimmed" size="sm">
                   <strong>INI Presets:</strong> Select a preset to apply.
+                </Text>
+                <Text c="dimmed" size="sm">
+                  *INI files are graphics config files that let you change more options that in-game.
                 </Text>
                 <Grid mt="xs" gutter="xs">
                   {configPresets.map((config) => (
