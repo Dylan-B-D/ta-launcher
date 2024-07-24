@@ -7,7 +7,7 @@
       box-shadow 100ms ease;
     padding: var(--mantine-spacing-xs);
     padding-left: calc(var(--mantine-spacing-xs) * 2);
-    background-color: var(--mantine-color-dark-6);
+    background-color: var(--mantine-color-dark-8) !important;
   
     &:hover {
       box-shadow: var(--mantine-shadow-md);

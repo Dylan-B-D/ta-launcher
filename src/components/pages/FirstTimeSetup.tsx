@@ -1,13 +1,38 @@
 import { useEffect, useState } from "react";
-import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid } from "@mantine/core";
+import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table } from "@mantine/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
 import { invoke } from "@tauri-apps/api/core";
 import { resources } from "../../utils/usefulResources";
+import { formatSize } from "../../utils/formatters";
 
 interface FirstTimeSetupProps {
   onComplete: () => void;
+}
+
+interface PackageDetails {
+  id: string;
+  displayName: string;
+  description: string;
+  version: string;
+  objectKey: string;
+  size: number;
+  dependencies: string[];
+  dependencyCount: number;
+  isTopLevelPackage: boolean;
+  totalSize: number;
+  lastModified: string;
+  hash: string;
+}
+
+interface PackageNode {
+  package: PackageDetails;
+  dependencies: Record<string, PackageNode>;
+}
+
+interface Packages {
+  [key: string]: PackageNode;
 }
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
@@ -21,6 +46,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     dllVersion: "Release",
   });
   const [, setFileFound] = useState<null | boolean>(null);
+  const [packages, setPackages] = useState<Packages>({});
 
   const nextStep = () => {
     checkAndFindGamePath();
@@ -86,8 +112,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     try {
       const packagesJson = await invoke('fetch_packages')
       const packages = JSON.parse(packagesJson as string)
-      // Now you can use the packages data
-      console.log(packages)
+      // console.log(packages)
+      setPackages(packages)
     } catch (error) {
       console.error('Failed to fetch packages:', error)
     }
@@ -105,7 +131,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               <Text size="sm" mt="md" c="dimmed">
                 Any options changed here can be modified later. For additional assistance, ask for help in one of the following Discord servers or message 'evxl.' on Discord.
               </Text>
-              <Title mt="md" order={5}>Useful Resources Links</Title>
+              <Title mt="md" order={5}>Useful Resource Links</Title>
               <Grid mt="md">
                 {resources.map((resource, index) => (
                   <Grid.Col span={4} key={index}>
@@ -126,35 +152,36 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
           <Stepper.Step label="Game Path">
             <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
               <Text size="sm" mt="md" c="dimmed">
-                <strong>Note:</strong> A Tribes: Ascend installation is required. (<strong>Recommended:</strong> Steam version)
+                A Tribes: Ascend installation is required. (<strong>Recommended:</strong> Steam version)
               </Text>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '16px' }}>
+              <Space h="xl" />
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
                 <Button
                   component="a"
                   href="steam://install/17080"
-                  variant="outline"
+                  variant="light"
                   color="cyan"
                 >
-                  Install Tribes: Ascend through Steam
+                  Install Through Steam
                 </Button>
                 <Button
                   component="a"
                   href="https://library.theexiled.pwnageservers.com/file.php?id=2962"
                   target="_blank"
-                  variant="outline"
+                  variant="light"
                   color="cyan"
                 >
-                  Install Tribes: Ascend as a standalone from The Exiled
+                  Install as a standalone from The Exiled
                 </Button>
               </div>
-              <Text size="sm" c="dimmed" mt="md">
-                The launcher will try to automatically detect the game path if installed through steam. If it doesn't, you can manually enter the path to the TribesAscend.exe executable.
+              <Text size="sm" c="dimmed" mt="xl">
+                If the path to the TribesAscend.exe executable is not detected, you can manually add it.
               </Text>
               <Text size="sm" c="dimmed">
                 The executable is usually located in: '..\Tribes\Binaries\Win32\TribesAscend.exe'
               </Text>
             </Center>
-            <Space h="lg" />
+            <Space h="xl" />
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <TextInput
                 style={{ flexGrow: 1 }}
@@ -164,7 +191,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               />
               <Button color="cyan" onClick={selectFile}>Choose File</Button>
             </div>
-            <Space h="lg" />
+            <Space h="xl" />
             <Center>
               <Button color="cyan" onClick={findGamePath}>Find Steam Game Path</Button>
             </Center>
@@ -172,27 +199,50 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
           {/* ----------- Packages ----------- */}
           <Stepper.Step label="Packages">
-            <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
-              <Text size="sm" mt="md" c="dimmed">
-                If you do <strong>NOT</strong> wish to use <strong>TAMods</strong>, and you do <strong>NOT</strong> want to play on <strong>GOTY servers</strong>, then you can skip this step.
-              </Text>
-              <Text size="sm" c="dimmed">
-                Otherwise, you will need the following packages:
-              </Text>
-            </Center>
-            <Text size="sm" mt="md" c="dimmed">
+            <Text size="sm" c="dimmed">
               <strong>Minimum </strong>(GOTY and TAMODs): TAMods Core Library
             </Text>
             <Text size="sm" c="dimmed">
               <strong>Recommended:</strong> TAMods Core Library, TAMods Standard Library, Community Made Maps, and Recommended GOTY Routes Library
             </Text>
 
-            <Space h="lg" />
+            <Space h="xs" />
+
+            <Table withRowBorders={false} striped verticalSpacing="6px">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Name</Table.Th>
+                  <Table.Th>Description</Table.Th>
+                  <Table.Th>Size</Table.Th>
+                  <Table.Th>Last Modified</Table.Th>
+                  <Table.Th>Action</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {Object.values(packages).map(({ package: pkg }) => (
+                  <Table.Tr key={pkg.id}>
+                    <Table.Td>{pkg.displayName}</Table.Td>
+                    <Table.Td>{pkg.description}</Table.Td>
+                    <Table.Td>{formatSize(pkg.totalSize || pkg.size)}</Table.Td>
+                    <Table.Td>{new Date(pkg.lastModified).toLocaleDateString()}</Table.Td>
+                    <Table.Td>
+                      <Button radius="lg" variant="light" color="cyan" onClick={() => console.log('Install', pkg.displayName)}>
+                        Install
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+
           </Stepper.Step>
 
           {/* ----------- Launch Options ----------- */}
           <Stepper.Step label="Options">
-            <Title order={4}>Launch Method</Title>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Title order={4}>Launch Method</Title>
+              <Text size="sm" c="dimmed"><strong>Recommended:</strong> Non-Steam</Text>
+            </div>
             <Text size="sm" c="dimmed">
               <strong>Non-Steam:</strong> Launches executable directly, and can inject based on game events.
             </Text>
@@ -205,11 +255,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               onChange={(value) => setConfig({ ...config, launchMethod: value })}
               data={["Non-Steam", "Steam"]}
             />
-            <Text size="sm" c="dimmed">
-              Recommended: Non-Steam
-            </Text>
 
-            <Divider my="md" />
+            <Divider my="xs" />
 
             <Title order={4}>Login Server</Title>
             <Text size="sm" c="dimmed">
@@ -231,9 +278,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               data={["Community", "PUG", "Custom"]}
             />
 
-            <Divider my="md" />
+            <Divider my="xs" />
 
-            <Title order={4}>DLL Version</Title>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Title order={4}>DLL Version</Title>
+              <Text size="sm" c="dimmed"><strong>Recommended:</strong> Release</Text>
+            </div>
             <Text size="sm" c="dimmed">
               <strong>Release:</strong> The latest stable version of TAMods.
             </Text>
@@ -244,11 +294,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             <SegmentedControl
               value={config.dllVersion}
               onChange={(value) => setConfig({ ...config, dllVersion: value })}
-              data={["Release", "Beta", "Edge", "Custom"]}
+              data={["Release", "Beta", "Edge"]}
             />
-            <Text size="sm" c="dimmed">
-              Recommended: Release
-            </Text>
           </Stepper.Step>
 
           {/* ----------- Config Options ----------- */}
