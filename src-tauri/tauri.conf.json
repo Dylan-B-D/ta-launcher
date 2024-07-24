@@ -29,6 +29,13 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "resources": [
+      "../public/configs/dodgehigh/*",
+      "../public/configs/evil/*",
+      "../public/configs/evillow/*",
+      "../public/configs/veryhigh/*",
+      "../public/configs/verylow/*"
     ]
   }
 }

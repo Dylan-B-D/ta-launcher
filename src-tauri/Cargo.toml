@@ -1,3 +1,5 @@
+cargo-features = ["profile-rustflags", "trim-paths"]
+
 [package]
 name = "ta-launcherv2"
 version = "0.0.0"
@@ -24,3 +26,16 @@ log = "0.4.14"          # Used to log to console
 vdf = "0.1.0"           # Used to parse steam libraryfolders.vdf
 serde_yaml = "0.9.34"   # Used to parse the config file
 reqwest = "0.12.5"      # Used to get package info
+
+[profile.dev]
+incremental = true # Compile your binary in smaller steps.
+rustflags = ["-Zthreads=16"] # Better compile performance.
+
+[profile.release]
+codegen-units = 1 # Allows LLVM to perform better optimization.
+lto = true # Enables link-time-optimizations.
+opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
+panic = "abort" # Higher performance by disabling panic handlers.
+strip = true # Ensures debug symbols are removed.
+trim-paths = "all" # Removes potentially privileged information from your binaries.
+rustflags = ["-Cdebuginfo=0", "-Zthreads=16"] # Better compile performance.

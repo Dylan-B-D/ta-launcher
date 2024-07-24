@@ -32,6 +32,14 @@
         }
       ]
     },
+    {
+      "identifier": "fs:allow-document-read-recursive",
+      "allow": [{ "path": "$DOCUMENTS/*" }]
+    },
+    {
+      "identifier": "fs:allow-document-write-recursive",
+      "allow": [{ "path": "$DOCUMENTS/*" }]
+    },
     "dialog:default"
   ]
 }

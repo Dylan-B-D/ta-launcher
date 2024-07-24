@@ -4,7 +4,8 @@
 mod commands;
 use commands::{ 
     find_game_path::find_path,
-    packages::fetch_packages
+    packages::fetch_packages,
+    config_ini::{ check_config, replace_config }
 };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -24,7 +25,9 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             greet, 
             find_path,
-            fetch_packages
+            fetch_packages,
+            check_config,
+            replace_config
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
