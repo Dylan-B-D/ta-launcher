@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification, rem } from "@mantine/core";
+import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification, rem, Switch, NumberInput } from "@mantine/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
@@ -10,42 +10,7 @@ import { confirm } from '@tauri-apps/plugin-dialog';
 import { IconAlertCircle, IconCheck, IconCircleX, IconX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../utils/configPresets";
-
-interface FirstTimeSetupProps {
-  onComplete: () => void;
-}
-
-interface PackageDetails {
-  id: string;
-  displayName: string;
-  description: string;
-  version: string;
-  objectKey: string;
-  size: number;
-  dependencies: string[];
-  dependencyCount: number;
-  isTopLevelPackage: boolean;
-  totalSize: number;
-  lastModified: string;
-  hash: string;
-}
-
-interface PackageNode {
-  package: PackageDetails;
-  dependencies: Record<string, PackageNode>;
-}
-
-interface Packages {
-  [key: string]: PackageNode;
-}
-
-interface CheckConfigResult {
-  exists: boolean;
-}
-
-interface ReplaceConfigResult {
-  message: string;
-}
+import { CheckConfigResult, ConfigFile, ConfigFilesResult, FirstTimeSetupProps, IniField, Packages, ReplaceConfigResult } from "../../interfaces";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -72,6 +37,70 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     color: '',
     icon: null,
   });
+  const [tribesIni, setTribesIni] = useState<ConfigFile | null>(null);
+  const [tribesInputIni, setTribesInputIni] = useState<ConfigFile | null>(null);
+  const [iniValues, setIniValues] = useState<{ [key: string]: boolean | number }>({
+    DynamicLights: false,
+    DepthOfField: false,
+    MaxSmoothedFrameRate: 0,
+  });
+
+  const iniFields: IniField[] = [
+    {
+      key: 'DynamicLights',
+      displayName: 'Dynamic Lights',
+      type: 'boolean',
+      description: 'Significantly improves visuals, but has a very large performance impact (up to -50%).',
+    },
+    {
+      key: 'DepthOfField',
+      displayName: 'Depth of Field',
+      type: 'boolean',
+      description: 'Enable or disable post-processing.',
+    },
+    {
+      key: 'MaxSmoothedFrameRate',
+      displayName: 'Max Smoothed Frame Rate',
+      type: 'number',
+      description: 'Set the maximum framerate (requires framerate smoothing to be enabled).',
+    },
+  ];
+  
+
+  async function fetchConfigFiles() {
+    try {
+      const result: ConfigFilesResult = await invoke('fetch_config_files');
+      console.log(result);
+      setTribesIni(result.tribes_ini);
+      setTribesInputIni(result.tribes_input_ini);
+
+      // Initialize iniValues with fetched data if available
+      const iniContent = parseIni(result.tribes_ini.content);
+      setIniValues({
+        DynamicLights: iniContent.DynamicLights === 'True',
+        DepthOfField: iniContent.DepthOfField === 'True',
+        MaxSmoothedFrameRate: parseInt(iniContent.MaxSmoothedFrameRate) || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching config files:', error);
+    }
+  }
+
+  function parseIni(iniContent: string): { [key: string]: string } {
+    const lines = iniContent.split('\n');
+    const iniObject: { [key: string]: string } = {};
+    lines.forEach(line => {
+      const [key, value] = line.split('=');
+      if (key && value) {
+        iniObject[key.trim()] = value.trim();
+      }
+    });
+    return iniObject;
+  }
+
+  function handleInputChange(key: string, value: boolean | number) {
+    setIniValues(prevValues => ({ ...prevValues, [key]: value }));
+  }
 
   const handleGamePathChange = (value: string) => {
     const trimmedValue = value.trim();
@@ -207,6 +236,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   useEffect(() => {
     findGamePath();
     getPackages();
+    fetchConfigFiles();
   }, []);
 
   const getPackages = async () => {
@@ -443,6 +473,27 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                     </Grid.Col>
                   ))}
                 </Grid>
+                <Grid mt="xs" gutter="xs">
+              {iniFields.map(field => (
+                <Grid.Col span={4} key={field.key}>
+                  <div>
+                    <h3>{field.displayName}</h3>
+                    <p>{field.description}</p>
+                    {field.type === 'boolean' ? (
+                      <Switch
+                        checked={iniValues[field.key] as boolean}
+                        onChange={event => handleInputChange(field.key, event.currentTarget.checked)}
+                      />
+                    ) : (
+                      <NumberInput
+                        value={iniValues[field.key] as number}
+                        onChange={value => handleInputChange(field.key, Number(value) || 0)}
+                      />
+                    )}
+                  </div>
+                </Grid.Col>
+              ))}
+            </Grid>
               </Center>
             </Stepper.Step>
           </Stepper>

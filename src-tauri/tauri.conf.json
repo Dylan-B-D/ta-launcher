@@ -35,7 +35,9 @@
       "../public/configs/evil/*",
       "../public/configs/evillow/*",
       "../public/configs/veryhigh/*",
-      "../public/configs/verylow/*"
+      "../public/configs/verylow/*",
+      "../public/configs/defaultinput/*",
+      "../public/configs/defaultini/*"
     ]
   }
 }

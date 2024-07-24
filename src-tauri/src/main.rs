@@ -5,7 +5,8 @@ mod commands;
 use commands::{ 
     find_game_path::find_path,
     packages::fetch_packages,
-    config_presets::{ check_config, replace_config }
+    config_presets::{ check_config, replace_config },
+    get_config_files::fetch_config_files
 };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -27,7 +28,8 @@ fn main() {
             find_path,
             fetch_packages,
             check_config,
-            replace_config
+            replace_config,
+            fetch_config_files
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
