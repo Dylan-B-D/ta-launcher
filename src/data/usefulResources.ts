@@ -1,6 +1,4 @@
 import { FaGithub } from 'react-icons/fa';
-import { CgWebsite } from 'react-icons/cg';
-
 
 export const resources = [
     {
