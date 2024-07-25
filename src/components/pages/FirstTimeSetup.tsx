@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification, rem, Switch, NumberInput, Tooltip, useMantineTheme, Box } from "@mantine/core";
+import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification, rem } from "@mantine/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
@@ -10,11 +10,11 @@ import { confirm } from '@tauri-apps/plugin-dialog';
 import { IconAlertCircle, IconCheck, IconCircleX, IconX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../utils/configPresets";
-import { CheckConfigResult, ConfigFile, ConfigFilesResult, Field, FirstTimeSetupProps, Packages, ReplaceConfigResult } from "../../interfaces";
-import { iniFields } from "../../utils/iniFields";
+import { CheckConfigResult, ConfigFile, ConfigFilesResult, FirstTimeSetupProps, Packages, ReplaceConfigResult } from "../../interfaces";
+import { iniFields, inputIniFields } from "../../utils/iniFields";
+import ConfigSettingsTable from "../ConfigSettingsTable";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
-  const theme = useMantineTheme();
   const [active, setActive] = useState(0);
   const [config, setConfig] = useState({
     gamePath: "",
@@ -46,6 +46,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     DepthOfField: false,
     MaxSmoothedFrameRate: 0,
   });
+  const allFields = [...iniFields, ...inputIniFields];
+  const third = Math.ceil(allFields.length / 3);
 
   async function fetchConfigFiles() {
     try {
@@ -54,8 +56,11 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       setTribesIni(result.tribes_ini);
       setTribesInputIni(result.tribes_input_ini);
 
-      // Initialize iniValues with fetched data if available, If value is true they are set to to, otherwise they are set to false
+      // Parse ini files
       const iniContent = parseIni(result.tribes_ini.content);
+      const inputIniContent = parseIni(result.tribes_input_ini.content);
+
+      // Initialize iniValues with fetched data if available, If value is true they are set to to, otherwise they are set to false
       setIniValues({
         DynamicLights: iniContent.DynamicLights === 'True',
         DepthOfField: iniContent.DepthOfField === 'True',
@@ -67,6 +72,11 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
         SpeedTreeLeaves: iniContent.SpeedTreeLeaves === 'True',
         SpeedTreeFronds: iniContent.SpeedTreeFronds === 'True',
         AllowRadialBlur: iniContent.AllowRadialBlur === 'True',
+        OneFrameThreadLag: iniContent.OneFrameThreadLag === 'True',
+        m_bTinyWeaponsEnabled: iniContent.m_bTinyWeaponsEnabled === 'True',
+        bEnableMouseSmoothing: inputIniContent.bEnableMouseSmoothing === 'True',
+        FOVSetting: parseInt(inputIniContent.FOVSetting) || 90,
+        MouseSensitivity: parseFloat(inputIniContent.MouseSensitivity) || 1.0,
       });
     } catch (error) {
       console.error('Error fetching config files:', error);
@@ -235,56 +245,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       setPackages(packages)
     } catch (error) {
       console.error('Failed to fetch packages:', error)
-    }
-  };
-
-  const renderInputField = (field: Field) => {
-    
-    if (field.type === 'boolean') {
-      return (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Switch
-            checked={iniValues[field.key] as boolean}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleInputChange(field.key, event.currentTarget.checked)
-            }
-            size="md"
-            onLabel="On"
-            offLabel="Off"
-            color="teal"
-            thumbIcon={
-              iniValues[field.key] ? (
-                <IconCheck
-                  style={{ width: rem(12), height: rem(12) }}
-                  color={theme.colors.teal[6]}
-                  stroke={3}
-                />
-              ) : (
-                <IconX
-                  style={{ width: rem(12), height: rem(12) }}
-                  color={theme.colors.red[6]}
-                  stroke={3}
-                />
-              )
-            }
-          />
-        </div>
-      );
-    } else {
-      return (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <NumberInput
-            value={iniValues[field.key] as number}
-            onChange={(value: string | number) =>
-              handleInputChange(field.key, Number(value) || 0)
-            }
-            size="xs"
-            w={75}
-            variant="filled"
-            style={{ marginBottom: '-3px', marginTop: '-3px' }} // Fix for NumberInput height to match Switch
-          />
-        </div>
-      );
     }
   };
 
@@ -512,56 +472,22 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Grid>
                 <Space h="xs" />
                 <Group align="flex-start" grow style={{ width: '100%' }}>
-                  <Box style={{ width: '100%' }}>
-                    <Table striped withTableBorder withRowBorders={false} style={{ tableLayout: 'fixed', width: '100%' }}>
-                      <Table.Thead>
-                        <Table.Tr>
-                          <Table.Th style={{ textAlign: 'left', width: '60%' }}>Setting</Table.Th>
-                          <Table.Th style={{ textAlign: 'right', width: '40%' }}>Value</Table.Th>
-                        </Table.Tr>
-                      </Table.Thead>
-                      <Table.Tbody>
-                        {iniFields.slice(0, Math.ceil(iniFields.length / 2)).map(field => (
-                          <Table.Tr key={field.key}>
-                            <Table.Td style={{ textAlign: 'left' }}>
-                              <Tooltip label={field.description} withArrow>
-                                <div>{field.displayName}</div>
-                              </Tooltip>
-                            </Table.Td>
-                            <Table.Td style={{ textAlign: 'right' }}>
-                              {renderInputField(field)}
-                            </Table.Td>
-                          </Table.Tr>
-                        ))}
-                      </Table.Tbody>
-                    </Table>
-                  </Box>
-
-                  <Box style={{ width: '100%' }}>
-                    <Table striped withTableBorder withRowBorders={false} style={{ tableLayout: 'fixed', width: '100%' }}>
-                      <Table.Thead>
-                        <Table.Tr>
-                          <Table.Th style={{ textAlign: 'left', width: '60%' }}>Setting</Table.Th>
-                          <Table.Th style={{ textAlign: 'right', width: '40%' }}>Value</Table.Th>
-                        </Table.Tr>
-                      </Table.Thead>
-                      <Table.Tbody>
-                        {iniFields.slice(Math.ceil(iniFields.length / 2)).map(field => (
-                          <Table.Tr key={field.key}>
-                            <Table.Td style={{ textAlign: 'left' }}>
-                              <Tooltip label={field.description} withArrow>
-                                <div>{field.displayName}</div>
-                              </Tooltip>
-                            </Table.Td>
-                            <Table.Td style={{ textAlign: 'right' }}>
-                              {renderInputField(field)}
-                            </Table.Td>
-                          </Table.Tr>
-                        ))}
-                      </Table.Tbody>
-                    </Table>
-                  </Box>
-                </Group>
+                  <ConfigSettingsTable
+                    fields={allFields.slice(0, third)}
+                    iniValues={iniValues}
+                    handleInputChange={handleInputChange}
+                  />
+                  <ConfigSettingsTable
+                    fields={allFields.slice(third, third * 2)}
+                    iniValues={iniValues}
+                    handleInputChange={handleInputChange}
+                  />
+                  <ConfigSettingsTable
+                    fields={allFields.slice(third * 2)}
+                    iniValues={iniValues}
+                    handleInputChange={handleInputChange}
+                  />
+              </Group>
               </Center>
             </Stepper.Step>
           </Stepper>

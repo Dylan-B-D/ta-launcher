@@ -2,63 +2,96 @@ import { IniField } from "../interfaces";
 
 export const iniFields: IniField[] = [
     {
-        key: 'DynamicLights',
-        displayName: 'Dynamic Lights',
-        type: 'boolean',
-        description: 'Significantly improves visuals, but has a very large performance impact (up to -50%).',
-    },
-    {
-        key: 'DepthOfField',
-        displayName: 'Depth of Field',
-        type: 'boolean',
-        description: 'Enable or disable post-processing.',
-    },
-    {
         key: 'MaxSmoothedFrameRate',
-        displayName: 'Max Smoothed Frame Rate',
+        displayName: 'Max Framerate',
         type: 'number',
-        description: 'Set the maximum framerate (requires framerate smoothing to be enabled).',
-    },
-    {
-        key: 'Bloom',
-        displayName: 'Bloom',
-        type: 'boolean',
-        description: 'Enable or disable bloom.',
-    },
-    {
-        key: 'MotionBlur',
-        displayName: 'Motion Blur',
-        type: 'boolean',
-        description: 'Enable or disable motion blur.',
+        description: '[MaxSmoothedFrameRate] Set the maximum framerate (requires framerate smoothing to be enabled).',
     },
     {
         key: 'bSmoothFrameRate',
         displayName: 'Framerate Smoothing',
         type: 'boolean',
-        description: 'Enabled: Allows custom framerate.',
+        description: '[bSmoothFrameRate] Allows custom framerate when enabled.',
+    },
+    {
+        key: 'm_bTinyWeaponsEnabled',
+        displayName: 'Reduce Weapon Size',
+        type: 'boolean',
+        description: '[m_bTinyWeaponsEnabled] Enable or disable tiny weapons.',
+    },
+    {
+        key: 'DynamicLights',
+        displayName: 'Dynamic Lights',
+        type: 'boolean',
+        description: '[DynamicLights] Significantly improves visuals, but has a very large performance impact (up to -50%).',
+    },
+    {
+        key: 'DepthOfField',
+        displayName: 'Depth of Field',
+        type: 'boolean',
+        description: '[DepthOfField] Enable or disable post-processing.',
+    },
+    {
+        key: 'Bloom',
+        displayName: 'Bloom',
+        type: 'boolean',
+        description: '[Bloom] Enable or disable bloom.',
+    },
+    {
+        key: 'MotionBlur',
+        displayName: 'Motion Blur',
+        type: 'boolean',
+        description: '[MotionBlur] Enable or disable motion blur.',
     },
     {
         key: 'bForceStaticTerrain',
         displayName: 'Force Static Terrain',
         type: 'boolean',
-        description: 'False: Disables terrain popping.',
+        description: '[bForceStaticTerrain]  Disables terrain popping when false.',
     },
     {
         key: 'SpeedTreeLeaves',
-        displayName: 'Speed Tree Leaves',
+        displayName: 'Tree Leaves',
         type: 'boolean',
-        description: 'Enable or disable leaves on trees.',
+        description: '[SpeedTreeLeaves] Enable or disable leaves on trees.',
     },
     {
         key: 'SpeedTreeFronds',
-        displayName: 'Speed Tree Leaves',
+        displayName: 'Tree Branches',
         type: 'boolean',
-        description: 'Enable or disable branches on some trees.',
+        description: '[SpeedTreeFronds] Enable or disable branches on some trees.',
     },
     {
         key: 'AllowRadialBlur',
-        displayName: 'Allow Radial Blur',
+        displayName: 'Impact Distortion',
         type: 'boolean',
-        description: 'When false, removes some of the distortions from weapon impacts.',
+        description: '[AllowRadialBlur] When false, removes some of the distortions from weapon impacts.',
+    },
+    {
+        key: 'OneFrameThreadLag',
+        displayName: 'One Frame Thread Lag',
+        type: 'boolean',
+        description: '[OneFrameThreadLag] Reduces mouse latency when disabled.',
     },
 ];
+
+export const inputIniFields: IniField[] = [
+    {
+      key: 'bEnableMouseSmoothing',
+      displayName: 'Mouse Smoothing',
+      type: 'boolean',
+      description: '[bEnableMouseSmoothing] Enable or disable mouse smoothing.',
+    },
+    {
+      key: 'FOVSetting',
+      displayName: 'Field of View',
+      type: 'number',
+      description: '[FOVSetting] Set the field of view (Max 120).',
+    },
+    {
+      key: 'MouseSensitivity',
+      displayName: 'Mouse Sensitivity',
+      type: 'number',
+      description: '[MouseSensitivity] Set the mouse sensitivity (0-100).',
+    }
+  ];

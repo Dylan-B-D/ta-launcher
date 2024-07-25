@@ -54,4 +54,12 @@ export interface IniField {
 export interface Field {
     type: string;
     key: string;
+    displayName: string;
+    description: string;
   }
+
+export interface ConfigSettingsTableProps {
+    fields: Field[];
+    iniValues: { [key: string]: boolean | number };
+    handleInputChange: (key: string, value: boolean | number) => void;
+}
