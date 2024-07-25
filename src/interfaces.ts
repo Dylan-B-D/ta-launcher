@@ -50,3 +50,8 @@ export interface IniField {
     type: 'boolean' | 'number';
     description: string;
 }
+
+export interface Field {
+    type: string;
+    key: string;
+  }
