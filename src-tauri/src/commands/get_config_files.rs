@@ -4,6 +4,18 @@ use std::path::PathBuf;
 use tauri::{path::BaseDirectory, Manager};
 use dirs;
 
+#[derive(serde::Serialize)]
+pub struct ConfigFile {
+    content: String,
+    permissions: String,
+}
+
+#[derive(serde::Serialize)]
+pub struct ConfigFilesResult {
+    tribes_ini: ConfigFile,
+    tribes_input_ini: ConfigFile,
+}
+
 #[tauri::command]
 pub fn fetch_config_files(handle: tauri::AppHandle) -> Result<ConfigFilesResult, String> {
     let documents_dir = dirs::document_dir().ok_or_else(|| "Could not find documents directory".to_string())?;
@@ -74,14 +86,53 @@ fn get_permissions(path: &PathBuf) -> Result<String, String> {
     Ok(if permissions.readonly() { "readonly" } else { "read-write" }.to_string())
 }
 
-#[derive(serde::Serialize)]
-pub struct ConfigFile {
-    content: String,
-    permissions: String,
-}
+#[tauri::command]
+pub fn update_ini_file(file: String, changes: Vec<(String, String)>) -> Result<(), String> {
+    let documents_dir = dirs::document_dir().ok_or_else(|| "Could not find documents directory".to_string())?;
+    let config_dir = documents_dir.join("My Games\\Tribes Ascend\\TribesGame\\config");
+    let file_path = config_dir.join(file);
 
-#[derive(serde::Serialize)]
-pub struct ConfigFilesResult {
-    tribes_ini: ConfigFile,
-    tribes_input_ini: ConfigFile,
+    let mut content = read_file(&file_path)?;
+    let mut lines: Vec<String> = content.split('\n').map(String::from).collect();
+
+    // Check if the file is read-only
+    let metadata = fs::metadata(&file_path).map_err(|e| format!("Failed to get metadata for file {}: {}", file_path.display(), e))?;
+    let mut was_read_only = false;
+
+    if metadata.permissions().readonly() {
+        was_read_only = true;
+        // Make the file writable
+        let mut permissions = metadata.permissions();
+        permissions.set_readonly(false);
+        fs::set_permissions(&file_path, permissions).map_err(|e| format!("Failed to set permissions for file {}: {}", file_path.display(), e))?;
+    }
+
+    for (key, new_value) in changes {
+        // Capitalize boolean values
+        let formatted_value = if new_value == "true" || new_value == "false" {
+            let mut chars = new_value.chars();
+            chars.next().unwrap().to_uppercase().collect::<String>() + chars.as_str()
+        } else {
+            new_value
+        };
+
+        // Update all occurrences of the key
+        for line in lines.iter_mut() {
+            if line.starts_with(&format!("{}=", key)) {
+                *line = format!("{}={}", key, formatted_value);
+            }
+        }
+    }
+
+    content = lines.join("\n");
+    fs::write(&file_path, content).map_err(|e| format!("Failed to write to file {}: {}", file_path.display(), e))?;
+
+    // Restore the read-only permission if it was initially read-only
+    if was_read_only {
+        let mut permissions = fs::metadata(&file_path).map_err(|e| e.to_string())?.permissions();
+        permissions.set_readonly(true);
+        fs::set_permissions(&file_path, permissions).map_err(|e| format!("Failed to restore permissions for file {}: {}", file_path.display(), e))?;
+    }
+
+    Ok(())
 }

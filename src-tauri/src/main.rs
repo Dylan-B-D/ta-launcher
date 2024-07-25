@@ -6,7 +6,7 @@ use commands::{
     find_game_path::find_path,
     packages::fetch_packages,
     config_presets::{ check_config, replace_config },
-    get_config_files::fetch_config_files
+    get_config_files::{ fetch_config_files, update_ini_file }
 };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -29,7 +29,8 @@ fn main() {
             fetch_packages,
             check_config,
             replace_config,
-            fetch_config_files
+            fetch_config_files,
+            update_ini_file
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

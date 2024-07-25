@@ -18,8 +18,8 @@ export function ConfigCard({ title, author, description, onApply }: ConfigCardPr
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
             onClick={onApply}
         >
-            <Group justify="space-between" align="start" wrap="nowrap" p="xs" style={{ paddingBottom: '2px' }}>
-                <Box style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <Group justify="space-between" align="start" wrap="nowrap" p={0} style={{ padding: '2px 8px' }}>
+                <Box style={{ paddingLeft: 10, paddingRight: 5 ,display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                     <Box style={{ display: 'flex', flexDirection: 'column' }}>
                         <Text size="sm" fw={600} lineClamp={1}>
                             {title}

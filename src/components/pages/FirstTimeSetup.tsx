@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container, Button, TextInput, Stepper, Group, Space, Center, Title, Text, SegmentedControl, Divider, Grid, Table, Notification, rem } from "@mantine/core";
 import { open } from '@tauri-apps/plugin-dialog';
-import { saveConfig } from "../../utils/config";
+import { loadConfig, saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
 import { invoke } from "@tauri-apps/api/core";
 import { resources } from "../../utils/usefulResources";
@@ -13,6 +13,8 @@ import { configPresets } from "../../utils/configPresets";
 import { CheckConfigResult, ConfigFile, ConfigFilesResult, FirstTimeSetupProps, Packages, ReplaceConfigResult } from "../../interfaces";
 import { iniFields, inputIniFields } from "../../utils/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
+import SensitivityCalculator from "../SensitivityCalculator";
+import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -21,6 +23,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     loginServer: "Community",
     launchMethod: "Non-Steam",
     dllVersion: "Release",
+    dpi: 800,
   });
   const [, setFileFound] = useState<null | boolean>(null);
   const [packages, setPackages] = useState<Packages>({});
@@ -49,6 +52,19 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const allFields = [...iniFields, ...inputIniFields];
   const third = Math.ceil(allFields.length / 3);
 
+  const handleDpiChange = (value: number) => {
+    setConfig(prev => ({ ...prev, dpi: value }));
+  };
+
+  const handleSensitivityChange = (value: number) => {
+    const maxFOV = 120;
+    const fovScale = maxFOV / (iniValues.FOVSetting as number);
+    const constant = 124_846.176;
+    const newMouseSensitivity = (constant / (config.dpi * value * fovScale)).toFixed(3);
+    
+    handleInputChange('input', 'MouseSensitivity', parseFloat(newMouseSensitivity));
+  };
+
   async function fetchConfigFiles() {
     try {
       const result: ConfigFilesResult = await invoke('fetch_config_files');
@@ -74,9 +90,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
         AllowRadialBlur: iniContent.AllowRadialBlur === 'True',
         OneFrameThreadLag: iniContent.OneFrameThreadLag === 'True',
         m_bTinyWeaponsEnabled: iniContent.m_bTinyWeaponsEnabled === 'True',
+        UseVsync: iniContent.UseVsync === 'True',
+        ResX: parseInt(iniContent.ResX) || 1920,
+        ResY: parseInt(iniContent.ResY) || 1080,
         bEnableMouseSmoothing: inputIniContent.bEnableMouseSmoothing === 'True',
         FOVSetting: parseInt(inputIniContent.FOVSetting) || 90,
-        MouseSensitivity: parseFloat(inputIniContent.MouseSensitivity) || 1.0,
+        MouseSensitivity: parseFloat(inputIniContent.MouseSensitivity) || 10.0,
       });
     } catch (error) {
       console.error('Error fetching config files:', error);
@@ -95,9 +114,21 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     return iniObject;
   }
 
-  function handleInputChange(key: string, value: boolean | number) {
-    setIniValues(prevValues => ({ ...prevValues, [key]: value }));
-  }
+  function handleInputChange(fileKey: string, key: string, value: boolean | number) {
+    setIniValues(prevValues => {
+      const updatedValues = { ...prevValues, [key]: value };
+  
+      // Prepare data for backend
+      const changes = [[key, value.toString()]];
+      const file = fileKey === 'input' ? 'TribesInput.ini' : 'tribes.ini';
+  
+      // Call Rust function via Tauri command
+      invoke('update_ini_file', { file, changes })
+        .catch(console.error);
+  
+      return updatedValues;
+    });
+  }  
 
   const handleGamePathChange = (value: string) => {
     const trimmedValue = value.trim();
@@ -235,6 +266,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     findGamePath();
     getPackages();
     fetchConfigFiles();
+    loadConfig(setConfig);
   }, []);
 
   const getPackages = async () => {
@@ -276,18 +308,18 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Text>
                 <Title mt="md" order={5}>Useful Resource Links</Title>
                 <Grid mt="md">
-                {resources.map((resource, index) => (
-                  <Grid.Col span={4} key={index}>
-                    <CardGradient
-                      icon={resource.icon}
-                      image={resource.image}
-                      gradient={resource.gradient}
-                      title={resource.title}
-                      description={resource.description}
-                      link={resource.link}
-                    />
-                  </Grid.Col>
-                ))}
+                  {resources.map((resource, index) => (
+                    <Grid.Col span={4} key={index}>
+                      <CardGradient
+                        icon={resource.icon}
+                        image={resource.image}
+                        gradient={resource.gradient}
+                        title={resource.title}
+                        description={resource.description}
+                        link={resource.link}
+                      />
+                    </Grid.Col>
+                  ))}
                 </Grid>
               </Center>
             </Stepper.Step>
@@ -453,7 +485,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             <Stepper.Step label="Config">
               <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%', width: '100%' }}>
                 <Text c="dimmed" size="sm">
-                  <strong>INI Presets:</strong> Select a preset to apply (if you want).
+                  <strong>Tribes.ini Presets:</strong> Select a preset to apply (if you want).
                 </Text>
                 <Text c="dimmed" size="sm">
                   *INI files are graphics config files that let you change more options that in-game.
@@ -473,21 +505,30 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 <Space h="xs" />
                 <Group align="flex-start" grow style={{ width: '100%' }}>
                   <ConfigSettingsTable
-                    fields={allFields.slice(0, third)}
+                    fields={iniFields.slice(0, third)}
                     iniValues={iniValues}
-                    handleInputChange={handleInputChange}
+                    handleInputChange={(key, value) => handleInputChange('main', key, value)}
                   />
                   <ConfigSettingsTable
-                    fields={allFields.slice(third, third * 2)}
+                    fields={iniFields.slice(third, third * 2)}
                     iniValues={iniValues}
-                    handleInputChange={handleInputChange}
+                    handleInputChange={(key, value) => handleInputChange('main', key, value)}
                   />
                   <ConfigSettingsTable
-                    fields={allFields.slice(third * 2)}
+                    fields={inputIniFields}
                     iniValues={iniValues}
-                    handleInputChange={handleInputChange}
+                    handleInputChange={(key, value) => handleInputChange('input', key, value)}
                   />
-              </Group>
+                </Group>
+
+                <SensitivityCalculator 
+                  mouseSensitivity={iniValues.MouseSensitivity as number} 
+                  FOVSetting={iniValues.FOVSetting as number}
+                  dpi={config.dpi}
+                  onDpiChange={handleDpiChange}
+                  onSensitivityChange={handleSensitivityChange}
+                />
+
               </Center>
             </Stepper.Step>
           </Stepper>

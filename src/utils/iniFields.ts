@@ -27,7 +27,7 @@ export const iniFields: IniField[] = [
     },
     {
         key: 'DepthOfField',
-        displayName: 'Depth of Field',
+        displayName: 'Post Processing',
         type: 'boolean',
         description: '[DepthOfField] Enable or disable post-processing.',
     },
@@ -73,6 +73,24 @@ export const iniFields: IniField[] = [
         type: 'boolean',
         description: '[OneFrameThreadLag] Reduces mouse latency when disabled.',
     },
+    {
+        key: 'UseVsync',
+        displayName: 'Vsync',
+        type: 'boolean',
+        description: '[UseVsync] Enable or disable Vsync.',
+    },
+    {
+        key: 'ResX',
+        displayName: 'Res Width',
+        type: 'number',
+        description: '[ResX] Set the resolution width.',
+    },
+    {
+        key: 'ResY',
+        displayName: 'Res Height',
+        type: 'number',
+        description: '[ResY] Set the resolution height.',
+    }
 ];
 
 export const inputIniFields: IniField[] = [
@@ -80,7 +98,7 @@ export const inputIniFields: IniField[] = [
       key: 'bEnableMouseSmoothing',
       displayName: 'Mouse Smoothing',
       type: 'boolean',
-      description: '[bEnableMouseSmoothing] Enable or disable mouse smoothing.',
+      description: '[bEnableMouseSmoothing] Ties mouse sensitivity to framerate when enabled. Disable',
     },
     {
       key: 'FOVSetting',

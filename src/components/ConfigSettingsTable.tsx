@@ -48,6 +48,7 @@ const ConfigSettingsTable: React.FC<ConfigSettingsTableProps> = ({ fields, iniVa
             size="xs"
             w={75}
             variant="filled"
+            radius={0}
             style={{ marginBottom: '-3px', marginTop: '-3px' }} // Fix for NumberInput height to match Switch
           />
         </div>

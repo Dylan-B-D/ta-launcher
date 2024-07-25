@@ -10,8 +10,8 @@
     padding-left: calc(var(--mantine-spacing-xs) * 2);
     background-image: linear-gradient(
       to right,
-      var(--mantine-color-dark-7),
-      var(--mantine-color-dark-9)
+      var(--mantine-color-dark-8),
+      var(--mantine-color-dark-8)
     ) !important;
   
     &:hover {
