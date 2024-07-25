@@ -49,11 +49,16 @@ Before you begin, ensure you have the following installed:
    ```bash
    npm install -g @tauri-apps/cli
 
-5. **Run in Development Mode:**
+5. **Switching from Bun to NPM:**
+   To use NPM instead of Bun for running the project, you need to make the following changes in `src-tauri/tauri.conf.json`:
+   - Replace `bun run dev` with `npm run dev`
+   - Replace `bun run build` with `npm run build`
+
+6. **Run in Development Mode:**
    ```bash
    npx tauri dev
 
-6. **Build Executable:**
+7. **Build Executable:**
    ```bash
    npx tauri build
   
