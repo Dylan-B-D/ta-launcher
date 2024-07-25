@@ -14,7 +14,6 @@ import { CheckConfigResult, ConfigFile, ConfigFilesResult, FirstTimeSetupProps, 
 import { iniFields, inputIniFields } from "../../utils/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
 import SensitivityCalculator from "../SensitivityCalculator";
-import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -342,7 +341,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                     variant="light"
                     color="cyan"
                   >
-                    Install Through Steam
+                    Steam Install
                   </Button>
                   <Button
                     component="a"
@@ -351,7 +350,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                     variant="light"
                     color="cyan"
                   >
-                    Install as a standalone from The Exiled
+                    Non-Steam Install
                   </Button>
                 </div>
                 <Text size="sm" c="dimmed" mt="xl">

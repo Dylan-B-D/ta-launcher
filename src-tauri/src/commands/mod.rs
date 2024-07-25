@@ -1,4 +1,4 @@
 pub mod find_game_path;
 pub mod packages;
-pub mod config_presets;
-pub mod get_config_files;
+pub mod config_preset_manager;
+pub mod config_manager;

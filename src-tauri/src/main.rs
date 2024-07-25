@@ -5,8 +5,8 @@ mod commands;
 use commands::{ 
     find_game_path::find_path,
     packages::fetch_packages,
-    config_presets::{ check_config, replace_config },
-    get_config_files::{ fetch_config_files, update_ini_file }
+    config_preset_manager::{ check_config, replace_config },
+    config_manager::{ fetch_config_files, update_ini_file }
 };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
