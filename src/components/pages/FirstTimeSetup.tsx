@@ -316,16 +316,18 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Text>
                 <Title mt="md" order={5}>Useful Resource Links</Title>
                 <Grid mt="md">
-                  {resources.map((resource, index) => (
-                    <Grid.Col span={4} key={index}>
-                      <CardGradient
-                        icon={resource.icon}
-                        gradient={resource.gradient}
-                        title={resource.title}
-                        description={resource.description}
-                        link={resource.link} />
-                    </Grid.Col>
-                  ))}
+                {resources.map((resource, index) => (
+                  <Grid.Col span={4} key={index}>
+                    <CardGradient
+                      icon={resource.icon}
+                      image={resource.image}
+                      gradient={resource.gradient}
+                      title={resource.title}
+                      description={resource.description}
+                      link={resource.link}
+                    />
+                  </Grid.Col>
+                ))}
                 </Grid>
               </Center>
             </Stepper.Step>
