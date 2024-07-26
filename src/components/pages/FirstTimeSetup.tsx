@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, Table, rem } from "@mantine/core";
-import { open } from '@tauri-apps/plugin-dialog';
+import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem } from "@mantine/core";
 import { loadConfig, saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
-import { invoke } from "@tauri-apps/api/core";
-import { resources } from "../../data/usefulResources";
-import { formatSize } from "../../utils/formatters";
+import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
-import { ConfigFile, FirstTimeSetupProps, Packages } from "../../interfaces";
+import { ConfigFile, ConfigState, FirstTimeSetupProps, Packages } from "../../interfaces";
 import { iniFields, inputIniFields } from "../../data/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
 import SensitivityCalculator from "../SensitivityCalculator";
 import { GamePathStep } from "../GamePathStep";
 import NotificationPopup from "../NotificationPopup";
 import LaunchOptions from "../LaunchOptionsStep";
-import { fetchConfigFiles, findGamePath, getPackages } from "../../utils/utils";
+import { checkAndFindGamePath, fetchConfigFiles, findGamePath, getPackages, handleDpiChange, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
+import PackagesTable from "../PackageTable";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -28,7 +26,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [iniValues, setIniValues] = useState<{ [key: string]: boolean | number }>({});
   const allFields = [...iniFields, ...inputIniFields];
   const third = Math.ceil(allFields.length / 3);
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<ConfigState>({
     gamePath: "",
     loginServer: "Community",
     launchMethod: "Non-Steam",
@@ -41,60 +39,25 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     title: string;
     color: string;
     icon: JSX.Element | null;
-}>({
+  }>({
     visible: false,
     message: '',
     title: '',
     color: '',
     icon: null,
-});
+  });
 
   // Initilize: Game Path, Config Files, Config Values and Packages
   useEffect(() => {
     findGamePath(setConfig, setFileFound);
-    getPackages(setPackages); 
+    getPackages(setPackages);
     fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
     loadConfig(setConfig);
   }, []);
 
-  const handleDpiChange = (value: number) => {
-    setConfig(prev => ({ ...prev, dpi: value }));
-  };
-
-  const handleSensitivityChange = (value: number) => {
-    const maxFOV = 120;
-    const fovScale = maxFOV / (iniValues.FOVSetting as number);
-    const constant = 124_846.176;
-    const newMouseSensitivity = (constant / (config.dpi * value * fovScale)).toFixed(3);
-    
-    handleInputChange('input', 'MouseSensitivity', parseFloat(newMouseSensitivity));
-  };
-
-  function handleInputChange(fileKey: string, key: string, value: boolean | number) {
-    setIniValues(prevValues => {
-      const updatedValues = { ...prevValues, [key]: value };
-  
-      // Prepare data for backend
-      const changes = [[key, value.toString()]];
-      const file = fileKey === 'input' ? 'TribesInput.ini' : 'tribes.ini';
-  
-      // Call Rust function via Tauri command
-      invoke('update_ini_file', { file, changes })
-        .catch(console.error);
-  
-      return updatedValues;
-    });
-  }  
-
-  const handleGamePathChange = (value: string) => {
-    const trimmedValue = value.trim();
-    setConfig({ ...config, gamePath: value });
-    setGamePathError(trimmedValue === '');
-  };
-
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault();
-    checkAndFindGamePath();
+    checkAndFindGamePath(config, setConfig, setFileFound);
     // Check for empty config values
     const emptyFields = Object.entries(config)
       .filter(([, value]) => value === "")
@@ -122,47 +85,26 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   }, [active, config.gamePath]);
 
   const nextStep = () => {
-    checkAndFindGamePath();
+    checkAndFindGamePath(config, setConfig, setFileFound);
     setActive((current) => (current < 5 ? current + 1 : current));
   };
 
   const prevStep = () => {
-    checkAndFindGamePath();
+    checkAndFindGamePath(config, setConfig, setFileFound);
     setActive((current) => (current > 0 ? current - 1 : current));
-  };
-
-  const selectFile = async () => {
-    try {
-      const selected = await open();
-
-      if (selected && typeof selected.path === "string" && selected.path.endsWith(".exe")) {
-        setConfig((prevConfig) => ({ ...prevConfig, gamePath: selected.path }));
-        setFileFound(true);
-      } else {
-        setFileFound(false);
-      }
-    } catch (error) {
-      console.error("Error selecting file:", error);
-    }
-  };
-
-  const checkAndFindGamePath = () => {
-    if (config.gamePath === "") {
-      findGamePath(setConfig, setFileFound);
-    }
   };
 
   return (
     <>
       <NotificationPopup
-                visible={notification.visible}
-                message={notification.message}
-                title={notification.title}
-                color={notification.color}
-                onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
-                icon={notification.icon}
-            />
-    <Container p={0} fluid style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        visible={notification.visible}
+        message={notification.message}
+        title={notification.title}
+        color={notification.color}
+        onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
+        icon={notification.icon}
+      />
+      <Container p={0} fluid style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           <Stepper p={"md"} color="teal" size="sm" active={active} onStepClick={setActive}>
 
@@ -170,12 +112,27 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             <Stepper.Step label="Welcome">
               <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
                 <Title order={2}>First-time Setup</Title>
-                <Text size="sm" mt="md" c="dimmed">
+                <Text size="sm" c="dimmed">
                   Any options changed here can be modified later. For additional assistance, ask for help in one of the following Discord servers or message 'evxl.' on Discord.
                 </Text>
+                <Title mt="md" order={5}>Discord Links</Title>
+                <Grid mt="4px">
+                  {discordResources.map((resource, index) => (
+                    <Grid.Col span={4} key={index}>
+                      <CardGradient
+                        icon={resource.icon}
+                        image={resource.image}
+                        gradient={resource.gradient}
+                        title={resource.title}
+                        description={resource.description}
+                        link={resource.link}
+                      />
+                    </Grid.Col>
+                  ))}
+                </Grid>
                 <Title mt="md" order={5}>Useful Resource Links</Title>
-                <Grid mt="md">
-                  {resources.map((resource, index) => (
+                <Grid mt="4px">
+                  {usefulResources.map((resource, index) => (
                     <Grid.Col span={4} key={index}>
                       <CardGradient
                         icon={resource.icon}
@@ -199,56 +156,23 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             >
               <GamePathStep
                 config={config}
+                setConfig={setConfig}
+                setFileFound={setFileFound}
                 gamePathError={gamePathError}
-                handleGamePathChange={handleGamePathChange}
-                selectFile={selectFile}
+                handleGamePathChange={(value) => handleGamePathChange(value, setConfig, setGamePathError)}
                 findGamePath={() => findGamePath(setConfig, setFileFound)}
               />
+
             </Stepper.Step>
 
             {/* ----------- Packages ----------- */}
             <Stepper.Step label="Packages">
-              <Text size="sm" c="dimmed">
-                <strong>Minimum </strong>(GOTY and TAMODs): TAMods Core Library
-              </Text>
-              <Text size="sm" c="dimmed">
-                <strong>Recommended:</strong> TAMods Core Library, TAMods Standard Library, Community Made Maps, and Recommended GOTY Routes Library
-              </Text>
-
-              <Space h="xs" />
-
-              <Table withRowBorders={false} striped verticalSpacing="6px">
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Name</Table.Th>
-                    <Table.Th>Description</Table.Th>
-                    <Table.Th>Size</Table.Th>
-                    <Table.Th>Last Modified</Table.Th>
-                    <Table.Th>Action</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {Object.values(packages).map(({ package: pkg }) => (
-                    <Table.Tr key={pkg.id}>
-                      <Table.Td>{pkg.displayName}</Table.Td>
-                      <Table.Td>{pkg.description}</Table.Td>
-                      <Table.Td>{formatSize(pkg.totalSize || pkg.size)}</Table.Td>
-                      <Table.Td>{new Date(pkg.lastModified).toLocaleDateString()}</Table.Td>
-                      <Table.Td>
-                        <Button radius="lg" variant="light" color="cyan" onClick={() => console.log('Install', pkg.displayName)}>
-                          Install
-                        </Button>
-                      </Table.Td>
-                    </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-
+              <PackagesTable packages={packages} />
             </Stepper.Step>
 
             {/* ----------- Launch Options ----------- */}
             <Stepper.Step label="Options">
-            <LaunchOptions config={config} setConfig={setConfig} />
+              <LaunchOptions config={config} setConfig={setConfig} />
 
             </Stepper.Step>
 
@@ -273,35 +197,35 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                         fetchConfigFiles={async () => {
                           await fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
                         }}
-                    />
+                      />
                     </Grid.Col>
                   ))}
                 </Grid>
                 <Space h="xs" />
-                <Group align="flex-start" grow style={{ width: '100%' }}>
+                <Group align="flex-start" gap='sm' grow style={{ width: '100%' }}>
                   <ConfigSettingsTable
                     fields={iniFields.slice(0, third)}
                     iniValues={iniValues}
-                    handleInputChange={(key, value) => handleInputChange('main', key, value)}
+                    handleInputChange={(key, value) => handleInputChange('main', key, value, setIniValues)}
                   />
                   <ConfigSettingsTable
                     fields={iniFields.slice(third, third * 2)}
                     iniValues={iniValues}
-                    handleInputChange={(key, value) => handleInputChange('main', key, value)}
+                    handleInputChange={(key, value) => handleInputChange('main', key, value, setIniValues)}
                   />
                   <ConfigSettingsTable
                     fields={inputIniFields}
                     iniValues={iniValues}
-                    handleInputChange={(key, value) => handleInputChange('input', key, value)}
+                    handleInputChange={(key, value) => handleInputChange('input', key, value, setIniValues)}
                   />
                 </Group>
 
-                <SensitivityCalculator 
-                  mouseSensitivity={iniValues.MouseSensitivity as number} 
+                <SensitivityCalculator
+                  mouseSensitivity={iniValues.MouseSensitivity as number}
                   FOVSetting={iniValues.FOVSetting as number}
                   dpi={config.dpi}
-                  onDpiChange={handleDpiChange}
-                  onSensitivityChange={handleSensitivityChange}
+                  onDpiChange={(value) => handleDpiChange(value, setConfig)}
+                  onSensitivityChange={(value) => handleSensitivityChange(value, iniValues, config, handleInputChange, setIniValues)}
                 />
 
               </Center>

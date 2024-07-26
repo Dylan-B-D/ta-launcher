@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { ConfigFilesResult } from "../interfaces";
+import { ConfigFilesResult, ConfigState } from "../interfaces";
 
 // Get the list of available packages from the backend
 export const getPackages = async (setPackages: (packages: any) => void) => {
@@ -27,9 +27,13 @@ export const findGamePath = async (setConfig: (config: any) => void, setFileFoun
     }
 };
 
-export const checkAndFindGamePath = (config: { gamePath: string }, findGamePath: () => void) => {
+export const checkAndFindGamePath = (
+    config: { gamePath: string },
+    setConfig: (config: any) => void,
+    setFileFound: (found: boolean) => void
+) => {
     if (config.gamePath === "") {
-        findGamePath();
+        findGamePath(setConfig, setFileFound);
     }
 };
 
@@ -85,3 +89,56 @@ function parseIni(iniContent: string): { [key: string]: string } {
     });
     return iniObject;
 }
+
+export const handleDpiChange = (
+    value: number,
+    setConfig: React.Dispatch<React.SetStateAction<ConfigState>>
+) => {
+    setConfig(prev => ({ ...prev, dpi: value }));
+};
+
+export const handleSensitivityChange = (
+    value: number,
+    iniValues: { [key: string]: boolean | number },
+    config: ConfigState,
+    handleInputChange: (fileKey: string, key: string, value: boolean | number, setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>) => void,
+    setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>
+) => {
+    const maxFOV = 120;
+    const fovScale = maxFOV / (iniValues.FOVSetting as number);
+    const constant = 124_846.176;
+    const newMouseSensitivity = (constant / (config.dpi * value * fovScale)).toFixed(3);
+
+    handleInputChange('input', 'MouseSensitivity', parseFloat(newMouseSensitivity), setIniValues);
+};
+
+export const handleInputChange = (
+    fileKey: string,
+    key: string,
+    value: boolean | number,
+    setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>
+) => {
+    setIniValues(prevValues => {
+        const updatedValues = { ...prevValues, [key]: value };
+
+        // Prepare data for backend
+        const changes = [[key, value.toString()]];
+        const file = fileKey === 'input' ? 'TribesInput.ini' : 'tribes.ini';
+
+        // Call Rust function via Tauri command
+        invoke('update_ini_file', { file, changes })
+            .catch(console.error);
+
+        return updatedValues;
+    });
+};
+
+export const handleGamePathChange = (
+    value: string,
+    setConfig: React.Dispatch<React.SetStateAction<ConfigState>>,
+    setGamePathError: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+    const trimmedValue = value.trim();
+    setConfig(prevConfig => ({ ...prevConfig, gamePath: value }));
+    setGamePathError(trimmedValue === '');
+};

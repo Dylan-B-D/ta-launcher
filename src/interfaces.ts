@@ -1,3 +1,5 @@
+import { IconType } from "react-icons";
+
 export interface FirstTimeSetupProps {
     onComplete: () => void;
 }
@@ -63,3 +65,32 @@ export interface ConfigSettingsTableProps {
     iniValues: { [key: string]: boolean | number };
     handleInputChange: (key: string, value: boolean | number) => void;
 }
+
+export interface ConfigState {
+    gamePath: string;
+    loginServer: string;
+    launchMethod: string;
+    dllVersion: string;
+    dpi: number;
+}
+
+export interface SensitivityCalculatorProps {
+    mouseSensitivity: number;
+    FOVSetting: number;
+    dpi: number;
+    onDpiChange: (value: number) => void;
+    onSensitivityChange: (value: number) => void;
+}
+
+export interface CardGradientProps {
+    icon?: IconType;
+    image?: string;
+    gradient: {
+      deg: number;
+      from: string;
+      to: string;
+    };
+    title: string;
+    description: string;
+    link: string;
+  }

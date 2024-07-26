@@ -1,21 +1,40 @@
 import React from 'react';
 import { Button, Center, Space, Text, TextInput } from '@mantine/core';
+import { open } from '@tauri-apps/plugin-dialog';
 
 interface GamePathStepProps {
   config: { gamePath: string };
+  setConfig: React.Dispatch<React.SetStateAction<any>>;
+  setFileFound: React.Dispatch<React.SetStateAction<null | boolean>>;
   gamePathError: boolean;
   handleGamePathChange: (value: string) => void;
-  selectFile: () => Promise<void>;
   findGamePath: () => Promise<void>;
 }
 
 export const GamePathStep: React.FC<GamePathStepProps> = ({
   config,
+  setConfig,
+  setFileFound,
   gamePathError,
   handleGamePathChange,
-  selectFile,
   findGamePath,
 }) => {
+
+  const selectFile = async () => {
+    try {
+      const selected = await open();
+
+      if (selected && typeof selected.path === "string" && selected.path.endsWith(".exe")) {
+        setConfig((prevConfig: any) => ({ ...prevConfig, gamePath: selected.path }));
+        setFileFound(true);
+      } else {
+        setFileFound(false);
+      }
+    } catch (error) {
+      console.error("Error selecting file:", error);
+    }
+  };
+
   return (
     <>
       <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>

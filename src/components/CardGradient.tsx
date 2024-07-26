@@ -1,15 +1,6 @@
 import { Paper, Text, ThemeIcon, Avatar, rem } from '@mantine/core';
 import classes from './CardGradient.module.css';
-import { IconType } from 'react-icons';
-
-interface CardGradientProps {
-  icon?: IconType;
-  image?: string;
-  gradient: { deg: number; from: string; to: string };
-  title: string;
-  description: string;
-  link: string;
-}
+import { CardGradientProps } from '../interfaces';
 
 export function CardGradient({ icon: Icon, image, gradient, title, description, link }: CardGradientProps) {
   return (
@@ -41,7 +32,7 @@ export function CardGradient({ icon: Icon, image, gradient, title, description, 
           {title}
         </Text>
       </div>
-      <Text size="sm" mt="md" c="dimmed">
+      <Text size="sm" mt="md" color="dimmed">
         {description}
       </Text>
     </Paper>
