@@ -1,6 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet}, future::Future};
+use futures::future::join_all;
 use reqwest;
 use serde::{Deserialize, Serialize};
+use futures::FutureExt;
 
 const PKG_ENDPOINT: &str = "https://client.update.tamods.org/";
 const PKG_CFG_FILE: &str = "packageconfig.yaml";
@@ -46,7 +48,7 @@ struct PackageList {
     packages: Vec<Package>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 struct PackageNode {
     package: Package,
     dependencies: HashMap<String, PackageNode>,
@@ -56,15 +58,22 @@ struct PackageNode {
 pub async fn fetch_packages() -> Result<String, String> {
     let mut package_tree = fetch_package_tree().await?;
 
-    // Iterate through the package tree and update metadata for each package and its dependencies
+    let mut update_futures = Vec::new();
+
     for (_package_name, package_info) in package_tree.iter_mut() {
-
         package_info.package.isTopLevelPackage = Some(true);
-
         package_info.package.dependencyCount = Some(count_dependencies(package_info));
 
-        if let Err(e) = update_package_metadata(package_info).await {
-            return Err(e);
+        update_futures.push(tokio::spawn(update_package_metadata(package_info.clone())));
+    }
+
+    let results = join_all(update_futures).await;
+
+    for (result, (_package_name, package_info)) in results.into_iter().zip(package_tree.iter_mut()) {
+        match result {
+            Ok(Ok(updated_info)) => *package_info = updated_info,
+            Ok(Err(e)) => return Err(e),
+            Err(e) => return Err(e.to_string()),
         }
 
         // Calculate and set the total size for top-level packages
@@ -172,19 +181,31 @@ fn build_package_node(
     }
 }
 
-async fn update_package_metadata(package_node: &mut PackageNode) -> Result<(), String> {
-    // Update metadata for the current package
-    let updated_package = fetch_package_metadata(package_node.package.clone()).await?;
-    package_node.package = updated_package;
+fn update_package_metadata(mut package_node: PackageNode) -> impl Future<Output = Result<PackageNode, String>> + Send {
+    async move {
+        // Update metadata for the current package
+        let updated_package = fetch_package_metadata(package_node.package.clone()).await?;
+        package_node.package = updated_package;
 
-    // Recursively update metadata for each dependency
-    for (_dep_name, dep_node) in package_node.dependencies.iter_mut() {
-        // Wrap the recursive call in Box::pin
-        let future = Box::pin(update_package_metadata(dep_node));
-        future.await?;
-    }
+        // Concurrently update metadata for each dependency
+        let mut update_futures = Vec::new();
+        for (_dep_name, dep_node) in package_node.dependencies.iter_mut() {
+            let future = update_package_metadata(dep_node.clone()).boxed();
+            update_futures.push(tokio::spawn(future));
+        }
 
-    Ok(())
+        let results = join_all(update_futures).await;
+
+        for (result, (_dep_name, dep_node)) in results.into_iter().zip(package_node.dependencies.iter_mut()) {
+            match result {
+                Ok(Ok(updated_node)) => *dep_node = updated_node,
+                Ok(Err(e)) => return Err(e),
+                Err(e) => return Err(e.to_string()),
+            }
+        }
+
+        Ok(package_node)
+    }.boxed()
 }
 
 async fn fetch_package_metadata(mut package: Package) -> Result<Package, String> {

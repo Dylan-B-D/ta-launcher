@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text, Space, Table, Button, Group } from "@mantine/core";
 import { Packages } from '../interfaces';
 import { formatSize } from '../utils/formatters';
@@ -12,7 +12,7 @@ interface PackagesTableProps {
 const PackagesTable: React.FC<PackagesTableProps> = ({ packages }) => {
     const [showCustom, setShowCustom] = useState(false);
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
-    const { addToQueue } = useContext(DownloadContext);
+    const { addToQueue, getTotalItems } = useContext(DownloadContext);
 
     const order = [
         'tamods-dll',
@@ -44,14 +44,44 @@ const PackagesTable: React.FC<PackagesTableProps> = ({ packages }) => {
     const allSize = calculateTotalSize(order);
 
     const handleInstall = (packageIds: string[]) => {
+        // Function to recursively gather all dependencies
+        const gatherDependencies = (id: string, set: Set<string>) => {
+            const pkg = Object.values(packages).find(p => p.package.id === id);
+            if (pkg && pkg.package.dependencies) {
+                pkg.package.dependencies.forEach(depId => {
+                    if (!set.has(depId)) {
+                        set.add(depId);
+                        gatherDependencies(depId, set);  // Recurse into dependencies
+                    }
+                });
+            }
+        };        
+    
+        const allPackagesToInstall = new Set<string>();
+    
+        // Gather all dependencies for each package
         packageIds.forEach(id => {
-            if (!pendingPackages.includes(id)) {
-                addToQueue(id);
-                console.log(`Added ${id} to download queue`);
+            if (!allPackagesToInstall.has(id)) {
+                allPackagesToInstall.add(id);
+                gatherDependencies(id, allPackagesToInstall);
             }
         });
-        setPendingPackages(prevPending => [...new Set([...prevPending, ...packageIds])]);
+    
+        // Add all gathered packages to the queue
+        allPackagesToInstall.forEach(id => {
+            if (!pendingPackages.includes(id)) {
+                addToQueue(id);
+                console.log(`Added ${id} along with its dependencies to download queue`);
+            }
+        });
+    
+        // Update state to reflect pending status for all packages
+        setPendingPackages(prevPending => [...new Set([...prevPending, ...Array.from(allPackagesToInstall)])]);
     };
+
+    useEffect(() => {
+        console.log(`Total items in queue: ${getTotalItems()}`);
+    }, [pendingPackages]);
 
     const handleInstallMinimum = () => {
         handleInstall(minimumPackages);
@@ -104,7 +134,7 @@ const PackagesTable: React.FC<PackagesTableProps> = ({ packages }) => {
                 >
                     {order.every(id => pendingPackages.includes(id)) ? 'Pending' : `All (${formatSize(allSize)})`}
                 </Button>
-                <Button variant='light' color='cyan' onClick={handleToggleCustom}>
+                <Button w={120} variant='light' color='cyan' onClick={handleToggleCustom}>
                     {showCustom ? 'Hide Advanced' : 'Show Advanced'}
                 </Button>
             </Group>
