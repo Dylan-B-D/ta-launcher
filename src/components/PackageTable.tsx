@@ -12,7 +12,7 @@ interface PackagesTableProps {
 const PackagesTable: React.FC<PackagesTableProps> = ({ packages }) => {
     const [showCustom, setShowCustom] = useState(false);
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
-    const { addToQueue, getTotalItems } = useContext(DownloadContext);
+    const { addToQueue, getTotalItems, getTotalSizeInQueue } = useContext(DownloadContext);
 
     const order = [
         'tamods-dll',
@@ -81,6 +81,7 @@ const PackagesTable: React.FC<PackagesTableProps> = ({ packages }) => {
 
     useEffect(() => {
         console.log(`Total items in queue: ${getTotalItems()}`);
+        console.log(`Total size in queue: ${formatSize(getTotalSizeInQueue(packages))}`);
     }, [pendingPackages]);
 
     const handleInstallMinimum = () => {
