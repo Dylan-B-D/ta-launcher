@@ -1,12 +1,15 @@
+use std::time::Duration;
+
 use tauri::Emitter;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use dirs::document_dir;
 use futures::stream::StreamExt;
 use reqwest::Client;
+use tokio::time::sleep;
 
 #[tauri::command]
-pub async fn download_package(app: tauri::AppHandle, package_id: String, object_key: String, total_size: u64, package_hash: String) -> Result<(), String> {
+pub async fn download_package(app: tauri::AppHandle, package_id: String, object_key: String, package_hash: String) -> Result<(), String> {
     let base_url = "https://client.update.tamods.org/";
     let download_url = format!("{}{}", base_url, object_key);
     
@@ -29,8 +32,11 @@ pub async fn download_package(app: tauri::AppHandle, package_id: String, object_
         downloaded += chunk.len() as u64;
 
         // Emit progress event
-        app.emit("download-progress", (package_id.clone(), downloaded, total_size))
+        app.emit("download-progress", (package_id.clone(), downloaded))
             .map_err(|e| e.to_string())?;
+
+        // Add a delay to simulate rate limiting for debugging progress bar
+        sleep(Duration::from_millis(100)).await; // !TODO: Remove this line
     }
 
     // Emit completion event

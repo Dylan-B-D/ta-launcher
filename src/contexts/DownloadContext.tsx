@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { PackageNode, Packages } from '../interfaces';
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core';
@@ -10,8 +10,10 @@ interface DownloadContextType {
     getQueue: () => string[];
     getTotalItems: () => number;
     getTotalSizeInQueue: (packages: Packages) => number;
-    progress: Record<string, number>;
     packages: Packages;
+    getTotalSize: () => number;
+    getOverallProgress: () => number;
+    getCompletedPackages: () => Map<string, string>;
 }
 
 const DownloadContext = createContext<DownloadContextType>({
@@ -21,8 +23,10 @@ const DownloadContext = createContext<DownloadContextType>({
     getQueue: () => [],
     getTotalItems: () => 0,
     getTotalSizeInQueue: () => 0,
-    progress: {},
-    packages: {}
+    packages: {},
+    getTotalSize: () => 0,
+    getOverallProgress: () => 0,
+    getCompletedPackages: () => new Map()
 });
 
 interface DownloadProviderProps {
@@ -32,20 +36,37 @@ interface DownloadProviderProps {
 
 export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, packages }) => {
     const [queue, setQueue] = useState<string[]>([]);
+    const [totalSize, setTotalSize] = useState<number>(0);
+    const [completedPackages, setCompletedPackages] = useState<Map<string, string>>(new Map());
+    const progressMapRef = useRef<Map<string, number>>(new Map());
 
-    const [progress, setProgress] = useState<Record<string, number>>({});
+    const calculateOverallProgress = useCallback(() => {
+        return Array.from(progressMapRef.current.values()).reduce((sum, value) => sum + value, 0);
+    }, []);
 
     useEffect(() => {
         const unlistenProgress = listen('download-progress', (event: any) => {
-            const [packageId, downloaded, total] = event.payload;
-            // console.log(`${packageId} has downloaded ${downloaded} of ${total} bytes`);
-            setProgress(prev => ({...prev, [packageId]: downloaded / total}));
+            const [packageId, downloaded] = event.payload;
+            progressMapRef.current.set(packageId, downloaded);
+            // Force a re-render
+            setQueue(prev => [...prev]);
         });
 
-        const unlistenCompleted = listen('download-completed', (event: any) => {
+        const unlistenCompleted = listen('download-completed', async (event: any) => {
             const [packageId, hash] = event.payload;
-            console.log(`${packageId} (${hash}) has finished downloading`);
-            removeFromQueue(packageId);
+            setCompletedPackages(prev => new Map(prev).set(packageId, hash));
+            const newQueue = await removeFromQueue(packageId);
+
+            console.log('Download completed:', event.payload);
+            console.log('New Queue:', newQueue);
+            console.log('New Queue length:', newQueue.length);
+
+            if (newQueue.length === 0) {
+                setTotalSize(0);
+                progressMapRef.current.clear();
+                // Force a re-render
+                setQueue([]);
+            }
         });
 
         return () => {
@@ -56,14 +77,20 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
 
     const addToQueue = (packageId: string) => {
         setQueue(prevQueue => [...prevQueue, packageId]);
+        const packageNode = findPackageNode(packageId, packages);
+        if (packageNode && packageNode.package.totalSize) {
+            setTotalSize(prev => prev + packageNode.package.totalSize);
+        }
         startDownload(packageId);
     };
 
     const removeFromQueue = (packageId: string) => {
-        setQueue(prevQueue => prevQueue.filter(id => id !== packageId));
-        setProgress(prev => {
-            const { [packageId]: _, ...rest } = prev;
-            return rest;
+        return new Promise<string[]>((resolve) => {
+            setQueue(prevQueue => {
+                const newQueue = prevQueue.filter(id => id !== packageId);
+                resolve(newQueue);
+                return newQueue;
+            });
         });
     };
 
@@ -88,7 +115,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
                 await invoke('download_package', { 
                     packageId, 
                     objectKey: packageDetails.objectKey,
-                    totalSize: packageDetails.totalSize,
                     packageHash: packageDetails.hash
                 });
             } catch (error) {
@@ -122,10 +148,12 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
             addToQueue, 
             removeFromQueue, 
             getQueue, 
-            getTotalItems, 
+            getTotalItems,
             getTotalSizeInQueue,
-            progress,
-            packages
+            packages,
+            getTotalSize: () => totalSize,
+            getOverallProgress: calculateOverallProgress,
+            getCompletedPackages: () => completedPackages
         }}>
             {children}
         </DownloadContext.Provider>
