@@ -6,20 +6,19 @@ import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
-import { ConfigFile, ConfigState, FirstTimeSetupProps, Packages } from "../../interfaces";
+import { ConfigFile, ConfigState, FirstTimeSetupProps } from "../../interfaces";
 import { iniFields, inputIniFields } from "../../data/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
 import SensitivityCalculator from "../SensitivityCalculator";
 import { GamePathStep } from "../GamePathStep";
 import NotificationPopup from "../NotificationPopup";
 import LaunchOptions from "../LaunchOptionsStep";
-import { checkAndFindGamePath, fetchConfigFiles, findGamePath, getPackages, handleDpiChange, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
+import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleDpiChange, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
 import PackagesTable from "../PackageTable";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
   const [, setFileFound] = useState<null | boolean>(null);
-  const [packages, setPackages] = useState<Packages>({});
   const [gamePathError, setGamePathError] = useState(false);
   const [, setTribesIni] = useState<ConfigFile | null>(null);
   const [, setTribesInputIni] = useState<ConfigFile | null>(null);
@@ -50,7 +49,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   // Initilize: Game Path, Config Files, Config Values and Packages
   useEffect(() => {
     findGamePath(setConfig, setFileFound);
-    getPackages(setPackages);
     fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
     loadConfig(setConfig);
   }, []);
@@ -167,7 +165,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
             {/* ----------- Packages ----------- */}
             <Stepper.Step label="Packages">
-              <PackagesTable packages={packages} />
+              <PackagesTable/>
             </Stepper.Step>
 
             {/* ----------- Launch Options ----------- */}

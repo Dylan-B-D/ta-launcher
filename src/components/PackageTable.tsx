@@ -1,19 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Text, Space, Table, Button, Group } from "@mantine/core";
-import { Packages } from '../interfaces';
 import { formatSize } from '../utils/formatters';
 import './componentStyles.css';
-import { DownloadContext } from '../contexts/DownloadContext';
+import { DownloadContext, usePackages } from '../contexts/DownloadContext';
 
-interface PackagesTableProps {
-    packages: Packages;
-}
-
-const PackagesTable: React.FC<PackagesTableProps> = ({ packages }) => {
+const PackagesTable = () => {
     const [showCustom, setShowCustom] = useState(false);
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
     const { addToQueue, getTotalItems, getTotalSizeInQueue } = useContext(DownloadContext);
-
+    const packages = usePackages();
     const order = [
         'tamods-dll',
         'tamods-stdlib',

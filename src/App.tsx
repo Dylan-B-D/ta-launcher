@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Home from "./components/pages/Home";
 import FirstTimeSetup from "./components/pages/FirstTimeSetup";
 import { DownloadProvider } from "./contexts/DownloadContext";
+import { Packages } from "./interfaces";
+import { getPackages } from "./utils/utils";
 
 function App() {
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -20,8 +22,14 @@ function App() {
     setIsFirstTime(false);
   };
 
+  const [packages, setPackages] = useState<Packages>({});
+
+    useEffect(() => {
+        getPackages(setPackages);
+    }, []);
+
   return (
-    <DownloadProvider>
+    <DownloadProvider packages={packages}>
       <Router>
         <Routes>
           {isFirstTime ? (
