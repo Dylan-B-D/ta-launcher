@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect, useCallback, use
 import { PackageNode, Packages } from '../interfaces';
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core';
+import { loadDownloadedPackages, saveDownloadedPackages } from '../utils/config';
 
 interface DownloadContextType {
     queue: string[];
@@ -45,6 +46,12 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
     }, []);
 
     useEffect(() => {
+
+        // Load downloaded packages when the component mounts
+        loadDownloadedPackages().then(savedPackages => {
+            setCompletedPackages(savedPackages);
+        });
+
         const unlistenProgress = listen('download-progress', (event: any) => {
             const [packageId, downloaded] = event.payload;
             progressMapRef.current.set(packageId, downloaded);
@@ -54,7 +61,11 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
 
         const unlistenCompleted = listen('download-completed', async (event: any) => {
             const [packageId, hash] = event.payload;
-            setCompletedPackages(prev => new Map(prev).set(packageId, hash));
+            setCompletedPackages(prev => {
+                const newMap = new Map(prev).set(packageId, hash);
+                saveDownloadedPackages(newMap);
+                return newMap;
+            });
             const newQueue = await removeFromQueue(packageId);
 
             console.log('Download completed:', event.payload);
