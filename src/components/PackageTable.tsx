@@ -157,7 +157,7 @@ const PackagesTable: React.FC<PackageTableProps> = ({ config }) => {
                 <strong>Recommended:</strong> TAMods Core Library, TAMods Standard Library, Community Made Maps, and Recommended GOTY Routes Library
             </Text>
 
-            <Space h="xs" />
+            <Space h="4px" />
             <Group grow preventGrowOverflow={false} wrap="nowrap" gap="xs">
             <Button
                     variant='light'
@@ -197,7 +197,7 @@ const PackagesTable: React.FC<PackageTableProps> = ({ config }) => {
                 </Button>
             </Group>
 
-            <Space h="sm" />
+            <Space h="4px" />
 
             <Table withTableBorder withColumnBorders striped highlightOnHover verticalSpacing="2px" fz="xs">
                 <Table.Thead>
@@ -212,7 +212,9 @@ const PackagesTable: React.FC<PackageTableProps> = ({ config }) => {
                 <Table.Tbody>
                     {sortedPackages.map(({ package: pkg }) => (
                         <Table.Tr key={pkg.id}>
-                            <Table.Td>{pkg.displayName}</Table.Td>
+                            <Table.Td style={{ color: getStatus(pkg.id) === 'completed' ? 'lightgreen' : 'inherit', fontWeight: getStatus(pkg.id) === 'completed' ? 'bold' : 'normal' }}>
+                                {pkg.displayName}
+                            </Table.Td>
                             <Table.Td>{pkg.description}</Table.Td>
                             <Table.Td>{formatSize(pkg.totalSize || pkg.size)}</Table.Td>
                             <Table.Td>{new Date(pkg.lastModified).toLocaleDateString()}</Table.Td>
