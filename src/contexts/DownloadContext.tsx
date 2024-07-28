@@ -15,6 +15,7 @@ interface DownloadContextType {
     getTotalSize: () => number;
     getOverallProgress: () => number;
     getCompletedPackages: () => Map<string, string>;
+    packagesToUpdate: string[];
 }
 
 const DownloadContext = createContext<DownloadContextType>({
@@ -27,7 +28,8 @@ const DownloadContext = createContext<DownloadContextType>({
     packages: {},
     getTotalSize: () => 0,
     getOverallProgress: () => 0,
-    getCompletedPackages: () => new Map()
+    getCompletedPackages: () => new Map(),
+    packagesToUpdate: []
 });
 
 interface DownloadProviderProps {
@@ -40,16 +42,43 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
     const [totalSize, setTotalSize] = useState<number>(0);
     const [completedPackages, setCompletedPackages] = useState<Map<string, string>>(new Map());
     const progressMapRef = useRef<Map<string, number>>(new Map());
+    const [packagesToUpdate, setPackagesToUpdate] = useState<string[]>([]);
 
     const calculateOverallProgress = useCallback(() => {
         return Array.from(progressMapRef.current.values()).reduce((sum, value) => sum + value, 0);
     }, []);
+
+    const checkPackageHashes = (savedPackages: Map<string, string>, currentPackages: Packages, toUpdate: Set<string> = new Set()) => {
+        for (const [packageId, savedHash] of savedPackages) {
+            const packageNode = findPackageNode(packageId, currentPackages);
+            if (packageNode && packageNode.package.hash !== savedHash) {
+                toUpdate.add(packageId);
+            }
+            
+            // Check dependencies
+            if (packageNode) {
+                checkPackageHashes(savedPackages, packageNode.dependencies, toUpdate);
+            }
+        }
+        return toUpdate;
+    };
 
     useEffect(() => {
 
         // Load downloaded packages when the component mounts
         loadDownloadedPackages().then(savedPackages => {
             setCompletedPackages(savedPackages);
+            
+            // Check hashes and create list of packages to update
+            const packagesToUpdate = checkPackageHashes(savedPackages, packages);
+            setPackagesToUpdate(Array.from(packagesToUpdate));
+            
+            // Log packages that need updating
+            if (packagesToUpdate.size > 0) {
+                console.log('Packages that need updating:', Array.from(packagesToUpdate));
+            } else {
+                console.log('No packages need updating');
+            }
         });
 
         const unlistenProgress = listen('download-progress', (event: any) => {
@@ -84,7 +113,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
             unlistenProgress.then(f => f());
             unlistenCompleted.then(f => f());
         };
-    }, []);
+    }, [packages]);
 
     const addToQueue = (packageId: string) => {
         setQueue(prevQueue => [...prevQueue, packageId]);
@@ -164,7 +193,8 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
             packages,
             getTotalSize: () => totalSize,
             getOverallProgress: calculateOverallProgress,
-            getCompletedPackages: () => completedPackages
+            getCompletedPackages: () => completedPackages,
+            packagesToUpdate
         }}>
             {children}
         </DownloadContext.Provider>
