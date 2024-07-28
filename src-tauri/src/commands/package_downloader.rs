@@ -1,12 +1,11 @@
-use std::time::Duration;
-
 use tauri::Emitter;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use dirs::document_dir;
 use futures::stream::StreamExt;
 use reqwest::Client;
-use tokio::time::sleep;
+// use tokio::time::sleep;
+// use std::time::Duration;
 
 #[tauri::command]
 pub async fn download_package(app: tauri::AppHandle, package_id: String, object_key: String, package_hash: String) -> Result<(), String> {
@@ -36,7 +35,7 @@ pub async fn download_package(app: tauri::AppHandle, package_id: String, object_
             .map_err(|e| e.to_string())?;
 
         // Add a delay to simulate rate limiting for debugging progress bar
-        sleep(Duration::from_millis(100)).await; // !TODO: Remove this line
+        // sleep(Duration::from_millis(100)).await; // !TODO: Remove this line
     }
 
     // Emit completion event

@@ -92,8 +92,17 @@ const PackagesTable = () => {
             return true;
         };
 
+        const isDownloading = (id: string): boolean => {
+            if (queue.includes(id)) return true;
+            const pkg = Object.values(packages).find(p => p.package.id === id);
+            if (pkg && pkg.package.dependencies) {
+                return pkg.package.dependencies.some(depId => isDownloading(depId));
+            }
+            return false;
+        };
+
         if (isCompleted(pkgId)) return 'completed';
-        if (queue.includes(pkgId)) return 'downloading';
+        if (isDownloading(pkgId)) return 'downloading';
         if (pendingPackages.includes(pkgId)) return 'pending';
         return 'install';
     };
@@ -114,6 +123,10 @@ const PackagesTable = () => {
         handleInstall(order);
     };
 
+    const isButtonDisabled = (packageIds: string[]) => {
+        return packageIds.every(id => pendingPackages.includes(id) || queue.includes(id) || completedPackages.has(id));
+    };
+
     return (
         <>
             <Text size="xs" c="dimmed">
@@ -126,39 +139,43 @@ const PackagesTable = () => {
                 <strong>Recommended:</strong> TAMods Core Library, TAMods Standard Library, Community Made Maps, and Recommended GOTY Routes Library
             </Text>
 
-            <Space h="sm" />
+            <Space h="xs" />
             <Group grow preventGrowOverflow={false} wrap="nowrap" gap="xs">
-                <Button
+            <Button
                     variant='light'
+                    size='xs'
                     color='cyan'
                     onClick={handleInstallMinimum}
-                    disabled={minimumPackages.every(id => pendingPackages.includes(id))}
+                    disabled={isButtonDisabled(minimumPackages)}
                 >
-                    {minimumPackages.every(id => pendingPackages.includes(id)) ? 'Pending' : `Minimum (${formatSize(minimumSize)})`}
+                    Minimum ({formatSize(minimumSize)})
                 </Button>
                 <Button
                     variant='light'
+                    size='xs'
                     color='cyan'
                     onClick={handleInstallStandard}
-                    disabled={standardPackages.every(id => pendingPackages.includes(id))}
+                    disabled={isButtonDisabled(standardPackages)}
                 >
-                    {standardPackages.every(id => pendingPackages.includes(id)) ? 'Pending' : `Standard (${formatSize(standardSize)})`}
+                    Standard ({formatSize(standardSize)})
                 </Button>
                 <Button
                     variant='light'
+                    size='xs'
                     color='cyan'
                     onClick={handleInstallRecommended}
-                    disabled={recommendedPackages.every(id => pendingPackages.includes(id))}
+                    disabled={isButtonDisabled(recommendedPackages)}
                 >
-                    {recommendedPackages.every(id => pendingPackages.includes(id)) ? 'Pending' : `Recommended (${formatSize(recommendedSize)})`}
+                    Recommended ({formatSize(recommendedSize)})
                 </Button>
                 <Button
                     variant='light'
+                    size='xs'
                     color='cyan'
                     onClick={handleInstallAll}
-                    disabled={order.every(id => pendingPackages.includes(id))}
+                    disabled={isButtonDisabled(order)}
                 >
-                    {order.every(id => pendingPackages.includes(id)) ? 'Pending' : `All (${formatSize(allSize)})`}
+                    All ({formatSize(allSize)})
                 </Button>
             </Group>
 
@@ -183,7 +200,7 @@ const PackagesTable = () => {
                             <Table.Td>{new Date(pkg.lastModified).toLocaleDateString()}</Table.Td>
                             <Table.Td style={{ padding: 0, textAlign: 'center' }}>
                                 {getStatus(pkg.id) === 'completed' ? (
-                                    <Text c='teal' fw='bold' style={{ color: 'green' }}>✔</Text>
+                                    <Text c='teal' size='sm' fw='bold' style={{ color: 'green' }}>✔</Text>
                                 ) : (
                                     <Button
                                         size="xs"
@@ -204,12 +221,11 @@ const PackagesTable = () => {
                     ))}
                 </Table.Tbody>
             </Table>
-
             {totalSize > 0 && (
-                <div style={{ position: 'relative', width: '100%' }}>
-                    <Text>Progress: {formatSize(overallProgress)} / Total: {formatSize(totalSize)}</Text>
-                    <Progress size='md' color='teal' animated value={progressPercentage} mt="md" />
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                <div style={{ position: 'relative', width: '100%', marginTop: 4 }}>
+                    <Text style={{ margin: '0', fontSize: '0.9em' }}>Progress: {formatSize(overallProgress)} / Total: {formatSize(totalSize)}</Text>
+                    <Progress size='sm' color='teal' animated value={progressPercentage} mt="0" />
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '0.8em' }}>
                         {`${Math.round(progressPercentage)}%`}
                     </div>
                 </div>
