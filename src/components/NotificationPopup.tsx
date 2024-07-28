@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Notification, Progress, Box } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 
@@ -14,7 +14,11 @@ interface NotificationPopupProps {
 const NotificationPopup: React.FC<NotificationPopupProps> = ({ visible, message, title, color, onClose, icon }) => {
     const [progress, setProgress] = useState(0);
 
-    // 2s timer (20*100) to close the notification
+    const closeNotification = useCallback(() => {
+        setProgress(0);
+        onClose();
+    }, [onClose]);
+
     useEffect(() => {
         if (visible) {
             setProgress(0);
@@ -22,18 +26,22 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({ visible, message,
                 setProgress((oldProgress) => {
                     if (oldProgress >= 100) {
                         clearInterval(timer);
-                        onClose();
-                        return 0;
+                        return 100;
                     }
                     return oldProgress + 1;
                 });
             }, 40);
 
+            const closeTimer = setTimeout(() => {
+                closeNotification();
+            }, 4000); // 4 seconds
+
             return () => {
                 clearInterval(timer);
+                clearTimeout(closeTimer);
             };
         }
-    }, [visible, onClose]);
+    }, [visible, closeNotification]);
 
     if (!visible) return null;
 
@@ -44,7 +52,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({ visible, message,
                     icon={icon || <IconX />}
                     title={title}
                     color={color}
-                    onClose={onClose}
+                    onClose={closeNotification}
                     style={{ 
                         backgroundColor: 'rgba(0, 0, 0, 0.3)',
                         backdropFilter: 'blur(10px)',
