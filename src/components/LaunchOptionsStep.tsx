@@ -25,6 +25,7 @@ const LaunchOptions: React.FC<LaunchOptionsProps> = ({ config, setConfig }) => {
       </Text>
       <Space h="sm" />
       <SegmentedControl
+        color="cyan"
         value={config.launchMethod}
         onChange={(value) => setConfig((prev: any) => ({ ...prev, launchMethod: value }))}
         data={["Non-Steam", "Steam"]}
@@ -47,6 +48,7 @@ const LaunchOptions: React.FC<LaunchOptionsProps> = ({ config, setConfig }) => {
       </Text>
       <Space h="sm" />
       <SegmentedControl
+        color="cyan"
         value={config.loginServer}
         onChange={(value) => setConfig((prev: any) => ({ ...prev, loginServer: value }))}
         data={["Community", "PUG", "Custom"]}
@@ -66,6 +68,7 @@ const LaunchOptions: React.FC<LaunchOptionsProps> = ({ config, setConfig }) => {
       </Text>
       <Space h="sm" />
       <SegmentedControl
+        color="cyan"
         value={config.dllVersion}
         onChange={(value) => setConfig((prev: any) => ({ ...prev, dllVersion: value }))}
         data={["Release", "Beta", "Edge"]}
