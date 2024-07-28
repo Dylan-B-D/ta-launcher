@@ -165,7 +165,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
             {/* ----------- Packages ----------- */}
             <Stepper.Step label="Packages">
-              <PackagesTable/>
+              <PackagesTable config={config} />
             </Stepper.Step>
 
             {/* ----------- Launch Options ----------- */}

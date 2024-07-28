@@ -27,7 +27,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({ visible, message,
                     }
                     return oldProgress + 1;
                 });
-            }, 20);
+            }, 40);
 
             return () => {
                 clearInterval(timer);
@@ -38,7 +38,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({ visible, message,
     if (!visible) return null;
 
     return (
-        <div style={{ position: 'fixed', bottom: 20, right: 20, maxWidth: '30%', zIndex: 1000 }}>
+        <div style={{ position: 'fixed', bottom: 20, right: 20, maxWidth: '40%', zIndex: 1000 }}>
             <Box style={{ position: 'relative' }}>
                 <Notification
                     icon={icon || <IconX />}

@@ -1,11 +1,20 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Text, Space, Table, Button, Group, Progress, Loader } from "@mantine/core";
 import { formatSize } from '../utils/formatters';
 import './componentStyles.css';
 import { DownloadContext, usePackages } from '../contexts/DownloadContext';
+import NotificationPopup from './NotificationPopup';
+import { IconAlertTriangle } from '@tabler/icons-react';
 
-const PackagesTable = () => {
+interface PackageTableProps {
+    config: {
+        gamePath: string;
+    };
+}
+
+const PackagesTable: React.FC<PackageTableProps> = ({ config }) => {
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
+    const [showNotification, setShowNotification] = useState(false);
     const { addToQueue, getTotalSize, getOverallProgress, getQueue, getCompletedPackages } = useContext(DownloadContext);
     const totalSize = getTotalSize();
     const overallProgress = getOverallProgress();
@@ -124,8 +133,17 @@ const PackagesTable = () => {
     };
 
     const isButtonDisabled = (packageIds: string[]) => {
+        if (config.gamePath === '') {
+            return packageIds.includes('community-maps');
+        }
         return packageIds.every(id => pendingPackages.includes(id) || queue.includes(id) || completedPackages.has(id));
     };
+
+    useEffect(() => {
+        if (config.gamePath === '') {
+            setShowNotification(true);
+        }
+    }, [config.gamePath]);
 
     return (
         <>
@@ -209,7 +227,7 @@ const PackagesTable = () => {
                                         color={getStatus(pkg.id) === 'downloading' ? 'cyan' : 'cyan'}
                                         className="full-size-button"
                                         onClick={() => handleInstall([pkg.id])}
-                                        disabled={getStatus(pkg.id) !== 'install'}
+                                        disabled={getStatus(pkg.id) !== 'install' || (config.gamePath === '' && pkg.id === 'community-maps')}
                                     >
                                         {getStatus(pkg.id) === 'downloading' ? (
                                             <Loader color="cyan" size="xs" type="dots" />
@@ -230,6 +248,14 @@ const PackagesTable = () => {
                     </div>
                 </div>
             )}
+            <NotificationPopup
+                visible={showNotification}
+                message="Some packages are not available because the game path is not set."
+                title="Warning"
+                color="yellow"
+                onClose={() => setShowNotification(false)}
+                icon={<IconAlertTriangle />}
+            />
         </>
     );
 };
