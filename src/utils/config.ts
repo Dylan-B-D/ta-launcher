@@ -1,4 +1,4 @@
-import { writeTextFile, BaseDirectory, readTextFile, exists } from '@tauri-apps/plugin-fs';;
+import { writeTextFile, BaseDirectory, readTextFile, exists } from '@tauri-apps/plugin-fs';
 
 const DOWNLOADED_PACKAGES_FILE = 'downloaded_packages.json';
 const CONFIG_FILE = 'config.json';

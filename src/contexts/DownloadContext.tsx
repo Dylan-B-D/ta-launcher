@@ -4,6 +4,7 @@ import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core';
 import { loadDownloadedPackages, saveDownloadedPackages } from '../utils/config';
 import { useConfig } from './ConfigContext';
+import { appLocalDataDir } from '@tauri-apps/api/path';
 
 interface DownloadContextType {
     queue: string[];
@@ -155,6 +156,9 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
         const tribesDir = getTribesDir();
         console.log('Tribes Dir:', tribesDir);
 
+        const appDataDir = await appLocalDataDir();
+        console.log('App Data Dir:', appDataDir);
+
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {
@@ -162,7 +166,8 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
                     packageId, 
                     objectKey: packageDetails.objectKey,
                     packageHash: packageDetails.hash,
-                    tribesDir: tribesDir
+                    tribesDir: tribesDir,
+                    appDataDir: appDataDir,
                 });
             } catch (error) {
                 console.error(`Failed to download package ${packageId}:`, error);

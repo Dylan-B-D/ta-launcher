@@ -1,12 +1,14 @@
 use tauri::Emitter;
-use tokio::fs::{File, create_dir_all};
+use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use dirs::document_dir;
 use futures::stream::StreamExt;
 use reqwest::Client;
 use zip::ZipArchive;
+use std::io::Write;
 use std::path::Path;
 use std::fs::File as StdFile;
+use tempfile::TempDir;
 
 #[tauri::command]
 pub async fn download_package(
@@ -14,7 +16,8 @@ pub async fn download_package(
     package_id: String,
     object_key: String,
     package_hash: String,
-    tribes_dir: String
+    tribes_dir: String,
+    app_data_dir: String
 ) -> Result<(), String> {
     let base_url = "https://client.update.tamods.org/";
     let download_url = format!("{}{}", base_url, object_key);
@@ -22,11 +25,8 @@ pub async fn download_package(
     let client = Client::new();
     let res = client.get(&download_url).send().await.map_err(|e| e.to_string())?;
 
-    let docs_dir = document_dir().ok_or("Failed to get documents directory")?;
-    let target_dir = docs_dir.join("My Games").join("Tribes Ascend").join("TribesGame");
-    create_dir_all(&target_dir).await.map_err(|e| e.to_string())?;
-
-    let file_path = target_dir.join(format!("{}.zip", package_id));
+    let temp_dir = TempDir::new().map_err(|e| e.to_string())?;
+    let file_path = temp_dir.path().join(format!("{}.zip", package_id));
     let mut file = File::create(&file_path).await.map_err(|e| e.to_string())?;
 
     let mut downloaded = 0;
@@ -44,27 +44,29 @@ pub async fn download_package(
     // Ensure the file is fully written before we try to extract it
     file.flush().await.map_err(|e| e.to_string())?;
 
+    // Clone package_id for use in the closure
+    let package_id_clone = package_id.clone();
+
     // Extract the zip file
-    let file_path_clone = file_path.clone();
     let extraction_result = tokio::task::spawn_blocking(move || {
-        extract_package(&file_path_clone, &target_dir, &tribes_dir)
+        extract_package(file_path, tribes_dir, app_data_dir, package_id_clone)
     }).await.map_err(|e| e.to_string())?;
 
     // Check the result of the extraction
     extraction_result?;
 
-    // Delete the zip file after extraction
-    tokio::fs::remove_file(&file_path).await.map_err(|e| e.to_string())?;
-
     app.emit("download-completed", (package_id.clone(), package_hash))
         .map_err(|e| e.to_string())?;
-
     Ok(())
 }
 
-fn extract_package(zip_path: &Path, target_dir: &Path, tribes_dir: &str) -> Result<(), String> {
+fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_dir: String, package_id: String) -> Result<(), String> {
     let file = StdFile::open(zip_path).map_err(|e| e.to_string())?;
     let mut archive = ZipArchive::new(file).map_err(|e| e.to_string())?;
+
+    let docs_dir = document_dir().ok_or("Failed to get documents directory")?;
+    let config_dir = docs_dir.join("My Games").join("Tribes Ascend").join("TribesGame").join("config");
+    std::fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
 
     for i in 0..archive.len() {
         let mut file = archive.by_index(i).map_err(|e| e.to_string())?;
@@ -74,11 +76,16 @@ fn extract_package(zip_path: &Path, target_dir: &Path, tribes_dir: &str) -> Resu
         };
 
         let outpath = if outpath.starts_with("!CONFIG") {
-            target_dir.join(outpath.strip_prefix("!CONFIG").unwrap())
+            config_dir.join(outpath.strip_prefix("!CONFIG").unwrap())
         } else if outpath.starts_with("!TRIBESDIR") {
-            Path::new(tribes_dir).join(outpath.strip_prefix("!TRIBESDIR").unwrap())
+            Path::new(&tribes_dir).join(outpath.strip_prefix("!TRIBESDIR").unwrap())
         } else {
-            target_dir.join(outpath)
+            let base_path = Path::new(&app_data_dir);
+            if outpath.extension().map_or(false, |ext| ext == "dll") {
+                base_path.join("dlls").join(outpath)
+            } else {
+                base_path.join(outpath)
+            }
         };
 
         if file.name().ends_with('/') {
@@ -92,6 +99,13 @@ fn extract_package(zip_path: &Path, target_dir: &Path, tribes_dir: &str) -> Resu
             let mut outfile = StdFile::create(&outpath).map_err(|e| e.to_string())?;
             std::io::copy(&mut file, &mut outfile).map_err(|e| e.to_string())?;
         }
+    }
+
+    // Initialize ubermenu if package is tamods-stdlib
+    if package_id == "tamods-stdlib" {
+        let init_ubermenu = config_dir.join("config.lua");
+        let mut config_file = StdFile::create(init_ubermenu).map_err(|e| e.to_string())?;
+        config_file.write_all(b"require(\"presets/ubermenu/preset\")\n").map_err(|e| e.to_string())?;
     }
 
     Ok(())
