@@ -5,14 +5,9 @@ import './componentStyles.css';
 import { DownloadContext, usePackages } from '../contexts/DownloadContext';
 import NotificationPopup from './NotificationPopup';
 import { IconAlertTriangle } from '@tabler/icons-react';
+import { useConfig } from '../contexts/ConfigContext';
 
-interface PackageTableProps {
-    config: {
-        gamePath: string;
-    };
-}
-
-const PackagesTable: React.FC<PackageTableProps> = ({ config }) => {
+const PackagesTable = () => {
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
     const [showNotification, setShowNotification] = useState(false);
     const { addToQueue, getTotalSize, getOverallProgress, getQueue, getCompletedPackages } = useContext(DownloadContext);
@@ -22,6 +17,7 @@ const PackagesTable: React.FC<PackageTableProps> = ({ config }) => {
     const packages = usePackages();
     const queue = getQueue();
     const completedPackages = getCompletedPackages();
+    const { config } = useConfig();
 
     // Order of packages to display in the table (other packages are shown above the ordered ones)
     const order = [

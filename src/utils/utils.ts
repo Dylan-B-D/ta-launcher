@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { ConfigFilesResult, ConfigState } from "../interfaces";
+import { ConfigFilesResult, Config } from "../interfaces";
 
 // Get the list of available packages from the backend
 export const getPackages = async (setPackages: (packages: any) => void) => {
@@ -12,7 +12,7 @@ export const getPackages = async (setPackages: (packages: any) => void) => {
     }
 };
 
-export const findGamePath = async (setConfig: (config: any) => void, setFileFound: (found: boolean) => void) => {
+export const findGamePath = async (setConfig: React.Dispatch<React.SetStateAction<Config>>, setFileFound: (found: boolean) => void) => {
     try {
         const path = await invoke<string>("find_path");
         if (path) {
@@ -28,8 +28,8 @@ export const findGamePath = async (setConfig: (config: any) => void, setFileFoun
 };
 
 export const checkAndFindGamePath = (
-    config: { gamePath: string },
-    setConfig: (config: any) => void,
+    config: Config,
+    setConfig: React.Dispatch<React.SetStateAction<Config>>,
     setFileFound: (found: boolean) => void
 ) => {
     if (config.gamePath === "") {
@@ -92,7 +92,7 @@ function parseIni(iniContent: string): { [key: string]: string } {
 
 export const handleDpiChange = (
     value: number,
-    setConfig: React.Dispatch<React.SetStateAction<ConfigState>>
+    setConfig: React.Dispatch<React.SetStateAction<Config>>
 ) => {
     setConfig(prev => ({ ...prev, dpi: value }));
 };
@@ -100,8 +100,9 @@ export const handleDpiChange = (
 export const handleSensitivityChange = (
     value: number,
     iniValues: { [key: string]: boolean | number },
-    config: ConfigState,
-    handleInputChange: (fileKey: string, key: string, value: boolean | number, setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>) => void,
+    config: Config,
+    handleInputChange: (fileKey: string, key: string, value: boolean | number, 
+    setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>) => void,
     setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>
 ) => {
     const maxFOV = 120;
@@ -135,7 +136,7 @@ export const handleInputChange = (
 
 export const handleGamePathChange = (
     value: string,
-    setConfig: React.Dispatch<React.SetStateAction<ConfigState>>,
+    setConfig: React.Dispatch<React.SetStateAction<Config>>,
     setGamePathError: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
     const trimmedValue = value.trim();

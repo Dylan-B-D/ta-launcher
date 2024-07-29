@@ -66,7 +66,7 @@ export interface ConfigSettingsTableProps {
     handleInputChange: (key: string, value: boolean | number) => void;
 }
 
-export interface ConfigState {
+export interface Config {
     gamePath: string;
     loginServer: string;
     launchMethod: string;

@@ -1,12 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, RingProgress } from "@mantine/core";
-import { loadConfig, saveConfig } from "../../utils/config";
 import { CardGradient } from "../CardGradient";
 import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
-import { ConfigFile, ConfigState, FirstTimeSetupProps } from "../../interfaces";
+import { ConfigFile, FirstTimeSetupProps } from "../../interfaces";
 import { iniFields, inputIniFields } from "../../data/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
 import SensitivityCalculator from "../SensitivityCalculator";
@@ -16,6 +15,7 @@ import LaunchOptions from "../LaunchOptionsStep";
 import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleDpiChange, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
 import PackagesTable from "../PackageTable";
 import { DownloadContext } from "../../contexts/DownloadContext";
+import { useConfig } from "../../contexts/ConfigContext";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -28,13 +28,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const third = Math.ceil(allFields.length / 3); // Divides fields into 3 columns
   const { getTotalSize, getOverallProgress, getQueue } = useContext(DownloadContext);
   const downloadPercentage = (getOverallProgress() / getTotalSize()) * 100;
-  const [config, setConfig] = useState<ConfigState>({
-    gamePath: "",
-    loginServer: "Community",
-    launchMethod: "Non-Steam",
-    dllVersion: "Release",
-    dpi: 800,
-  });
+  const { config, setConfig, saveConfig } = useConfig();
   const [notification, setNotification] = useState<{
     visible: boolean;
     message: string;
@@ -49,11 +43,10 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     icon: null,
   });
 
-  // Initilize: Game Path, Config Files, Config Values and Packages
+  // Initilize: Game Path, Config Files, and Packages
   useEffect(() => {
     findGamePath(setConfig, setFileFound);
     fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
-    loadConfig(setConfig);
   }, []);
 
   const handleSetup = async (e: React.FormEvent) => {
@@ -170,8 +163,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               completedIcon={gamePathError ? <IconCircleX style={{ width: rem(20), height: rem(20) }} /> : undefined}
             >
               <GamePathStep
-                config={config}
-                setConfig={setConfig}
                 setFileFound={setFileFound}
                 gamePathError={gamePathError}
                 handleGamePathChange={(value) => handleGamePathChange(value, setConfig, setGamePathError)}
@@ -182,12 +173,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
             {/* ----------- Packages ----------- */}
             <Stepper.Step label="Packages">
-              <PackagesTable config={config} />
+              <PackagesTable/>
             </Stepper.Step>
 
             {/* ----------- Launch Options ----------- */}
             <Stepper.Step label="Options">
-              <LaunchOptions config={config} setConfig={setConfig} />
+              <LaunchOptions />
 
             </Stepper.Step>
 

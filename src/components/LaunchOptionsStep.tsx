@@ -1,16 +1,10 @@
-import React from 'react';
 import { Divider, Space, SegmentedControl, Title, Text } from '@mantine/core';
+import { useConfig } from '../contexts/ConfigContext';
 
-interface LaunchOptionsProps {
-  config: {
-    launchMethod: string;
-    loginServer: string;
-    dllVersion: string;
-  };
-  setConfig: React.Dispatch<React.SetStateAction<any>>;
-}
 
-const LaunchOptions: React.FC<LaunchOptionsProps> = ({ config, setConfig }) => {
+const LaunchOptions = () => {
+  const { config, setConfig } = useConfig();
+  
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
