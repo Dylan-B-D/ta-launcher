@@ -13,7 +13,6 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
     FOVSetting,
     onSensitivityChange
 }) => {
-    const [isCmToInch, setIsCmToInch] = useState(false);
     const [distance360, setDistance360] = useState(0);
     const  { config, setConfig } = useConfig();
     const dpi = config.dpi;
@@ -33,15 +32,15 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
             const constant = 124_846.176;
             let result = (constant / (dpi * mouseSensitivity)) * fovScale;
 
-            if (isCmToInch) {
+            if (units === 'Imperial') {
                 result /= 2.54;
             }
 
             setDistance360(Number(result.toFixed(2)));
         }
-    }, [mouseSensitivity, FOVSetting, dpi, isCmToInch]);
+    }, [mouseSensitivity, FOVSetting, dpi, units]);
 
-    const getDistanceLabel = () => (isCmToInch ? 'inches per 360°' : 'centimeters per 360°');
+    const getDistanceLabel = () => (units === 'Imperial' ? 'inches per 360°' : 'centimeters per 360°');
 
     const handleDistance360Change = (value: number) => {
         setDistance360(value);
@@ -58,8 +57,8 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
                 size="lg"
                 onLabel="Inch" offLabel="CM"
                 color="gray"
-                checked={isCmToInch}
-                onChange={(event) => setIsCmToInch(event.currentTarget.checked)}
+                checked={units === 'Imperial'}
+                onChange={(event) => setConfig(prev => ({ ...prev, units: event.currentTarget.checked ? 'Imperial' : 'Metric' }))}
             />
                     <Divider orientation="vertical" />
         </Group>
