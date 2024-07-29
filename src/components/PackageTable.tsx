@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, Space, Table, Button, Group, Progress, Loader } from "@mantine/core";
 import { formatSize } from '../utils/formatters';
 import './componentStyles.css';
-import { DownloadContext, usePackages } from '../contexts/DownloadContext';
+import {  useDownloadContext, usePackages } from '../contexts/DownloadContext';
 import NotificationPopup from './NotificationPopup';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useConfig } from '../contexts/ConfigContext';
@@ -10,7 +10,7 @@ import { useConfig } from '../contexts/ConfigContext';
 const PackagesTable = () => {
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
     const [showNotification, setShowNotification] = useState(false);
-    const { addToQueue, getTotalSize, getOverallProgress, getQueue, getCompletedPackages } = useContext(DownloadContext);
+    const { addToQueue, getTotalSize, getOverallProgress, getQueue, getCompletedPackages } = useDownloadContext();
     const totalSize = getTotalSize();
     const overallProgress = getOverallProgress();
     const progressPercentage = (overallProgress / totalSize) * 100;

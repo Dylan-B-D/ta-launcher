@@ -18,6 +18,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         launchMethod: "Non-Steam",
         dllVersion: "Release",
         dpi: 800,
+        units: "Metric"
     });
 
     useEffect(() => {

@@ -1,25 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Group, Text, Switch, NumberInput, Divider } from '@mantine/core';
+import { useConfig } from '../contexts/ConfigContext';
 
 interface SensitivityCalculatorProps {
     mouseSensitivity: number;
     FOVSetting: number;
-    dpi: number;
-    onDpiChange: (value: number) => void;
     onSensitivityChange: (value: number) => void;
 }
 
 const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
     mouseSensitivity,
     FOVSetting,
-    dpi,
-    onDpiChange,
     onSensitivityChange
 }) => {
     const [isCmToInch, setIsCmToInch] = useState(false);
     const [distance360, setDistance360] = useState(0);
+    const  { config, setConfig } = useConfig();
+    const dpi = config.dpi;
+    const units = config.units;
 
     const maxFOV = 120;
+
+    const handleDpiChange = (
+        value: number,
+    ) => {
+        setConfig(prev => ({ ...prev, dpi: value }));
+    };
 
     useEffect(() => {
         if (mouseSensitivity && FOVSetting && dpi) {
@@ -59,12 +65,12 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
         </Group>
 
         <Group gap="0" align="center">
-            <Text>Enter Mouse DPI:</Text>
+            <Text fz='sm' >Enter Mouse DPI:</Text>
             <NumberInput
                 variant="filled"
                 size="xs"
                 value={dpi}
-                onChange={(value) => onDpiChange(Number(value))}
+                onChange={(value) => handleDpiChange(Number(value))}
                 style={{ maxWidth: 90 }}
             />
         </Group>

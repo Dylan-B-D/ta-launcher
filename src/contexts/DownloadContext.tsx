@@ -149,7 +149,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
 
     const startDownload = async (packageId: string) => {
         const packageNode = findPackageNode(packageId, packages);
-        
+
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {
@@ -202,7 +202,14 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
     );
 };
 
-export const useDownload = () => useContext(DownloadContext);
+// Custom hook to access the download context
+export const useDownloadContext = (): DownloadContextType => {
+    const context = useContext(DownloadContext);
+    if (!context) {
+        throw new Error('useDownloadContext must be used within a DownloadProvider');
+    }
+    return context;
+};
 
 // Custom hook to access packages
 export const usePackages = () => {

@@ -58,7 +58,7 @@ export interface Field {
     key: string;
     displayName: string;
     description: string;
-  }
+}
 
 export interface ConfigSettingsTableProps {
     fields: Field[];
@@ -72,6 +72,7 @@ export interface Config {
     launchMethod: string;
     dllVersion: string;
     dpi: number;
+    units: string;
 }
 
 export interface SensitivityCalculatorProps {
@@ -86,11 +87,19 @@ export interface CardGradientProps {
     icon?: IconType;
     image?: string;
     gradient: {
-      deg: number;
-      from: string;
-      to: string;
+        deg: number;
+        from: string;
+        to: string;
     };
     title: string;
     description: string;
     link: string;
-  }
+}
+
+export interface Notification {
+    visible: boolean;
+    message: string;
+    title: string;
+    color: string;
+    icon: JSX.Element | null;
+}

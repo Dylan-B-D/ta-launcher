@@ -82,27 +82,18 @@ function parseIni(iniContent: string): { [key: string]: string } {
     return iniObject;
 }
 
-export const handleDpiChange = (
-    value: number,
-    setConfig: React.Dispatch<React.SetStateAction<Config>>
-) => {
-    setConfig(prev => ({ ...prev, dpi: value }));
-};
-
 export const handleSensitivityChange = (
     value: number,
     iniValues: { [key: string]: boolean | number },
     config: Config,
-    handleInputChange: (fileKey: string, key: string, value: boolean | number, 
-    setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>) => void,
-    setIniValues: React.Dispatch<React.SetStateAction<{ [key: string]: boolean | number }>>
+    handleInputChange: (fileKey: string, key: string, value: boolean | number) => void
 ) => {
     const maxFOV = 120;
     const fovScale = maxFOV / (iniValues.FOVSetting as number);
     const constant = 124_846.176;
     const newMouseSensitivity = (constant / (config.dpi * value * fovScale)).toFixed(3);
 
-    handleInputChange('input', 'MouseSensitivity', parseFloat(newMouseSensitivity), setIniValues);
+    handleInputChange('input', 'MouseSensitivity', parseFloat(newMouseSensitivity));
 };
 
 export const handleInputChange = (

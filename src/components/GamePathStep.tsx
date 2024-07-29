@@ -2,17 +2,16 @@ import React from 'react';
 import { Button, Container, Paper, Space, Text, TextInput } from '@mantine/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useConfig } from '../contexts/ConfigContext';
+import { findGamePath } from '../utils/utils';
 
 interface GamePathStepProps {
   gamePathError: boolean;
   handleGamePathChange: (value: string) => void;
-  findGamePath: () => Promise<void>;
 }
 
 export const GamePathStep: React.FC<GamePathStepProps> = ({
   gamePathError,
   handleGamePathChange,
-  findGamePath,
 }) => {
   const { config, setConfig } = useConfig();
   const selectFile = async () => {
@@ -79,7 +78,7 @@ export const GamePathStep: React.FC<GamePathStepProps> = ({
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
             <Button color="cyan" onClick={selectFile}>Choose File</Button>
-            <Button color="cyan" onClick={findGamePath}>Find Steam Game Path</Button>
+            <Button color="cyan" onClick={() => findGamePath(setConfig)}>Find Steam Game Path</Button>
           </div>
           <div style={{ minHeight: '20px', marginTop: '10px', marginBottom: -10 }}>
             {gamePathError && <Text size="sm" c="red">*Game path is required</Text>}

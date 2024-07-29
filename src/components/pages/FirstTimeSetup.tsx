@@ -1,20 +1,20 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, RingProgress } from "@mantine/core";
 import { CardGradient } from "../CardGradient";
 import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
-import { FirstTimeSetupProps } from "../../interfaces";
+import { FirstTimeSetupProps, Notification } from "../../interfaces";
 import { iniFields, inputIniFields } from "../../data/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
 import SensitivityCalculator from "../SensitivityCalculator";
 import { GamePathStep } from "../GamePathStep";
 import NotificationPopup from "../NotificationPopup";
 import LaunchOptions from "../LaunchOptionsStep";
-import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleDpiChange, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
+import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
 import PackagesTable from "../PackageTable";
-import { DownloadContext } from "../../contexts/DownloadContext";
+import {  useDownloadContext } from "../../contexts/DownloadContext";
 import { useConfig } from "../../contexts/ConfigContext";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
@@ -23,16 +23,10 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [iniValues, setIniValues] = useState<{ [key: string]: boolean | number }>({});
   const allFields = [...iniFields, ...inputIniFields];
   const third = Math.ceil(allFields.length / 3); // Divides fields into 3 columns
-  const { getTotalSize, getOverallProgress, getQueue } = useContext(DownloadContext);
+  const { getTotalSize, getOverallProgress, getQueue } = useDownloadContext();
   const downloadPercentage = (getOverallProgress() / getTotalSize()) * 100;
   const { config, setConfig, saveConfig } = useConfig();
-  const [notification, setNotification] = useState<{
-    visible: boolean;
-    message: string;
-    title: string;
-    color: string;
-    icon: JSX.Element | null;
-  }>({
+  const [notification, setNotification] = useState<Notification>({
     visible: false,
     message: '',
     title: '',
@@ -162,7 +156,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               <GamePathStep
                 gamePathError={gamePathError}
                 handleGamePathChange={(value) => handleGamePathChange(value, setConfig, setGamePathError)}
-                findGamePath={() => findGamePath(setConfig)}
               />
 
             </Stepper.Step>
@@ -223,11 +216,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Group>
 
                 <SensitivityCalculator
-                  mouseSensitivity={iniValues.MouseSensitivity as number}
-                  FOVSetting={iniValues.FOVSetting as number}
-                  dpi={config.dpi}
-                  onDpiChange={(value) => handleDpiChange(value, setConfig)}
-                  onSensitivityChange={(value) => handleSensitivityChange(value, iniValues, config, handleInputChange, setIniValues)}
+                    mouseSensitivity={iniValues.MouseSensitivity as number}
+                    FOVSetting={iniValues.FOVSetting as number}
+                    onSensitivityChange={(value) => handleSensitivityChange(value, iniValues, config, (fileKey, key, value) => handleInputChange(fileKey, key, value, setIniValues))}
                 />
 
               </Center>
