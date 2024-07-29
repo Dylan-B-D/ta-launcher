@@ -12,28 +12,25 @@ export const getPackages = async (setPackages: (packages: any) => void) => {
     }
 };
 
-export const findGamePath = async (setConfig: React.Dispatch<React.SetStateAction<Config>>, setFileFound: (found: boolean) => void) => {
+export const findGamePath = async (setConfig: React.Dispatch<React.SetStateAction<Config>>) => {
     try {
         const path = await invoke<string>("find_path");
         if (path) {
             setConfig((prevConfig: any) => ({ ...prevConfig, gamePath: path }));
-            setFileFound(true);
         } else {
-            setFileFound(false);
+            console.error("Failed to find game path");
         }
     } catch (error) {
         console.error("Failed to find game path:", error);
-        setFileFound(false);
     }
 };
 
 export const checkAndFindGamePath = (
     config: Config,
-    setConfig: React.Dispatch<React.SetStateAction<Config>>,
-    setFileFound: (found: boolean) => void
+    setConfig: React.Dispatch<React.SetStateAction<Config>>
 ) => {
     if (config.gamePath === "") {
-        findGamePath(setConfig, setFileFound);
+        findGamePath(setConfig);
     }
 };
 

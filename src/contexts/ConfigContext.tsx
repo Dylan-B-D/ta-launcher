@@ -1,13 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { loadConfig, saveConfig } from '../utils/config';
-
-interface Config {
-    gamePath: string;
-    loginServer: string;
-    launchMethod: string;
-    dllVersion: string;
-    dpi: number;
-}
+import { Config } from '../interfaces';
 
 interface ConfigContextType {
     config: Config;

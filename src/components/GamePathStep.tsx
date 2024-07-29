@@ -4,14 +4,12 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { useConfig } from '../contexts/ConfigContext';
 
 interface GamePathStepProps {
-  setFileFound: React.Dispatch<React.SetStateAction<null | boolean>>;
   gamePathError: boolean;
   handleGamePathChange: (value: string) => void;
   findGamePath: () => Promise<void>;
 }
 
 export const GamePathStep: React.FC<GamePathStepProps> = ({
-  setFileFound,
   gamePathError,
   handleGamePathChange,
   findGamePath,
@@ -23,9 +21,6 @@ export const GamePathStep: React.FC<GamePathStepProps> = ({
 
       if (selected && typeof selected.path === "string" && selected.path.endsWith(".exe")) {
         setConfig((prevConfig: any) => ({ ...prevConfig, gamePath: selected.path }));
-        setFileFound(true);
-      } else {
-        setFileFound(false);
       }
     } catch (error) {
       console.error("Error selecting file:", error);

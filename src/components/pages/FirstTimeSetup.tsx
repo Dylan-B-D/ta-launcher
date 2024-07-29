@@ -19,7 +19,6 @@ import { useConfig } from "../../contexts/ConfigContext";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
-  const [, setFileFound] = useState<null | boolean>(null);
   const [gamePathError, setGamePathError] = useState(false);
   const [, setTribesIni] = useState<ConfigFile | null>(null);
   const [, setTribesInputIni] = useState<ConfigFile | null>(null);
@@ -45,13 +44,13 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
   // Initilize: Game Path, Config Files, and Packages
   useEffect(() => {
-    findGamePath(setConfig, setFileFound);
+    findGamePath(setConfig);
     fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
   }, []);
 
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault();
-    checkAndFindGamePath(config, setConfig, setFileFound);
+    checkAndFindGamePath(config, setConfig);
 
     // Check if there are downloads in progress
     const queueLength = getQueue().length;
@@ -93,12 +92,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   }, [active, config.gamePath]);
 
   const nextStep = () => {
-    checkAndFindGamePath(config, setConfig, setFileFound);
+    checkAndFindGamePath(config, setConfig);
     setActive((current) => (current < 5 ? current + 1 : current));
   };
 
   const prevStep = () => {
-    checkAndFindGamePath(config, setConfig, setFileFound);
+    checkAndFindGamePath(config, setConfig);
     setActive((current) => (current > 0 ? current - 1 : current));
   };
 
@@ -163,10 +162,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               completedIcon={gamePathError ? <IconCircleX style={{ width: rem(20), height: rem(20) }} /> : undefined}
             >
               <GamePathStep
-                setFileFound={setFileFound}
                 gamePathError={gamePathError}
                 handleGamePathChange={(value) => handleGamePathChange(value, setConfig, setGamePathError)}
-                findGamePath={() => findGamePath(setConfig, setFileFound)}
+                findGamePath={() => findGamePath(setConfig)}
               />
 
             </Stepper.Step>
