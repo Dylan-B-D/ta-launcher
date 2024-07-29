@@ -5,7 +5,7 @@ import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
-import { ConfigFile, FirstTimeSetupProps } from "../../interfaces";
+import { FirstTimeSetupProps } from "../../interfaces";
 import { iniFields, inputIniFields } from "../../data/iniFields";
 import ConfigSettingsTable from "../ConfigSettingsTable";
 import SensitivityCalculator from "../SensitivityCalculator";
@@ -20,8 +20,6 @@ import { useConfig } from "../../contexts/ConfigContext";
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
   const [gamePathError, setGamePathError] = useState(false);
-  const [, setTribesIni] = useState<ConfigFile | null>(null);
-  const [, setTribesInputIni] = useState<ConfigFile | null>(null);
   const [iniValues, setIniValues] = useState<{ [key: string]: boolean | number }>({});
   const allFields = [...iniFields, ...inputIniFields];
   const third = Math.ceil(allFields.length / 3); // Divides fields into 3 columns
@@ -45,7 +43,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   // Initilize: Game Path, Config Files, and Packages
   useEffect(() => {
     findGamePath(setConfig);
-    fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
+    fetchConfigFiles(setIniValues);
   }, []);
 
   const handleSetup = async (e: React.FormEvent) => {
@@ -199,7 +197,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                         configId={config.id}
                         setNotification={setNotification}
                         fetchConfigFiles={async () => {
-                          await fetchConfigFiles(setTribesIni, setTribesInputIni, setIniValues);
+                          await fetchConfigFiles(setIniValues);
                         }}
                       />
                     </Grid.Col>

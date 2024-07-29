@@ -35,15 +35,10 @@ export const checkAndFindGamePath = (
 };
 
 export const fetchConfigFiles = async (
-    setTribesIni: (ini: any) => void,
-    setTribesInputIni: (ini: any) => void,
     setIniValues: (values: any) => void
 ) => {
     try {
         const result: ConfigFilesResult = await invoke('fetch_config_files');
-        // console.log(result);
-        setTribesIni(result.tribes_ini);
-        setTribesInputIni(result.tribes_input_ini);
 
         // Parse ini files
         const iniContent = parseIni(result.tribes_ini.content);
