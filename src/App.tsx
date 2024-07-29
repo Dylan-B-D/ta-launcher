@@ -7,6 +7,7 @@ import FirstTimeSetup from "./components/pages/FirstTimeSetup";
 import { DownloadProvider } from "./contexts/DownloadContext";
 import { Packages } from "./interfaces";
 import { getPackages } from "./utils/utils";
+import { ConfigProvider } from "./contexts/ConfigContext";
 
 function App() {
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -29,21 +30,23 @@ function App() {
     }, []);
 
   return (
-    <DownloadProvider packages={packages}>
-      <Router>
-        <Routes>
-          {isFirstTime ? (
-            <Route path="/" element={<FirstTimeSetup onComplete={handleSetupComplete} />} />
-          ) : (
-            <>
-              <Route path="/" element={<Home />} />
-              {/* Add more routes here */}
-            </>
-          )}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Router>
-    </DownloadProvider>
+    <ConfigProvider>
+      <DownloadProvider packages={packages}>
+        <Router>
+          <Routes>
+            {isFirstTime ? (
+              <Route path="/" element={<FirstTimeSetup onComplete={handleSetupComplete} />} />
+            ) : (
+              <>
+                <Route path="/" element={<Home />} />
+                {/* Add more routes here */}
+              </>
+            )}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Router>
+      </DownloadProvider>
+    </ConfigProvider>
   );
 }
 

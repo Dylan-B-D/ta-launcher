@@ -149,6 +149,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
 
     const startDownload = async (packageId: string) => {
         const packageNode = findPackageNode(packageId, packages);
+        
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {

@@ -27,6 +27,7 @@ export const loadConfig = async (setConfig: React.Dispatch<React.SetStateAction<
     console.error('Failed to load config:', error);
   }
 };
+
 export async function saveDownloadedPackages(packages: Map<string, string>) {
   await writeTextFile(
     DOWNLOADED_PACKAGES_FILE,
