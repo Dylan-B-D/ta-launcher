@@ -3,6 +3,7 @@ import { PackageNode, Packages } from '../interfaces';
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core';
 import { loadDownloadedPackages, saveDownloadedPackages } from '../utils/config';
+import { useConfig } from './ConfigContext';
 
 interface DownloadContextType {
     queue: string[];
@@ -43,6 +44,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
     const [completedPackages, setCompletedPackages] = useState<Map<string, string>>(new Map());
     const progressMapRef = useRef<Map<string, number>>(new Map());
     const [packagesToUpdate, setPackagesToUpdate] = useState<string[]>([]);
+    const { config } = useConfig();
 
     const calculateOverallProgress = useCallback(() => {
         return Array.from(progressMapRef.current.values()).reduce((sum, value) => sum + value, 0);
@@ -149,14 +151,15 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
 
     const startDownload = async (packageId: string) => {
         const packageNode = findPackageNode(packageId, packages);
-
+        const gamePath = config.gamePath;
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {
                 await invoke('download_package', { 
                     packageId, 
                     objectKey: packageDetails.objectKey,
-                    packageHash: packageDetails.hash
+                    packageHash: packageDetails.hash,
+                    tribesDir: 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Tribes'
                 });
             } catch (error) {
                 console.error(`Failed to download package ${packageId}:`, error);
