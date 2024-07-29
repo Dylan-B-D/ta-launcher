@@ -151,7 +151,10 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
 
     const startDownload = async (packageId: string) => {
         const packageNode = findPackageNode(packageId, packages);
-        const gamePath = config.gamePath;
+
+        const tribesDir = getTribesDir();
+        console.log('Tribes Dir:', tribesDir);
+
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {
@@ -159,7 +162,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
                     packageId, 
                     objectKey: packageDetails.objectKey,
                     packageHash: packageDetails.hash,
-                    tribesDir: 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Tribes'
+                    tribesDir: tribesDir
                 });
             } catch (error) {
                 console.error(`Failed to download package ${packageId}:`, error);
@@ -169,6 +172,12 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
             console.error(`Package ${packageId} not found`);
             removeFromQueue(packageId);
         }
+    };
+
+    const getTribesDir = (): string => {
+        // Get the path string to the tribes dir by moving back three directories
+        let gameDir = config.gamePath.split('\\').slice(0, -3).join('\\');
+        return gameDir.replace(/\\/g, '\\\\');
     };
 
     const getQueue = () => {
