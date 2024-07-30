@@ -49,7 +49,7 @@ export const usefulResources: Resource[] = [
   {
     title: "TA Server GitHub",
     description: "Host Your Own Servers",
-    link: "https://github.com/Griffon26/taserver/",
+    link: "https://github.com/Griffon26/taserver/blob/master/docs/user_manual/hosting_a_game_server.md",
     icon: FaGithub,
     gradient: { deg: 135, from: 'teal', to: 'cyan' },
   },

@@ -10,6 +10,16 @@ use std::path::Path;
 use std::fs::File as StdFile;
 use tempfile::TempDir;
 
+/// Downloads a package from the update server and extracts it to the correct directories
+/// 
+/// # Arguments
+/// - `app`: The Tauri AppHandle
+/// - `package_id`: The ID of the package to download (e.g. `tamods-stdlib`)
+/// - `object_key`: The object key of the package to download (e.g. `tamods-stdlib.zip`)
+/// - `package_hash`: The hash of the package to download
+/// - `tribes_dir`: The Tribes directory for community maps
+/// - `app_data_dir`: The app data local directory for dlls
+/// 
 #[tauri::command]
 pub async fn download_package(
     app: tauri::AppHandle,
@@ -19,19 +29,25 @@ pub async fn download_package(
     tribes_dir: String,
     app_data_dir: String
 ) -> Result<(), String> {
+
+    // Construct the download URL
     let base_url = "https://client.update.tamods.org/";
     let download_url = format!("{}{}", base_url, object_key);
     
+    // Create a new reqwest client
     let client = Client::new();
     let res = client.get(&download_url).send().await.map_err(|e| e.to_string())?;
 
+    // Create a temporary directory to store the downloaded zip
     let temp_dir = TempDir::new().map_err(|e| e.to_string())?;
     let file_path = temp_dir.path().join(format!("{}.zip", package_id));
     let mut file = File::create(&file_path).await.map_err(|e| e.to_string())?;
 
+    // Initialize download progress
     let mut downloaded = 0;
     let mut stream = res.bytes_stream();
 
+    // Download the zip file
     while let Some(item) = stream.next().await {
         let chunk = item.map_err(|e| e.to_string())?;
         file.write_all(&chunk).await.map_err(|e| e.to_string())?;
@@ -60,21 +76,36 @@ pub async fn download_package(
     Ok(())
 }
 
+/// Extracts a package to assigned directory
+/// 
+/// # Arguments
+/// - `zip_path`: The path to the zip file to extract
+/// - `tribes_dir`: The Tribes directory for community maps
+/// - `app_data_dir`: The app data local directory for dlls
+/// - `package_id`: The ID of the package to download (e.g. `tamods-stdlib`)
+/// 
 fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_dir: String, package_id: String) -> Result<(), String> {
+    // Construct the CONGIG directory
+    let docs_dir = document_dir().ok_or("Failed to get documents directory")?;
+    let config_dir = docs_dir.join("My Games").join("Tribes Ascend").join("TribesGame").join("config");
+    std::fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;   // Create the config directory if it doesn't exist
+
+    // Open the zip file
     let file = StdFile::open(zip_path).map_err(|e| e.to_string())?;
     let mut archive = ZipArchive::new(file).map_err(|e| e.to_string())?;
 
-    let docs_dir = document_dir().ok_or("Failed to get documents directory")?;
-    let config_dir = docs_dir.join("My Games").join("Tribes Ascend").join("TribesGame").join("config");
-    std::fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
-
+    
+    // Iterate through each file in the archive
     for i in 0..archive.len() {
         let mut file = archive.by_index(i).map_err(|e| e.to_string())?;
+        
+        // Get the output path for the current file
         let outpath = match file.enclosed_name() {
             Some(path) => path.to_owned(),
             None => continue,
         };
 
+        // Determine the output path based on the file's prefix
         let outpath = if outpath.starts_with("!CONFIG") {
             config_dir.join(outpath.strip_prefix("!CONFIG").unwrap())
         } else if outpath.starts_with("!TRIBESDIR") {
@@ -88,14 +119,17 @@ fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_di
             }
         };
 
+        // If the file is a directory, create it
         if file.name().ends_with('/') {
             std::fs::create_dir_all(&outpath).map_err(|e| e.to_string())?;
         } else {
+            // If the file is not a directory, create its parent directories if they don't exist
             if let Some(p) = outpath.parent() {
                 if !p.exists() {
                     std::fs::create_dir_all(&p).map_err(|e| e.to_string())?;
                 }
             }
+            // Create the file and copy its contents from the archive
             let mut outfile = StdFile::create(&outpath).map_err(|e| e.to_string())?;
             std::io::copy(&mut file, &mut outfile).map_err(|e| e.to_string())?;
         }
@@ -104,8 +138,12 @@ fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_di
     // Initialize ubermenu if package is tamods-stdlib
     if package_id == "tamods-stdlib" {
         let init_ubermenu = config_dir.join("config.lua");
-        let mut config_file = StdFile::create(init_ubermenu).map_err(|e| e.to_string())?;
-        config_file.write_all(b"require(\"presets/ubermenu/preset\")\n").map_err(|e| e.to_string())?;
+        
+        // Check if the file already exists
+        if !init_ubermenu.exists() {
+            let mut config_file = StdFile::create(init_ubermenu).map_err(|e| e.to_string())?;
+            config_file.write_all(b"require(\"presets/ubermenu/preset\")\n").map_err(|e| e.to_string())?;
+        }
     }
 
     Ok(())

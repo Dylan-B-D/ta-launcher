@@ -23,12 +23,22 @@ pub fn fetch_config_files(handle: tauri::AppHandle) -> Result<ConfigFilesResult,
 
     let tribes_ini_path = config_dir.join("tribes.ini");
     let tribes_input_ini_path = config_dir.join("TribesInput.ini");
+    let help_text_ini_path = config_dir.join("TribesHelpText.ini");
+    let tribes_user_ini_path = config_dir.join("TribesUser.ini");
     let default_input_ini_path = handle.path().resolve(
         "..\\public\\configs\\defaultinput\\TribesInput.ini",
         BaseDirectory::Resource
     ).map_err(|e| e.to_string())?;
     let default_ini_path = handle.path().resolve(
         "../public/configs/defaultini/tribes.ini",
+        BaseDirectory::Resource
+    ).map_err(|e| e.to_string())?;
+    let default_help_text_ini_path = handle.path().resolve(
+        "../public/configs/defaulttribeshelptext/TribesHelpText.ini",
+        BaseDirectory::Resource
+    ).map_err(|e| e.to_string())?;
+    let default_user_ini_path = handle.path().resolve(
+        "../public/configs/defaulttribesuser/TribesUser.ini",
         BaseDirectory::Resource
     ).map_err(|e| e.to_string())?;
 
@@ -40,6 +50,14 @@ pub fn fetch_config_files(handle: tauri::AppHandle) -> Result<ConfigFilesResult,
         return Err(format!("Default INI file not found: {}", default_ini_path.display()));
     }
 
+    if !default_help_text_ini_path.exists() {
+        return Err(format!("Default Help Text INI file not found: {}", default_help_text_ini_path.display()));
+    }
+
+    if !default_user_ini_path.exists() {
+        return Err(format!("Default User INI file not found: {}", default_user_ini_path.display()));
+    }
+
     // Ensure the config directory exists
     if !config_dir.exists() {
         create_dir_all(&config_dir).map_err(|e| format!("Failed to create config directory: {}", e))?;
@@ -49,10 +67,19 @@ pub fn fetch_config_files(handle: tauri::AppHandle) -> Result<ConfigFilesResult,
     if !tribes_input_ini_path.exists() {
         copy(&default_input_ini_path, &tribes_input_ini_path).map_err(|e| e.to_string())?;
     }
-
     // Check and copy default tribes.ini if it does not exist
     if !tribes_ini_path.exists() {
         copy(&default_ini_path, &tribes_ini_path).map_err(|e| e.to_string())?;
+    }
+
+    // Check and copy default TribesHelpText.ini if it does not exist
+    if !help_text_ini_path.exists() {
+        copy(&default_help_text_ini_path, &help_text_ini_path).map_err(|e| e.to_string())?;
+    }
+
+    // Check and copy default TribesUser.ini if it does not exist
+    if !tribes_user_ini_path.exists() {
+        copy(&default_user_ini_path, &tribes_user_ini_path).map_err(|e| e.to_string())?;
     }
 
     let tribes_ini_content = read_file(&tribes_ini_path)?;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, RingProgress } from "@mantine/core";
+import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, RingProgress, Loader } from "@mantine/core";
 import { CardGradient } from "../CardGradient";
 import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
@@ -26,6 +26,13 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const { getTotalSize, getOverallProgress, getQueue } = useDownloadContext();
   const downloadPercentage = (getOverallProgress() / getTotalSize()) * 100;
   const { config, setConfig, saveConfig } = useConfig();
+  const [startTime, setStartTime] = useState<number>(Date.now());
+  const [lastProgress, setLastProgress] = useState<number>(0);
+  const elapsedTime = (Date.now() - startTime) / 1000; // in seconds
+  const downloadedBytes = getOverallProgress() - lastProgress;
+  const downloadSpeed = downloadedBytes / elapsedTime; // bytes per second
+  const remainingBytes = getTotalSize() - getOverallProgress();
+  const estimatedTimeLeft = remainingBytes / downloadSpeed; // in seconds
   const [notification, setNotification] = useState<Notification>({
     visible: false,
     message: '',
@@ -39,6 +46,27 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     findGamePath(setConfig);
     fetchConfigFiles(setIniValues);
   }, []);
+
+  useEffect(() => {
+    if (getQueue().length > 0 && lastProgress === 0) {
+      setStartTime(Date.now());
+      setLastProgress(getOverallProgress());
+    }
+  
+    const interval = setInterval(() => {
+      if (getQueue().length > 0) {
+        setLastProgress(getOverallProgress());
+      }
+    }, 5000); // Update every 5 seconds
+  
+    return () => clearInterval(interval);
+  }, [getQueue, getOverallProgress, lastProgress]);
+
+  const formatTime = (seconds: number) => {
+    if (seconds < 60) return `${Math.floor(seconds)} seconds`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes`;
+    return `${Math.floor(seconds / 3600)} hours`;
+  };
 
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,44 +254,48 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
           </Stepper>
         </div>
         <Group
-          p={"xs"}
-          style={{
-            position: "sticky",
-            bottom: 0,
-            backgroundColor: "rgba(128, 128, 128, 0.1)",
-            borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
-            zIndex: 999,
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          {getQueue().length > 0 ? (
-            <RingProgress
-              size={35}
-              thickness={2}
-              roundCaps
-              label={
-              <Text size="sm" ta="center">
-                {Math.floor(downloadPercentage)}
-              </Text>
-              }
-              sections={[
-                { value: downloadPercentage, color: 'teal' }
-              ]}
-              style={{ margin: 0 }}
-            />
-          ) : (
-            <div style={{ width: 30 }}></div> // Placeholder to maintain space
-          )}
-          <Group>
-            <Button color="cyan" radius="xl" variant="subtle" size="sm" onClick={prevStep}>Back</Button>
-            {active === 4 ? (
-              <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup}>Finish</Button>
+      p="xs"
+      style={{
+        position: "sticky",
+        bottom: 0,
+        backgroundColor: "rgba(128, 128, 128, 0.1)",
+        borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
+        zIndex: 999,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      {getQueue().length > 0 ? (
+            downloadPercentage < 100 ? (
+              <>
+                <RingProgress
+                  size={35}
+                  thickness={2}
+                  roundCaps
+                  label={<Text size="sm" ta="center">{Math.floor(downloadPercentage)}</Text>}
+                  sections={[{ value: downloadPercentage, color: 'teal' }]}
+                  style={{ margin: 0 }}
+                />
+                <Text size="sm" ta="center">{`Estimated time left: ${formatTime(estimatedTimeLeft)}`}</Text>
+              </>
             ) : (
-              <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep}>Next</Button>
-            )}
+          <Group align="center" gap="xs">
+            <Loader color="cyan" size="sm" />
+            <Text size="sm" c="cyan">Extracting files...</Text>
           </Group>
-        </Group>
+        )
+      ) : (
+        <div style={{ width: 30 }}></div> // Placeholder to maintain space
+      )}
+      <Group>
+        <Button color="cyan" radius="xl" variant="subtle" size="sm" onClick={prevStep}>Back</Button>
+        {active === 4 ? (
+          <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup}>Finish</Button>
+        ) : (
+          <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep}>Next</Button>
+        )}
+      </Group>
+    </Group>
       </Container></>
   );
 };

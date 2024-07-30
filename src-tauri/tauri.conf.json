@@ -37,7 +37,9 @@
       "../public/configs/veryhigh/*",
       "../public/configs/verylow/*",
       "../public/configs/defaultinput/*",
-      "../public/configs/defaultini/*"
+      "../public/configs/defaultini/*",
+      "../public/configs/defaulttribeshelptext/*",
+      "../public/configs/defaulttribesuser/*"
     ]
   }
 }
