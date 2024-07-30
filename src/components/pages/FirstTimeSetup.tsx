@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, RingProgress, Loader } from "@mantine/core";
+import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem } from "@mantine/core";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
@@ -12,9 +12,10 @@ import NotificationPopup from "../NotificationPopup";
 import LaunchOptions from "../LaunchOptionsStep";
 import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleInputChange, handleSensitivityChange } from "../../utils/utils";
 import PackagesTable from "../PackageTable";
-import {  useDownloadContext } from "../../contexts/DownloadContext";
+import { useDownloadContext } from "../../contexts/DownloadContext";
 import { useConfig } from "../../contexts/ConfigContext";
 import UsefulResources from "../UsefulResources";
+import DownloadProgressIndicator from "../DownloadProgressIndicator";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -22,16 +23,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [iniValues, setIniValues] = useState<{ [key: string]: boolean | number }>({});
   const allFields = [...iniFields, ...inputIniFields];
   const third = Math.ceil(allFields.length / 3); // Divides fields into 3 columns
-  const { getTotalSize, getOverallProgress, getQueue } = useDownloadContext();
-  const downloadPercentage = (getOverallProgress() / getTotalSize()) * 100;
+  const { getQueue } = useDownloadContext();
   const { config, setConfig, saveConfig } = useConfig();
-  const [startTime, setStartTime] = useState<number>(Date.now());
-  const [lastProgress, setLastProgress] = useState<number>(0);
-  const elapsedTime = (Date.now() - startTime) / 1000; // in seconds
-  const downloadedBytes = getOverallProgress() - lastProgress;
-  const downloadSpeed = downloadedBytes / elapsedTime; // bytes per second
-  const remainingBytes = getTotalSize() - getOverallProgress();
-  const estimatedTimeLeft = remainingBytes / downloadSpeed; // in seconds
+  const queueLength = getQueue().length;
   const [notification, setNotification] = useState<Notification>({
     visible: false,
     message: '',
@@ -46,34 +40,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     fetchConfigFiles(setIniValues);
   }, []);
 
-  useEffect(() => {
-    if (getQueue().length > 0 && lastProgress === 0) {
-      setStartTime(Date.now());
-      setLastProgress(getOverallProgress());
-    }
-  
-    const interval = setInterval(() => {
-      if (getQueue().length > 0) {
-        setLastProgress(getOverallProgress());
-      }
-    }, 5000); // Update every 5 seconds
-  
-    return () => clearInterval(interval);
-  }, [getQueue, getOverallProgress, lastProgress]);
-
-  const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${Math.floor(seconds)} seconds`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes`;
-    return `${Math.floor(seconds / 3600)} hours`;
-  };
-
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault();
     checkAndFindGamePath(config, setConfig);
 
     // Check if there are downloads in progress
-    const queueLength = getQueue().length;
-    if (queueLength > 0) {
+    if (getQueue().length > 0) {
       setNotification({
         visible: true,
         message: `There are ${queueLength} downloads in progress. Please wait for them to finish before proceeding.`,
@@ -140,8 +112,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
               <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
                 <Title order={2}>First-Time Setup</Title>
                 <Text size="sm" c="dimmed">
-                  Any options changed here can be modified later. 
-                  For additional assistance, ask for help in one of the 
+                  Any options changed here can be modified later.
+                  For additional assistance, ask for help in one of the
                   following Discord servers or message 'evxl.' on Discord.
                 </Text>
                 <UsefulResources />
@@ -163,7 +135,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
             {/* ----------- Packages ----------- */}
             <Stepper.Step label="Packages">
-              <PackagesTable/>
+              <PackagesTable />
             </Stepper.Step>
 
             {/* ----------- Launch Options ----------- */}
@@ -216,9 +188,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                 </Group>
 
                 <SensitivityCalculator
-                    mouseSensitivity={iniValues.MouseSensitivity as number}
-                    FOVSetting={iniValues.FOVSetting as number}
-                    onSensitivityChange={(value) => handleSensitivityChange(value, iniValues, config, (fileKey, key, value) => handleInputChange(fileKey, key, value, setIniValues))}
+                  mouseSensitivity={iniValues.MouseSensitivity as number}
+                  FOVSetting={iniValues.FOVSetting as number}
+                  onSensitivityChange={(value) => handleSensitivityChange(value, iniValues, config, (fileKey, key, value) => handleInputChange(fileKey, key, value, setIniValues))}
                 />
 
               </Center>
@@ -226,47 +198,30 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
           </Stepper>
         </div>
         <Group
-      p="xs"
-      style={{
-        position: "sticky",
-        bottom: 0,
-        backgroundColor: "rgba(128, 128, 128, 0.1)",
-        borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      {getQueue().length > 0 ? (
-            downloadPercentage < 100 ? (
-              <>
-                <RingProgress
-                  size={35}
-                  thickness={2}
-                  roundCaps
-                  label={<Text size="sm" ta="center">{Math.floor(downloadPercentage)}</Text>}
-                  sections={[{ value: downloadPercentage, color: 'teal' }]}
-                  style={{ margin: 0 }}
-                />
-                <Text size="sm" ta="center">{`Estimated time left: ${formatTime(estimatedTimeLeft)}`}</Text>
-              </>
+          p="xs"
+          style={{
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: "rgba(128, 128, 128, 0.1)",
+            borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          {queueLength > 0 ? (
+            <DownloadProgressIndicator />
+          ) : (
+            <div style={{ width: 30 }}></div> // Placeholder to maintain space
+          )}
+          <Group>
+            <Button color="cyan" radius="xl" variant="subtle" size="sm" onClick={prevStep}>Back</Button>
+            {active === 4 ? (
+              <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup}>Finish</Button>
             ) : (
-          <Group align="center" gap="xs">
-            <Loader color="cyan" size="sm" />
-            <Text size="sm" c="cyan">Extracting files...</Text>
+              <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep}>Next</Button>
+            )}
           </Group>
-        )
-      ) : (
-        <div style={{ width: 30 }}></div> // Placeholder to maintain space
-      )}
-      <Group>
-        <Button color="cyan" radius="xl" variant="subtle" size="sm" onClick={prevStep}>Back</Button>
-        {active === 4 ? (
-          <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup}>Finish</Button>
-        ) : (
-          <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep}>Next</Button>
-        )}
-      </Group>
-    </Group>
+        </Group>
       </Container></>
   );
 };

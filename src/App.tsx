@@ -83,7 +83,7 @@ function App() {
             </Stack>
             <Group grow justify="center" mt="md">
               <Button color='teal' onClick={handleUpdate}>Update Now</Button>
-              <Button color='orange' variant="outline" onClick={handleCancelUpdate}>Cancel</Button>
+              <Button color='rgb(200,200,100)' variant="outline" onClick={handleCancelUpdate}>Cancel</Button>
             </Group>
           </Container>
         </Modal>
