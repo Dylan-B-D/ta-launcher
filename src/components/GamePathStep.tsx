@@ -6,20 +6,28 @@ import { findGamePath } from '../utils/utils';
 
 interface GamePathStepProps {
   gamePathError: boolean;
-  handleGamePathChange: (value: string) => void;
+  setGamePathError: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const GamePathStep: React.FC<GamePathStepProps> = ({
   gamePathError,
-  handleGamePathChange,
+  setGamePathError,
 }) => {
   const { config, setConfig } = useConfig();
+
+  const handleGamePathChange = (value: string) => {
+    const trimmedValue = value.trim();
+    setConfig((prevConfig) => ({ ...prevConfig, gamePath: value }));
+    setGamePathError(trimmedValue === '');
+  };
+
   const selectFile = async () => {
     try {
       const selected = await open();
 
       if (selected && typeof selected.path === "string" && selected.path.endsWith(".exe")) {
         setConfig((prevConfig: any) => ({ ...prevConfig, gamePath: selected.path }));
+        setGamePathError(false);
       }
     } catch (error) {
       console.error("Error selecting file:", error);
@@ -54,13 +62,12 @@ export const GamePathStep: React.FC<GamePathStepProps> = ({
               Non-Steam Install
             </Button>
           </div>
-          
         </Paper>
       </Container>
       <Space h="xl" />
       <Container>
-        <Paper className="card" shadow="xs" p="md" style={{ width: '100%'}}>
-        <Text ta='center' size="sm" c="dimmed" mt="md">
+        <Paper className="card" shadow="xs" p="md" style={{ width: '100%' }}>
+          <Text ta='center' size="sm" c="dimmed" mt="md">
             If the path to the TribesAscend.exe executable is not detected, you can manually add it.
           </Text>
           <Text ta='center' size="sm" c="dimmed">

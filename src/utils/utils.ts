@@ -116,13 +116,3 @@ export const handleInputChange = (
         return updatedValues;
     });
 };
-
-export const handleGamePathChange = (
-    value: string,
-    setConfig: React.Dispatch<React.SetStateAction<Config>>,
-    setGamePathError: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-    const trimmedValue = value.trim();
-    setConfig(prevConfig => ({ ...prevConfig, gamePath: value }));
-    setGamePathError(trimmedValue === '');
-};

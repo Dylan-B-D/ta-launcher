@@ -10,7 +10,7 @@ import SensitivityCalculator from "../SensitivityCalculator";
 import { GamePathStep } from "../GamePathStep";
 import NotificationPopup from "../NotificationPopup";
 import LaunchOptions from "../LaunchOptionsStep";
-import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleGamePathChange, handleInputChange, handleSensitivityChange } from "../../utils/utils";
+import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleInputChange, handleSensitivityChange } from "../../utils/utils";
 import PackagesTable from "../PackageTable";
 import {  useDownloadContext } from "../../contexts/DownloadContext";
 import { useConfig } from "../../contexts/ConfigContext";
@@ -156,7 +156,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             >
               <GamePathStep
                 gamePathError={gamePathError}
-                handleGamePathChange={(value) => handleGamePathChange(value, setConfig, setGamePathError)}
+                setGamePathError={setGamePathError}
               />
 
             </Stepper.Step>
