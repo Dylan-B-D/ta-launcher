@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Home from "./components/pages/Home";
 import FirstTimeSetup from "./components/pages/FirstTimeSetup";
 import { DownloadProvider } from "./contexts/DownloadContext";
-import { Packages } from "./interfaces";
-import { getPackages } from "./utils/utils";
 import { ConfigProvider } from "./contexts/ConfigContext";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
@@ -60,15 +58,9 @@ function App() {
     setIsFirstTime(false);
   };
 
-  const [packages, setPackages] = useState<Packages>({});
-
-  useEffect(() => {
-    getPackages(setPackages);
-  }, []);
-
   return (
     <ConfigProvider>
-      <DownloadProvider packages={packages}>
+      <DownloadProvider>
         <Modal
           opened={updateModalOpened}
           onClose={handleCancelUpdate}

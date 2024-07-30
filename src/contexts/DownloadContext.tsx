@@ -5,6 +5,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { loadDownloadedPackages, saveDownloadedPackages } from '../utils/config';
 import { useConfig } from './ConfigContext';
 import { appLocalDataDir } from '@tauri-apps/api/path';
+import { getPackages } from '../utils/utils';
 
 interface DownloadContextType {
     queue: string[];
@@ -36,19 +37,23 @@ const DownloadContext = createContext<DownloadContextType>({
 
 interface DownloadProviderProps {
     children: React.ReactNode;
-    packages: Packages;
 }
 
-export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, packages }) => {
+export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) => {
     const [queue, setQueue] = useState<string[]>([]);
     const [totalSize, setTotalSize] = useState<number>(0);
     const [completedPackages, setCompletedPackages] = useState<Map<string, string>>(new Map());
     const progressMapRef = useRef<Map<string, number>>(new Map());
     const [packagesToUpdate, setPackagesToUpdate] = useState<string[]>([]);
     const { config } = useConfig();
+    const [packages, setPackages] = useState<Packages>({});
 
     const calculateOverallProgress = useCallback(() => {
         return Array.from(progressMapRef.current.values()).reduce((sum, value) => sum + value, 0);
+    }, []);
+
+    useEffect(() => {
+        getPackages(setPackages)
     }, []);
 
     const checkPackageHashes = (savedPackages: Map<string, string>, currentPackages: Packages, toUpdate: Set<string> = new Set()) => {
@@ -69,20 +74,21 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children, pa
     useEffect(() => {
 
         // Load downloaded packages when the component mounts
-        loadDownloadedPackages().then(savedPackages => {
+        const initializePackages = async () => {
+            const savedPackages = await loadDownloadedPackages();
+            const packagesToUpdate = Array.from(checkPackageHashes(savedPackages, packages));
+            
             setCompletedPackages(savedPackages);
+            setPackagesToUpdate(packagesToUpdate);
             
-            // Check hashes and create list of packages to update
-            const packagesToUpdate = checkPackageHashes(savedPackages, packages);
-            setPackagesToUpdate(Array.from(packagesToUpdate));
-            
-            // Log packages that need updating
-            if (packagesToUpdate.size > 0) {
-                console.log('Packages that need updating:', Array.from(packagesToUpdate));
+            if (packagesToUpdate.length > 0) {
+              console.log('Packages that need updating:', packagesToUpdate);
             } else {
-                console.log('No packages need updating');
+              console.log('No packages need updating');
             }
-        });
+          };
+        
+          initializePackages();
 
         const unlistenProgress = listen('download-progress', (event: any) => {
             const [packageId, downloaded] = event.payload;
