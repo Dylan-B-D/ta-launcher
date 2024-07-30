@@ -67,6 +67,7 @@ export interface Config {
     dllVersion: string;
     dpi: number;
     units: string;
+    customServerIP: string;
 }
 
 export interface SensitivityCalculatorProps {
