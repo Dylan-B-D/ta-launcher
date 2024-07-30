@@ -40,6 +40,8 @@
       "identifier": "fs:allow-document-write-recursive",
       "allow": [{ "path": "$DOCUMENTS/*" }]
     },
-    "dialog:default"
+    "dialog:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
   ]
 }

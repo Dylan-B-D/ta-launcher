@@ -1,6 +1,6 @@
 {
-  "productName": "ta-launcherv2",
-  "version": "0.0.0",
+  "productName": "TA Launcher V2",
+  "version": "0.1.0",
   "identifier": "TALauncherV2",
   "build": {
     "beforeDevCommand": "bun run dev",
@@ -41,5 +41,18 @@
       "../public/configs/defaulttribeshelptext/*",
       "../public/configs/defaulttribesuser/*"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://gist.githubusercontent.com/Dylan-B-D/716f9e40e5916b20d7551f1f1414142f/raw/"
+      ],
+      "active": true,
+      "dialog": true,
+      "windows": {
+        "installMode": "passive"
+      },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENEQzgwNDQ3NzhFRkZGQ0QKUldUTi8rOTRSd1RJelV4Z210ei9ZVzZncnZxeGxJRTV5Sm16RW1hSXNJL1ZvQW9XU0tEM0ZGVisK"
+    }
   }
 }
