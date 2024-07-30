@@ -3,3 +3,4 @@ pub mod packages;
 pub mod config_preset_manager;
 pub mod config_manager;
 pub mod package_downloader;
+pub mod constants;

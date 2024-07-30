@@ -3,9 +3,7 @@ use futures::future::join_all;
 use reqwest;
 use serde::{Deserialize, Serialize};
 use futures::FutureExt;
-
-const PKG_ENDPOINT: &str = "https://client.update.tamods.org/";
-const PKG_CFG_FILE: &str = "packageconfig.yaml";
+use super::constants::{PKG_ENDPOINT, PKG_CFG_FILE};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[allow(non_snake_case)]

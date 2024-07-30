@@ -1,49 +1,16 @@
 use std::fs::{self, copy, create_dir_all};
 use std::path::PathBuf;
 use tauri::{path::BaseDirectory, Manager};
-use dirs;
+use super::constants::CONFIG_DIR;
 
-/// Get the paths for the new and user config files.
-/// 
-/// The new config file is the one that is included in the app's resources.
-/// The user config file is the one that is located in the user's documents directory.
-/// 
-fn get_config_paths(handle: &tauri::AppHandle, config_variant: &str) -> Result<(PathBuf, PathBuf), String> {
-    let new_config_path = handle.path().resolve(
-        format!("../public/configs/{}/tribes.ini", config_variant),
-        BaseDirectory::Resource
-    ).map_err(|e| e.to_string())?;
-
-    let user_config_path = dirs::document_dir()
-        .ok_or_else(|| "Could not find documents directory".to_string())?
-        .join("My Games\\Tribes Ascend\\TribesGame\\config\\tribes.ini");
-
-    Ok((new_config_path, user_config_path))
+#[derive(serde::Serialize)]
+pub struct ConfigCheckResult {
+    exists: bool,
 }
 
-/// Handle a read-only file by temporarily setting it to read-write.
-/// 
-/// This function will set the file to read-write, perform the action, and then set it back to read-only.
-/// 
-fn handle_readonly(path: &PathBuf, action: impl FnOnce() -> Result<(), String>) -> Result<(), String> {
-    let metadata = fs::metadata(path).map_err(|e| e.to_string())?;
-    let is_read_only = metadata.permissions().readonly();
-
-    if is_read_only {
-        let mut permissions = metadata.permissions();
-        permissions.set_readonly(false);
-        fs::set_permissions(path, permissions).map_err(|e| e.to_string())?;
-    }
-
-    let result = action();
-
-    if is_read_only {
-        let mut permissions = fs::metadata(path).map_err(|e| e.to_string())?.permissions();
-        permissions.set_readonly(true);
-        fs::set_permissions(path, permissions).map_err(|e| e.to_string())?;
-    }
-
-    result
+#[derive(serde::Serialize)]
+pub struct ReplaceResult {
+    message: String,
 }
 
 /// Check if the user config file exists and copy the new config file to the user's documents directory if it does not.
@@ -97,12 +64,46 @@ pub fn replace_config(handle: tauri::AppHandle, config_variant: String) -> Resul
     Ok(ReplaceResult { message: "Preset loaded".to_string() })
 }
 
-#[derive(serde::Serialize)]
-pub struct ConfigCheckResult {
-    exists: bool,
+/// Get the paths for the new and user config files.
+/// 
+/// The new config file is the one that is included in the app's resources.
+/// The user config file is the one that is located in the user's documents directory.
+/// 
+fn get_config_paths(handle: &tauri::AppHandle, config_variant: &str) -> Result<(PathBuf, PathBuf), String> {
+
+    // Path to a copy of the default tribes.ini file
+    let new_config_path = handle.path().resolve(
+        format!("../public/configs/{}/tribes.ini", config_variant),
+        BaseDirectory::Resource
+    ).map_err(|e| e.to_string())?;
+
+    // Path to the user's tribes.ini file
+    let user_config_path = CONFIG_DIR.join("tribes.ini");
+
+    Ok((new_config_path, user_config_path))
 }
 
-#[derive(serde::Serialize)]
-pub struct ReplaceResult {
-    message: String,
+/// Handle a read-only file by temporarily setting it to read-write.
+/// 
+/// This function will set the file to read-write, perform the action, and then set it back to read-only.
+/// 
+fn handle_readonly(path: &PathBuf, action: impl FnOnce() -> Result<(), String>) -> Result<(), String> {
+    let metadata = fs::metadata(path).map_err(|e| e.to_string())?;
+    let is_read_only = metadata.permissions().readonly();
+
+    if is_read_only {
+        let mut permissions = metadata.permissions();
+        permissions.set_readonly(false);
+        fs::set_permissions(path, permissions).map_err(|e| e.to_string())?;
+    }
+
+    let result = action();
+
+    if is_read_only {
+        let mut permissions = fs::metadata(path).map_err(|e| e.to_string())?.permissions();
+        permissions.set_readonly(true);
+        fs::set_permissions(path, permissions).map_err(|e| e.to_string())?;
+    }
+
+    result
 }

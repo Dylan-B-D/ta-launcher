@@ -1,7 +1,6 @@
 use tauri::Emitter;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
-use dirs::document_dir;
 use futures::stream::StreamExt;
 use reqwest::Client;
 use zip::ZipArchive;
@@ -9,7 +8,7 @@ use std::io::Write;
 use std::path::Path;
 use std::fs::File as StdFile;
 use tempfile::TempDir;
-
+use super::constants::{CONFIG_DIR, PKG_ENDPOINT};
 /// Downloads a package from the update server and extracts it to the correct directories
 /// 
 /// # Arguments
@@ -31,8 +30,7 @@ pub async fn download_package(
 ) -> Result<(), String> {
 
     // Construct the download URL
-    let base_url = "https://client.update.tamods.org/";
-    let download_url = format!("{}{}", base_url, object_key);
+    let download_url = format!("{}{}", PKG_ENDPOINT, object_key);
     
     // Create a new reqwest client
     let client = Client::new();
@@ -86,9 +84,7 @@ pub async fn download_package(
 /// 
 fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_dir: String, package_id: String) -> Result<(), String> {
     // Construct the CONGIG directory
-    let docs_dir = document_dir().ok_or("Failed to get documents directory")?;
-    let config_dir = docs_dir.join("My Games").join("Tribes Ascend").join("TribesGame").join("config");
-    std::fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;   // Create the config directory if it doesn't exist
+    std::fs::create_dir_all(&*CONFIG_DIR).map_err(|e| e.to_string())?;   // Create the config directory if it doesn't exist
 
     // Open the zip file
     let file = StdFile::open(zip_path).map_err(|e| e.to_string())?;
@@ -107,7 +103,7 @@ fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_di
 
         // Determine the output path based on the file's prefix
         let outpath = if outpath.starts_with("!CONFIG") {
-            config_dir.join(outpath.strip_prefix("!CONFIG").unwrap())
+            CONFIG_DIR.join(outpath.strip_prefix("!CONFIG").unwrap())
         } else if outpath.starts_with("!TRIBESDIR") {
             Path::new(&tribes_dir).join(outpath.strip_prefix("!TRIBESDIR").unwrap())
         } else {
@@ -137,7 +133,7 @@ fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_di
 
     // Initialize ubermenu if package is tamods-stdlib
     if package_id == "tamods-stdlib" {
-        let init_ubermenu = config_dir.join("config.lua");
+        let init_ubermenu = CONFIG_DIR.join("config.lua");
         
         // Check if the file already exists
         if !init_ubermenu.exists() {

@@ -30,6 +30,7 @@ futures = "0.3.30"
 zip = { version = "2.1.5", features = ["deflate-zlib"] }
 tempfile = "3.10.1"
 tauri-plugin-updater = { version = "2.0.0-beta.11" }
+once_cell = "1.19.0"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

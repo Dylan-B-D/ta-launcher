@@ -13,6 +13,11 @@ pub fn find_path() -> Option<String> {
     find_tribes_executable(possible_dirs)
 }
 
+/// Get the path to the Steam installation.
+/// 
+/// # Returns
+/// 
+/// The path to the Steam installation.
 fn get_steam_path() -> Option<PathBuf> {
     let hkey = RegKey::predef(HKEY_CURRENT_USER)
         .open_subkey("Software\\Valve\\Steam")
@@ -23,12 +28,30 @@ fn get_steam_path() -> Option<PathBuf> {
     Some(PathBuf::from(capitalize_path(&steam_path)))
 }
 
+/// Get the possible directories where the game might be installed.
+/// 
+/// # Arguments
+/// 
+/// * `steam_path` - The path to the Steam installation.
+/// 
+/// # Returns
+/// 
+/// A list of possible directories where the game might be installed.
 fn get_possible_directories(steam_path: &Path) -> Vec<PathBuf> {
     let mut possible_dirs = vec![get_default_steam_library(steam_path)];
     possible_dirs.extend(get_additional_libraries(steam_path));
     possible_dirs
 }
 
+/// Get the default Steam library path.
+/// 
+/// # Arguments
+/// 
+/// * `steam_path` - The path to the Steam installation.
+/// 
+/// # Returns
+/// 
+/// The default Steam library path.
 fn get_default_steam_library(steam_path: &Path) -> PathBuf {
     steam_path.join(format!(
         "steamapps{}common{}Tribes{}Binaries{}Win32",
@@ -36,6 +59,15 @@ fn get_default_steam_library(steam_path: &Path) -> PathBuf {
     ))
 }
 
+/// Get the additional Steam library paths.
+/// 
+/// # Arguments
+/// 
+/// * `steam_path` - The path to the Steam installation.
+/// 
+/// # Returns
+/// 
+/// A list of additional Steam library paths.
 fn get_additional_libraries(steam_path: &Path) -> Vec<PathBuf> {
     let library_folders_path = steam_path.join(format!("steamapps{}libraryfolders.vdf", MAIN_SEPARATOR));
     
@@ -65,6 +97,15 @@ fn get_additional_libraries(steam_path: &Path) -> Vec<PathBuf> {
         .collect()
 }
 
+/// Parse the content of a VDF file.
+/// 
+/// # Arguments
+/// 
+/// * `content` - The content of the VDF file.
+/// 
+/// # Returns
+/// 
+/// A map of maps containing the parsed content.
 fn parse_vdf(content: &str) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
     let mut current_key = String::new();
@@ -97,6 +138,15 @@ fn parse_vdf(content: &str) -> HashMap<String, HashMap<String, String>> {
     result
 }
 
+/// Find the Tribes Ascend executable in the given directories.
+/// 
+/// # Arguments
+/// 
+/// * `possible_dirs` - The directories to search in.
+/// 
+/// # Returns
+/// 
+/// The path to the Tribes Ascend executable.
 fn find_tribes_executable(possible_dirs: Vec<PathBuf>) -> Option<String> {
     for dir in possible_dirs {
         let game_path = dir.join("TribesAscend.exe");
