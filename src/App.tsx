@@ -24,7 +24,7 @@ function App() {
       if (update?.available) {
         setUpdateVersion(update.version);
         setUpdateBody(update.body || "");
-        // setUpdateModalOpened(true);
+        // setUpdateModalOpened(true); // TODO: Uncomment when updater is ready
       }
     } catch (error) {
       console.error("Error checking for updates:", error);

@@ -2,7 +2,7 @@ import { IconType } from 'react-icons';
 import { FaGithub } from 'react-icons/fa';
 import { CardGradientProps } from '../interfaces';
 
-interface Resource extends CardGradientProps {
+export interface Resource extends CardGradientProps {
   icon?: IconType;
   image?: string;
 }

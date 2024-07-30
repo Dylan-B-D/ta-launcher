@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, RingProgress, Loader } from "@mantine/core";
-import { CardGradient } from "../CardGradient";
-import { discordResources, usefulResources } from "../../data/usefulResources";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
@@ -16,6 +14,7 @@ import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleGamePathCha
 import PackagesTable from "../PackageTable";
 import {  useDownloadContext } from "../../contexts/DownloadContext";
 import { useConfig } from "../../contexts/ConfigContext";
+import UsefulResources from "../UsefulResources";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -101,7 +100,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       return;
     }
     await saveConfig(config);
-    // localStorage.setItem("isFirstTime", "false");
+    // localStorage.setItem("isFirstTime", "false"); // TODO: Uncomment when first-time setup is complete
     onComplete();
   };
 
@@ -123,6 +122,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
   return (
     <>
+      {/* Notification Popup */}
       <NotificationPopup
         visible={notification.visible}
         message={notification.message}
@@ -138,40 +138,13 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             {/* ----------- Welcome ----------- */}
             <Stepper.Step label="Welcome">
               <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
-                <Title order={2}>First-time Setup</Title>
+                <Title order={2}>First-Time Setup</Title>
                 <Text size="sm" c="dimmed">
-                  Any options changed here can be modified later. For additional assistance, ask for help in one of the following Discord servers or message 'evxl.' on Discord.
+                  Any options changed here can be modified later. 
+                  For additional assistance, ask for help in one of the 
+                  following Discord servers or message 'evxl.' on Discord.
                 </Text>
-                <Title mt="md" order={5}>Discord Links</Title>
-                <Grid mt="4px">
-                  {discordResources.map((resource, index) => (
-                    <Grid.Col span={4} key={index}>
-                      <CardGradient
-                        icon={resource.icon}
-                        image={resource.image}
-                        gradient={resource.gradient}
-                        title={resource.title}
-                        description={resource.description}
-                        link={resource.link}
-                      />
-                    </Grid.Col>
-                  ))}
-                </Grid>
-                <Title mt="md" order={5}>Useful Resource Links</Title>
-                <Grid mt="4px">
-                  {usefulResources.map((resource, index) => (
-                    <Grid.Col span={4} key={index}>
-                      <CardGradient
-                        icon={resource.icon}
-                        image={resource.image}
-                        gradient={resource.gradient}
-                        title={resource.title}
-                        description={resource.description}
-                        link={resource.link}
-                      />
-                    </Grid.Col>
-                  ))}
-                </Grid>
+                <UsefulResources />
               </Center>
             </Stepper.Step>
 
@@ -196,7 +169,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             {/* ----------- Launch Options ----------- */}
             <Stepper.Step label="Options">
               <LaunchOptions />
-
             </Stepper.Step>
 
             {/* ----------- Config Options ----------- */}
@@ -260,7 +232,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
         bottom: 0,
         backgroundColor: "rgba(128, 128, 128, 0.1)",
         borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
-        zIndex: 999,
         justifyContent: 'space-between',
         alignItems: 'center',
       }}
