@@ -34,7 +34,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     icon: null,
   });
 
-  // Initilize: Game Path, Config Files, and Packages
+  // Initilize: Game Path, and Config Files
   useEffect(() => {
     findGamePath(setConfig);
     fetchConfigFiles(setIniValues);

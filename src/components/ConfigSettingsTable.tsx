@@ -1,7 +1,13 @@
 import React from 'react';
 import { Table, Tooltip, Switch, NumberInput, rem, useMantineTheme, Box } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons-react';
-import { ConfigSettingsTableProps, Field } from '../interfaces';
+import { Field } from '../interfaces';
+
+interface ConfigSettingsTableProps {
+  fields: Field[];
+  iniValues: { [key: string]: boolean | number };
+  handleInputChange: (key: string, value: boolean | number) => void;
+}
 
 const ConfigSettingsTable: React.FC<ConfigSettingsTableProps> = ({ fields, iniValues, handleInputChange }) => {
   const theme = useMantineTheme();
