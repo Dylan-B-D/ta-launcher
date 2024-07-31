@@ -31,7 +31,7 @@ export function Header() {
       return (
         <Menu key={link.label} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
           <Menu.Target>
-            <Button variant="subtle" color={buttonColor} component="a" href={link.link} onClick={(event) => event.preventDefault()}>
+            <Button fw={200} style={{ letterSpacing:1 }} variant="subtle" color={buttonColor} component="a" href={link.link} onClick={(event) => event.preventDefault()}>
               <Center>
                 <span>{link.label}</span>
                 <IconChevronDown size="0.9rem" stroke={2.5} style={{ marginLeft: 8 }} />
@@ -50,6 +50,8 @@ export function Header() {
         to={link.link}
         variant="subtle"
         color= {buttonColor}
+        fw={200}
+        style={{ letterSpacing:1 }}
       >
         {link.label}
       </Button>
@@ -57,7 +59,7 @@ export function Header() {
   });
 
   return (
-    <Group h={40} w={'100%'} gap="0" justify="space-between">
+    <Group p='0 3px' h={40} w={'100%'} gap="0" justify="space-between">
       <Group gap="0">
         {items}
       </Group>

@@ -13,9 +13,8 @@ import SettingsPage from "./components/pages/SettingsPage";
 import PackageManagerPage from "./components/pages/PackageManagerPage";
 import RouteManagerPage from "./components/pages/RouteManagerPage";
 import ResourcesPage from "./components/pages/ResourcesPage";
-import BasicConfigPage from "./components/pages/BasicConfigPage";
-import AdvancedConfigPage from "./components/pages/AdvancedConfigPage";
 import './components/componentStyles.css';
+import ConfigPage from "./components/pages/ConfigPage";
 
 function App() {
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -119,8 +118,7 @@ function App() {
                         <Route path="/package-manager" element={<PackageManagerPage />} />
                         <Route path="/route-manager" element={<RouteManagerPage />}/>
                         <Route path="/resources" element={<ResourcesPage />}/>
-                        <Route path="/config/basic" element={<BasicConfigPage />}/>
-                        <Route path="/config/advanced" element={<AdvancedConfigPage />}/>
+                        <Route path="/config" element={<ConfigPage />}/>
                       </Routes>
                     </AppShell.Main>
                     <AppShell.Footer bg={'rgba(0,0,0,1)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>

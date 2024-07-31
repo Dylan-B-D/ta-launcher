@@ -23,11 +23,7 @@ function Footer() {
           </>
         )}
       </Group>
-      <div className="neon-button-container">
-        <UnstyledButton className="neon-button">
-          Launch
-        </UnstyledButton>
-      </div>
+      <button className='glowing-btn'><span className='glowing-txt'>L<span className='faulty-letter'>A</span>UNCH</span></button>
     </Group>
   );
 }

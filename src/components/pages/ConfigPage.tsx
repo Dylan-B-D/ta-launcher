@@ -1,6 +1,6 @@
 import { Container } from "@mantine/core";
 
-const BasicConfigPage = () => {
+const ConfigPage = () => {
   return (
     <Container>
       This is the basic config page.
@@ -8,4 +8,4 @@ const BasicConfigPage = () => {
   );
 };
 
-export default BasicConfigPage;
+export default ConfigPage;
