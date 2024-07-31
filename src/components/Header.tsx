@@ -1,55 +1,40 @@
-import { Menu, Group, Center, Burger, Container } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Button, Group, Center, Container, Menu } from '@mantine/core';
 import { IconChevronDown } from '@tabler/icons-react';
-import classes from './Header.module.css';
+import { Link } from 'react-router-dom';
 
 const links = [
-  { link: '/about', label: 'Features' },
+  { link: '/', label: 'Home' },
+  { link: '/package-manager', label: 'Packages' },
   {
-    link: '#1',
-    label: 'Learn',
+    link: '#more',
+    label: 'More',
     links: [
-      { link: '/docs', label: 'Documentation' },
+      { link: '/config', label: 'Config' },
+      { link: '/route-manager', label: 'Routes' },
       { link: '/resources', label: 'Resources' },
-      { link: '/community', label: 'Community' },
-      { link: '/blog', label: 'Blog' },
     ],
   },
-  { link: '/about', label: 'About' },
-  { link: '/pricing', label: 'Pricing' },
-  {
-    link: '#2',
-    label: 'Support',
-    links: [
-      { link: '/faq', label: 'FAQ' },
-      { link: '/demo', label: 'Book a demo' },
-      { link: '/forums', label: 'Forums' },
-    ],
-  },
+  { link: '/settings', label: '⚙' },
 ];
 
-export function HeaderMenu() {
-  const [opened, { toggle }] = useDisclosure(false);
-
+export function Header() {
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
+      <Menu.Item key={item.link} component={Link} to={item.link}>
+        {item.label}
+      </Menu.Item>
     ));
 
     if (menuItems) {
       return (
         <Menu key={link.label} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
           <Menu.Target>
-            <a
-              href={link.link}
-              className={classes.link}
-              onClick={(event) => event.preventDefault()}
-            >
+            <Button variant="subtle" color='white' component="a" href={link.link} onClick={(event) => event.preventDefault()}>
               <Center>
-                <span className={classes.linkLabel}>{link.label}</span>
+                <span>{link.label}</span>
                 <IconChevronDown size="0.9rem" stroke={1.5} />
               </Center>
-            </a>
+            </Button>
           </Menu.Target>
           <Menu.Dropdown>{menuItems}</Menu.Dropdown>
         </Menu>
@@ -57,28 +42,23 @@ export function HeaderMenu() {
     }
 
     return (
-      <a
+      <Button
         key={link.label}
-        href={link.link}
-        className={classes.link}
-        onClick={(event) => event.preventDefault()}
+        component={Link}
+        to={link.link}
+        variant="subtle"
+        color='white'
       >
         {link.label}
-      </a>
+      </Button>
     );
   });
 
   return (
-    <header className={classes.header}>
-      <Container size="md">
-        <div className={classes.inner}>
-          {/* <MantineLogo size={28} /> */}
-          <Group gap={5} visibleFrom="sm">
-            {items}
-          </Group>
-          <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-        </div>
-      </Container>
-    </header>
+    <Container h={40} w={'100%'} bg={'gray'}>
+      <Group gap="0" justify="center">
+        {items}
+      </Group>
+    </Container>
   );
 }

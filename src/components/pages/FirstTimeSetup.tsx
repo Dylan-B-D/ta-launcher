@@ -72,7 +72,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       return;
     }
     await saveConfig(config);
-    // localStorage.setItem("isFirstTime", "false"); // TODO: Uncomment when first-time setup is complete
+    localStorage.setItem("isFirstTime", "false"); // TODO: Uncomment when first-time setup is complete
     onComplete();
   };
 

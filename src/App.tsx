@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Home from "./components/pages/Home";
+import MainPage from "./components/pages/MainPage";
 import FirstTimeSetup from "./components/pages/FirstTimeSetup";
 import { DownloadProvider } from "./contexts/DownloadContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { Button, Container, Group, Modal, Stack, Text } from "@mantine/core";
+import { AppShell, Button, Container, Group, Modal, Stack, Text } from "@mantine/core";
+import { Header } from "./components/Header";
+import Footer from "./components/Footer";
+import SettingsPage from "./components/pages/SettingsPage";
+import PackageManagerPage from "./components/pages/PackageManagerPage";
+import RouteManagerPage from "./components/pages/RouteManagerPage";
+import ResourcesPage from "./components/pages/ResourcesPage";
+import BasicConfigPage from "./components/pages/BasicConfigPage";
+import AdvancedConfigPage from "./components/pages/AdvancedConfigPage";
 
 function App() {
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -92,10 +100,34 @@ function App() {
             {isFirstTime ? (
               <Route path="/" element={<FirstTimeSetup onComplete={handleSetupComplete} />} />
             ) : (
-              <>
-                <Route path="/" element={<Home />} />
-                {/* Add more routes here */}
-              </>
+              <Route
+                 path="*"
+                element={
+                  <AppShell
+                    padding="0"
+                    header={{ height: 40 }}
+                    footer={{ height: 60 }}
+                  >
+                    <AppShell.Header style={{ display: 'flex', alignItems: 'center' }}>
+                      <Header />
+                    </AppShell.Header>
+                    <AppShell.Main>
+                      <Routes>
+                        <Route path="/" element={<MainPage />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                        <Route path="/package-manager" element={<PackageManagerPage />} />
+                        <Route path="/route-manager" element={<RouteManagerPage />}/>
+                        <Route path="/resources" element={<ResourcesPage />}/>
+                        <Route path="/config/basic" element={<BasicConfigPage />}/>
+                        <Route path="/config/advanced" element={<AdvancedConfigPage />}/>
+                      </Routes>
+                    </AppShell.Main>
+                    <AppShell.Footer>
+                      <Footer />
+                    </AppShell.Footer>
+                  </AppShell>
+                }
+              />
             )}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
