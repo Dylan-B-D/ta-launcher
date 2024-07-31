@@ -15,6 +15,7 @@ import RouteManagerPage from "./components/pages/RouteManagerPage";
 import ResourcesPage from "./components/pages/ResourcesPage";
 import BasicConfigPage from "./components/pages/BasicConfigPage";
 import AdvancedConfigPage from "./components/pages/AdvancedConfigPage";
+import './components/componentStyles.css';
 
 function App() {
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -108,7 +109,7 @@ function App() {
                     header={{ height: 40 }}
                     footer={{ height: 60 }}
                   >
-                    <AppShell.Header style={{ display: 'flex', alignItems: 'center' }}>
+                    <AppShell.Header bg={'rgba(0,0,0,1)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Header />
                     </AppShell.Header>
                     <AppShell.Main>
@@ -122,7 +123,7 @@ function App() {
                         <Route path="/config/advanced" element={<AdvancedConfigPage />}/>
                       </Routes>
                     </AppShell.Main>
-                    <AppShell.Footer>
+                    <AppShell.Footer bg={'rgba(0,0,0,1)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Footer />
                     </AppShell.Footer>
                   </AppShell>

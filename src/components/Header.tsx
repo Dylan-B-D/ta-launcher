@@ -1,6 +1,7 @@
-import { Button, Group, Center, Container, Menu } from '@mantine/core';
+import { Button, Group, Center, Menu } from '@mantine/core';
 import { IconChevronDown } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
+import { VscSettings } from "react-icons/vsc";
 
 const links = [
   { link: '/', label: 'Home' },
@@ -14,8 +15,9 @@ const links = [
       { link: '/resources', label: 'Resources' },
     ],
   },
-  { link: '/settings', label: '⚙' },
 ];
+
+const buttonColor = 'rgba(255,255,255,0.8)';
 
 export function Header() {
   const items = links.map((link) => {
@@ -29,10 +31,10 @@ export function Header() {
       return (
         <Menu key={link.label} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
           <Menu.Target>
-            <Button variant="subtle" color='white' component="a" href={link.link} onClick={(event) => event.preventDefault()}>
+            <Button variant="subtle" color={buttonColor} component="a" href={link.link} onClick={(event) => event.preventDefault()}>
               <Center>
                 <span>{link.label}</span>
-                <IconChevronDown size="0.9rem" stroke={1.5} />
+                <IconChevronDown size="0.9rem" stroke={2.5} style={{ marginLeft: 8 }} />
               </Center>
             </Button>
           </Menu.Target>
@@ -47,7 +49,7 @@ export function Header() {
         component={Link}
         to={link.link}
         variant="subtle"
-        color='white'
+        color= {buttonColor}
       >
         {link.label}
       </Button>
@@ -55,10 +57,18 @@ export function Header() {
   });
 
   return (
-    <Container h={40} w={'100%'} bg={'gray'}>
-      <Group gap="0" justify="center">
+    <Group h={40} w={'100%'} gap="0" justify="space-between">
+      <Group gap="0">
         {items}
       </Group>
-    </Container>
+      <Button
+        component={Link}
+        to="/settings"
+        variant="subtle"
+        color={buttonColor}
+      >
+        <VscSettings size={20} />
+      </Button>
+    </Group>
   );
 }

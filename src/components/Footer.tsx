@@ -1,4 +1,4 @@
-import { Button, Container, Group, Text } from "@mantine/core";
+import { UnstyledButton, Group, Text } from "@mantine/core";
 import DownloadProgressIndicator from "./DownloadProgressIndicator";
 import { useDownloadContext } from "../contexts/DownloadContext";
 
@@ -8,23 +8,27 @@ function Footer() {
   const playerCount2 = 20;
 
   return (
-    <Container size="md">
-      <Group justify='space-between'>
+    <Group p='md' justify="space-between" align="center" style={{ width: '100%' }}>
+      <Group>
         {getQueue().length > 0 ? (
           <DownloadProgressIndicator />
         ) : (
           <>
             <Text ta="center" size="sm">
-              Community Player Count: {playerCount1}
+              Community: {playerCount1}
             </Text>
             <Text ta="center" size="sm">
-              PUG Player Count: {playerCount2}
+              PUG: {playerCount2}
             </Text>
           </>
         )}
-        <Button>Launch</Button>
       </Group>
-    </Container>
+      <div className="neon-button-container">
+        <UnstyledButton className="neon-button">
+          Launch
+        </UnstyledButton>
+      </div>
+    </Group>
   );
 }
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Text, Space, Table, Button, Group, Progress, Loader } from "@mantine/core";
 import { formatSize } from '../utils/formatters';
-import './componentStyles.css';
 import {  useDownloadContext, usePackages } from '../contexts/DownloadContext';
 import NotificationPopup from './NotificationPopup';
 import { IconAlertTriangle } from '@tabler/icons-react';

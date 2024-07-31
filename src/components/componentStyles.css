@@ -3,7 +3,9 @@
     height: 100% !important;
 }
 
-table, tr, td {
+table,
+tr,
+td {
     height: 100%;
 }
 
@@ -12,14 +14,14 @@ table, tr, td {
     overflow: hidden;
     border-radius: 0 4px 4px 0 !important;
     transition:
-      transform 150ms ease,
-      box-shadow 100ms ease;
+        transform 150ms ease,
+        box-shadow 100ms ease;
     padding: var(--mantine-spacing-xs);
     padding-left: calc(var(--mantine-spacing-xs) * 2);
     background-image: linear-gradient(to right,
-        var(--mantine-color-dark-8),
-        var(--mantine-color-dark-8)) !important;
-    
+            var(--mantine-color-dark-8),
+            var(--mantine-color-dark-8)) !important;
+
     &::before {
         content: '';
         position: absolute;
@@ -28,7 +30,40 @@ table, tr, td {
         left: 0;
         width: 4px;
         background-image: linear-gradient(0,
-            var(--mantine-color-teal-6),
-            var(--mantine-color-cyan-6));
-        }
+                var(--mantine-color-teal-6),
+                var(--mantine-color-cyan-6));
+    }
+}
+
+.neon-button-container {
+    display: flex;
+    align-items: center;
+    height: 60px;
+}
+
+.neon-button-container .neon-button {
+    position: relative;
+    display: inline-block;
+    padding: 4px 30px;
+    color: #03e9f4;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: 0.5s;
+    letter-spacing: 4px;
+    overflow: hidden;
+}
+
+.neon-button-container .neon-button:hover {
+    background: #03e9f4;
+    color: #050801;
+    box-shadow: 0 0 3px #03e9f4,
+        0 0 15px #03e9f4,
+        0 0 30px #03e9f4,
+        0 0 100px #03e9f4;
+    -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
+}
+
+.neon-button-container .neon-button span {
+    position: absolute;
+    display: block;
 }
