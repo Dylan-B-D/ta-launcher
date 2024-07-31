@@ -30,3 +30,6 @@ pub const CONFIG_FILES: [ConfigFileInfo; 4] = [
     ConfigFileInfo { name: "TribesHelpText.ini", default_path: "../public/configs/defaulttribeshelptext/TribesHelpText.ini" }, // Disabled help text by default
     ConfigFileInfo { name: "TribesUser.ini", default_path: "../public/configs/defaulttribesuser/TribesUser.ini" },  // Default
 ];
+
+pub const LOGIN_SERVER_PUG: &str = "http://ta.dodgesdomain.com:9080/detailed_status";
+pub const LOGIN_SERVER_COMMUNITY: &str = "http://ta.kfk4ever.com:9080/detailed_status";

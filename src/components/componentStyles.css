@@ -47,7 +47,7 @@ td {
     position: relative;
     color: var(--glow-color);
     cursor: pointer;
-    padding: 18px 2em;
+    padding: 18px 1em;
     border: 0.15em solid transparent;
     background: none;
     perspective: 2em;
