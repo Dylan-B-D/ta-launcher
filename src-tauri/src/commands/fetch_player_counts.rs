@@ -1,7 +1,7 @@
 use tauri::command;
 use serde_json::Value;
 use futures::future;
-use super::constants::{LOGIN_SERVER_PUG, LOGIN_SERVER_COMMUNITY};
+use super::constants::{LOGIN_SERVER_PUG_DETAILS, LOGIN_SERVER_COMMUNITY_DETAILS};
 
 /// Fetches the number of players online on the PUG and Community servers, along with their names.
 ///
@@ -11,8 +11,8 @@ use super::constants::{LOGIN_SERVER_PUG, LOGIN_SERVER_COMMUNITY};
 #[command]
 pub async fn fetch_players_online() -> Result<serde_json::Value, String> {
     let (pug_players_data, community_players_data) = future::join(
-        fetch_player_data(LOGIN_SERVER_PUG),
-        fetch_player_data(LOGIN_SERVER_COMMUNITY)
+        fetch_player_data(&LOGIN_SERVER_PUG_DETAILS),
+        fetch_player_data(&LOGIN_SERVER_COMMUNITY_DETAILS)
     ).await;
 
     let (pug_count, pug_names) = pug_players_data.unwrap_or((0, vec![]));

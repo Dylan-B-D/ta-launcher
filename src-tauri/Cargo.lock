@@ -3997,6 +3997,7 @@ dependencies = [
 name = "ta-launcherv2"
 version = "0.1.0"
 dependencies = [
+ "async-process",
  "dirs",
  "env_logger",
  "futures",

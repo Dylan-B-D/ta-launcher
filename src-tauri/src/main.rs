@@ -8,7 +8,8 @@ use commands::{
     config_preset_manager::{ check_config, replace_config },
     config_manager::{ fetch_config_files, update_ini_file },
     package_downloader::download_package,
-    fetch_player_counts::fetch_players_online
+    fetch_player_counts::fetch_players_online,
+    launch_game::launch_game
 };
 
 fn main() {
@@ -32,7 +33,8 @@ fn main() {
             fetch_config_files,
             update_ini_file,
             download_package,
-            fetch_players_online
+            fetch_players_online,
+            launch_game
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

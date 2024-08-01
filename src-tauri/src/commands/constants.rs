@@ -31,5 +31,13 @@ pub const CONFIG_FILES: [ConfigFileInfo; 4] = [
     ConfigFileInfo { name: "TribesUser.ini", default_path: "../public/configs/defaulttribesuser/TribesUser.ini" },  // Default
 ];
 
-pub const LOGIN_SERVER_PUG: &str = "http://ta.dodgesdomain.com:9080/detailed_status";
-pub const LOGIN_SERVER_COMMUNITY: &str = "http://ta.kfk4ever.com:9080/detailed_status";
+pub const LOGIN_SERVER_PUG: &str = "ta.dodgesdomain.com";
+pub const LOGIN_SERVER_COMMUNITY: &str = "ta.kfk4ever.com:9080";
+
+pub static LOGIN_SERVER_PUG_DETAILS: Lazy<String> = Lazy::new(|| {
+    format!("http://{}:9080/detailed_status", LOGIN_SERVER_PUG)
+});
+
+pub static LOGIN_SERVER_COMMUNITY_DETAILS: Lazy<String> = Lazy::new(|| {
+    format!("http://{}/detailed_status", LOGIN_SERVER_COMMUNITY)
+});
