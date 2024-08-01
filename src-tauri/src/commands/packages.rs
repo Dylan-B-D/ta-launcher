@@ -3,7 +3,7 @@ use futures::future::join_all;
 use reqwest;
 use serde::{Deserialize, Serialize};
 use futures::FutureExt;
-use super::constants::{PKG_ENDPOINT, PKG_CFG_FILE};
+use super::data::{PKG_ENDPOINT, PKG_CFG_FILE};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[allow(non_snake_case)]

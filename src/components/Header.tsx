@@ -59,7 +59,7 @@ export function Header() {
   });
 
   return (
-    <Group p='0 3px' h={40} w={'100%'} gap="0" justify="space-between">
+    <Group p='0 2px' h={40} w={'100%'} gap="0" justify="space-between">
       <Group gap="0">
         {items}
       </Group>

@@ -8,7 +8,7 @@ use std::io::Write;
 use std::path::Path;
 use std::fs::File as StdFile;
 use tempfile::TempDir;
-use super::constants::{CONFIG_DIR, PKG_ENDPOINT};
+use super::data::{CONFIG_DIR, PKG_ENDPOINT};
 /// Downloads a package from the update server and extracts it to the correct directories
 /// 
 /// # Arguments

@@ -2,7 +2,7 @@ use std::fs::{self, copy, create_dir_all};
 use std::io::Read;
 use std::path::PathBuf;
 use tauri::{path::BaseDirectory, Manager};
-use super::constants::{CONFIG_DIR, CONFIG_FILES};
+use super::data::{CONFIG_DIR, CONFIG_FILES};
 
 /// Store the content and permissions of a config file.
 #[derive(serde::Serialize)]

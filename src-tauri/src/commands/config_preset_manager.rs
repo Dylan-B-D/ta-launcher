@@ -1,7 +1,7 @@
 use std::fs::{self, copy, create_dir_all};
 use std::path::PathBuf;
 use tauri::{path::BaseDirectory, Manager};
-use super::constants::CONFIG_DIR;
+use super::data::CONFIG_DIR;
 
 #[derive(serde::Serialize)]
 pub struct ConfigCheckResult {

@@ -1,7 +1,7 @@
 use tauri::command;
 use serde_json::Value;
 use futures::future;
-use super::constants::{LOGIN_SERVER_PUG_DETAILS, LOGIN_SERVER_COMMUNITY_DETAILS};
+use super::data::{LOGIN_SERVER_PUG_DETAILS, LOGIN_SERVER_COMMUNITY_DETAILS};
 
 /// Fetches the number of players online on the PUG and Community servers, along with their names.
 ///

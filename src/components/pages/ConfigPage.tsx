@@ -38,7 +38,7 @@ const ConfigPage = () => {
         onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
         icon={notification.icon}
       />
-      <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%', width: '100%', overflow: 'hidden' }}>
+      <Center p='xs' style={{ flexDirection: 'column', textAlign: 'center'}}>
         <Text c="dimmed" size="sm">
           *INI files are graphics config files that let you change more options that in-game.
         </Text>

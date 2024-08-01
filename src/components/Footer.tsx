@@ -2,14 +2,11 @@ import { useState, useEffect } from "react";
 import { Badge, Group, Tooltip } from "@mantine/core";
 import DownloadProgressIndicator from "./DownloadProgressIndicator";
 import { useDownloadContext } from "../contexts/DownloadContext";
-
 import { listen } from '@tauri-apps/api/event';
-import { useConfig } from "../contexts/ConfigContext";
 import { invoke } from "@tauri-apps/api/core";
 
 function Footer() {
   const { getQueue } = useDownloadContext();
-  const { config } = useConfig();
   const [playerData, setPlayerData] = useState({
     Community: { count: 0, names: [] },
     PUG: { count: 0, names: [] }
@@ -48,7 +45,7 @@ function Footer() {
 
   const handleLaunchGame = async () => {
     try {
-      await invoke("launch_game", { config });
+      await invoke("launch_game");
     } catch (error) {
       console.error("Failed to launch game:", error);
     }
