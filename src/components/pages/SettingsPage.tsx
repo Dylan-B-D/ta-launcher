@@ -1,11 +1,16 @@
-import { Container } from "@mantine/core";
+import { Container, Button, Title, Space } from "@mantine/core";
 
 const SettingsPage = () => {
+  const handleButtonClick = () => {
+    localStorage.setItem("isFirstTime", "true");
+    window.location.reload();
+  };
+
   return (
     <Container>
-      This is the settings page. <br />
-      
-      UNDER CONSTRUCTION
+      <Title>Settings</Title>
+      <Space h='md'/>
+      <Button color="cyan" variant='light' onClick={handleButtonClick}>Return to First Time Setup</Button>
     </Container>
   );
 };

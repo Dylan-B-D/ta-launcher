@@ -111,7 +111,7 @@ function App() {
                     <AppShell.Header bg={'rgba(0,0,0,1)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Header />
                     </AppShell.Header>
-                    <AppShell.Main>
+                    <AppShell.Main bg={'rgba(0,0,0,1)'}>
                       <Routes>
                         <Route path="/" element={<MainPage />} />
                         <Route path="/settings" element={<SettingsPage />} />
