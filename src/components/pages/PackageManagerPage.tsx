@@ -1,9 +1,10 @@
 import { Container } from "@mantine/core";
+import PackagesTable from "../PackageTable";
 
 const PackageManagerPage = () => {
   return (
     <Container>
-      This is the package manager page.
+      <PackagesTable />
     </Container>
   );
 };

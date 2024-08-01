@@ -1,9 +1,10 @@
 import { Container } from "@mantine/core";
+import LaunchOptionsStep from "../LaunchOptionsStep";
 
 const MainPage = () => {
   return (
     <Container>
-      This is the main page
+      <LaunchOptionsStep />
     </Container>
   );
 };
