@@ -32,14 +32,14 @@ pub const CONFIG_FILES: [ConfigFileInfo; 4] = [
 ];
 
 pub const LOGIN_SERVER_PUG: &str = "ta.dodgesdomain.com";
-pub const LOGIN_SERVER_COMMUNITY: &str = "ta.kfk4ever.com:9080";
+pub const LOGIN_SERVER_COMMUNITY: &str = "ta.kfk4ever.com";
 
 pub static LOGIN_SERVER_PUG_DETAILS: Lazy<String> = Lazy::new(|| {
     format!("http://{}:9080/detailed_status", LOGIN_SERVER_PUG)
 });
 
 pub static LOGIN_SERVER_COMMUNITY_DETAILS: Lazy<String> = Lazy::new(|| {
-    format!("http://{}/detailed_status", LOGIN_SERVER_COMMUNITY)
+    format!("http://{}:9080/detailed_status", LOGIN_SERVER_COMMUNITY)
 });
 
 /// Function to get the app local data directory

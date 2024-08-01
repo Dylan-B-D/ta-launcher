@@ -21,10 +21,24 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         units: "Metric",
         customServerIP: "",
     });
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        loadConfig(setConfig);
+        const loadInitialConfig = async () => {
+            await loadConfig(setConfig);
+            setLoaded(true); // Set loaded to true once the initial load is complete
+        };
+        loadInitialConfig();
     }, []);
+
+    useEffect(() => {
+        if (loaded) {
+            const save = async () => {
+                await saveConfig(config);
+            };
+            save();
+        }
+    }, [config, loaded]);
 
     const handleSaveConfig = async (newConfig: Config) => {
         await saveConfig(newConfig);
@@ -35,7 +49,6 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         await loadConfig(setConfig);
     };
 
-
     return (
         <ConfigContext.Provider value={{ 
             config, 
@@ -43,8 +56,8 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             saveConfig: handleSaveConfig, 
             reloadConfig 
         }}>
-        {children}
-    </ConfigContext.Provider>
+            {children}
+        </ConfigContext.Provider>
     );
 };
 

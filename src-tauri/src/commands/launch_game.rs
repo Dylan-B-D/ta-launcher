@@ -51,8 +51,6 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     let tamods_dll_content = fs::read(&tamods_dll_path)
         .map_err(|e| format!("Failed to read TAMods DLL: {}", e))?;
 
-    println!("Original DLL Path: {:?}", original_dll_path);
-
     // Get all DLL names from the originalDLLs folder
     let original_dlls = fs::read_dir(&original_dll_path)
         .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
@@ -91,7 +89,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     let login_server_arg = match login_server {
         "PUG" => format!("-hostx={}", LOGIN_SERVER_PUG),
         "Community" => format!("-hostx={}", LOGIN_SERVER_COMMUNITY),
-        "Custom" => format!("-hostx={}", config["customLoginServer"].as_str().ok_or("Custom login server not found")?),
+        "Custom" => format!("-hostx={}", config["customServerIP"].as_str().ok_or("Custom login server not found")?),
         _ => return Err("Invalid login server".to_string()),
     };
 

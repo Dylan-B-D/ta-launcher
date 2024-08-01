@@ -18,6 +18,7 @@ const LaunchOptions = () => {
 
   const handleServerChange = (value: string) => {
     setConfig((prev) => ({ ...prev, loginServer: value }));
+    console.log(config.loginServer);
     if (value !== 'Custom') {
       setCustomServerIP('');
       setError('');
