@@ -5,6 +5,25 @@ use tauri::Emitter;
 use crate::commands::data::{get_app_local_data_dir, get_game_folder, get_launcher_config_file, get_original_dlls_dir};
 use super::data::{LOGIN_SERVER_PUG,LOGIN_SERVER_COMMUNITY};
 
+/// Launch the game with the specified configuration.
+/// 
+/// Finds the game executable, login server, original DLLs, and the chosen TAMods DLL.
+/// Finds all matches of original DLLs from the ..public/originalDLLs folder in the game folder and hijacks them with the chosen TAMods DLL.
+/// Launches the game with the specified login server.
+/// Reverts the hijacked DLLs back to their original content when the game exits.
+/// 
+/// # Arguments
+/// 
+/// * `handle` - The AppHandle object
+/// 
+/// # Returns
+/// 
+/// * `Result<(), String>` - An empty result or an error message
+/// 
+/// # Emit
+/// 
+/// * `game-launched` - When the game has been launched
+/// * `game-exited` - When the game has exited
 #[tauri::command]
 pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 

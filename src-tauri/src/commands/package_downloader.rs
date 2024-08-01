@@ -4,11 +4,12 @@ use tokio::io::AsyncWriteExt;
 use futures::stream::StreamExt;
 use reqwest::Client;
 use zip::ZipArchive;
-use std::io::Write;
+use std::{io::Write, path::PathBuf};
 use std::path::Path;
 use std::fs::File as StdFile;
 use tempfile::TempDir;
-use super::data::{CONFIG_DIR, PKG_ENDPOINT};
+use super::data::{get_app_local_data_dir, get_tribes_dir, CONFIG_DIR, PKG_ENDPOINT};
+
 /// Downloads a package from the update server and extracts it to the correct directories
 /// 
 /// # Arguments
@@ -21,13 +22,14 @@ use super::data::{CONFIG_DIR, PKG_ENDPOINT};
 /// 
 #[tauri::command]
 pub async fn download_package(
-    app: tauri::AppHandle,
+    handle: tauri::AppHandle,
     package_id: String,
     object_key: String,
     package_hash: String,
-    tribes_dir: String,
-    app_data_dir: String
 ) -> Result<(), String> {
+
+    let tribes_dir = get_tribes_dir(&handle)?;
+    let app_data_dir = get_app_local_data_dir(&handle);
 
     // Construct the download URL
     let download_url = format!("{}{}", PKG_ENDPOINT, object_key);
@@ -51,7 +53,7 @@ pub async fn download_package(
         file.write_all(&chunk).await.map_err(|e| e.to_string())?;
         downloaded += chunk.len() as u64;
 
-        app.emit("download-progress", (package_id.clone(), downloaded))
+        handle.emit("download-progress", (package_id.clone(), downloaded))
             .map_err(|e| e.to_string())?;
     }
 
@@ -69,7 +71,7 @@ pub async fn download_package(
     // Check the result of the extraction
     extraction_result?;
 
-    app.emit("download-completed", (package_id.clone(), package_hash))
+    handle.emit("download-completed", (package_id.clone(), package_hash))
         .map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -82,7 +84,7 @@ pub async fn download_package(
 /// - `app_data_dir`: The app data local directory for dlls
 /// - `package_id`: The ID of the package to download (e.g. `tamods-stdlib`)
 /// 
-fn extract_package(zip_path: std::path::PathBuf, tribes_dir: String, app_data_dir: String, package_id: String) -> Result<(), String> {
+fn extract_package(zip_path: std::path::PathBuf, tribes_dir: PathBuf, app_data_dir: PathBuf, package_id: String) -> Result<(), String> {
     // Construct the CONGIG directory
     std::fs::create_dir_all(&*CONFIG_DIR).map_err(|e| e.to_string())?;   // Create the config directory if it doesn't exist
 

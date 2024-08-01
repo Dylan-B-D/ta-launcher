@@ -3,8 +3,6 @@ import { PackageNode, Packages } from '../interfaces';
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core';
 import { loadDownloadedPackages, saveDownloadedPackages } from '../utils/config';
-import { useConfig } from './ConfigContext';
-import { appLocalDataDir } from '@tauri-apps/api/path';
 import { getPackages } from '../utils/utils';
 
 interface DownloadContextType {
@@ -45,7 +43,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
     const [completedPackages, setCompletedPackages] = useState<Map<string, string>>(new Map());
     const progressMapRef = useRef<Map<string, number>>(new Map());
     const [packagesToUpdate, setPackagesToUpdate] = useState<string[]>([]);
-    const { config } = useConfig();
     const [packages, setPackages] = useState<Packages>({});
 
     const calculateOverallProgress = useCallback(() => {
@@ -159,12 +156,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
     const startDownload = async (packageId: string) => {
         const packageNode = findPackageNode(packageId, packages);
 
-        const tribesDir = getTribesDir();
-        console.log('Tribes Dir:', tribesDir);
-
-        const appDataDir = await appLocalDataDir();
-        console.log('App Data Dir:', appDataDir);
-
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {
@@ -172,8 +163,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
                     packageId, 
                     objectKey: packageDetails.objectKey,
                     packageHash: packageDetails.hash,
-                    tribesDir: tribesDir,
-                    appDataDir: appDataDir,
                 });
             } catch (error) {
                 console.error(`Failed to download package ${packageId}:`, error);
@@ -183,12 +172,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
             console.error(`Package ${packageId} not found`);
             removeFromQueue(packageId);
         }
-    };
-
-    const getTribesDir = (): string => {
-        // Get the path string to the tribes dir by moving back three directories
-        let gameDir = config.gamePath.split('\\').slice(0, -3).join('\\');
-        return gameDir.replace(/\\/g, '\\\\');
     };
 
     const getQueue = () => {

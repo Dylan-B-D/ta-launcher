@@ -77,7 +77,15 @@ pub fn get_launcher_config_file(handle: &AppHandle) -> Result<Value, String> {
     Ok(config_json)
 }
 
-/// Function to extract the game path from the configuration file
+/// Gets the path to the game executable from the launcher config file
+/// 
+/// # Arguments
+/// 
+/// * `handle` - The AppHandle object
+/// 
+/// # Returns
+/// 
+/// * `Result<PathBuf, String>` - The path to the game executable or an error message
 pub fn get_game_path(handle: &AppHandle) -> Result<PathBuf, String> {
     let config_json = get_launcher_config_file(handle)?;
     let game_path_str = config_json["gamePath"].as_str()
@@ -85,19 +93,34 @@ pub fn get_game_path(handle: &AppHandle) -> Result<PathBuf, String> {
     Ok(PathBuf::from(game_path_str))
 }
 
-/// Function to get the game folder
+/// Gets the game folder for DLL Hijacking
+/// 
+/// # Arguments
+/// 
+/// * `handle` - The AppHandle object
+/// 
+/// # Returns
+/// 
+/// * `Result<PathBuf, String>` - The path to the game folder or an error message
 pub fn get_game_folder(handle: &AppHandle) -> Result<PathBuf, String> {
     let game_path = get_game_path(handle)?;
     Ok(game_path.parent().expect("Failed to get game folder").to_path_buf())
 }
 
-/// Function to get the Tribes directory
+/// Gets the Tribes directory for Community Maps
+/// 
+/// # Arguments
+/// 
+/// * `handle` - The AppHandle object
 pub fn get_tribes_dir(handle: &AppHandle) -> Result<PathBuf, String> {
     let game_folder = get_game_folder(handle)?;
     Ok(game_folder.parent().expect("Failed to get Binaries folder").parent().expect("Failed to get parent of Binaries").to_path_buf())
 }
 
-/// Function to get the original DLLs directory
+/// Gets the original DLLs directory.
+/// The original DLLs are a list of DLLs that are to be hijacked
+/// by the TAMods DLLs, and then reverted back to the original 
+/// DLLs when the game is closed.
 ///
 /// # Arguments
 ///
