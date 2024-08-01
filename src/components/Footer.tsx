@@ -6,7 +6,7 @@ import { listen } from '@tauri-apps/api/event';
 import { invoke } from "@tauri-apps/api/core";
 
 function Footer() {
-  const { getQueue } = useDownloadContext();
+  const { getQueue, packagesToUpdate, addToQueue } = useDownloadContext();
   const [playerData, setPlayerData] = useState({
     Community: { count: 0, names: [] },
     PUG: { count: 0, names: [] }
@@ -43,11 +43,16 @@ function Footer() {
     };
   }, []);
 
-  const handleLaunchGame = async () => {
-    try {
-      await invoke("launch_game");
-    } catch (error) {
-      console.error("Failed to launch game:", error);
+  const handleLaunchOrUpdate = async () => {
+    if (packagesToUpdate.length > 0) {
+      // Add packages to the update queue
+      packagesToUpdate.forEach(packageId => addToQueue(packageId));
+    } else {
+      try {
+        await invoke("launch_game");
+      } catch (error) {
+        console.error("Failed to launch game:", error);
+      }
     }
   };
 
@@ -73,11 +78,13 @@ function Footer() {
       </Group>
       <button
         className='glowing-btn'
-        onClick={handleLaunchGame}
+        onClick={handleLaunchOrUpdate}
         disabled={isGameRunning}
         style={{ opacity: isGameRunning ? 0.5 : 1, cursor: isGameRunning ? 'not-allowed' : 'pointer' }}
       >
-        {isGameRunning ? (
+        {packagesToUpdate.length > 0 ? (
+          <span>UP<span className='faulty-letter'>D</span>ATE<sup><i style={{ letterSpacing: 2 }}>({packagesToUpdate.length})</i></sup></span>
+        ) : isGameRunning ? (
           <span>LAUNCH</span>
         ) : (
           <span className='glowing-txt'>L<span className='faulty-letter'>A</span>UNCH</span>

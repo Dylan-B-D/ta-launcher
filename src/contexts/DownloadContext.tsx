@@ -96,17 +96,33 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
 
         const unlistenCompleted = listen('download-completed', async (event: any) => {
             const [packageId, hash] = event.payload;
+        
+            // Update the completed packages
             setCompletedPackages(prev => {
                 const newMap = new Map(prev).set(packageId, hash);
                 saveDownloadedPackages(newMap);
                 return newMap;
             });
+        
+            // Recalculate packages to update after updating completedPackages
+            setCompletedPackages(prev => {
+                const newMap = new Map(prev).set(packageId, hash);
+                saveDownloadedPackages(newMap);
+        
+                // Recalculate the packages to update based on the new state of completedPackages
+                const updatedPackagesToUpdate = Array.from(checkPackageHashes(newMap, packages));
+                setPackagesToUpdate(updatedPackagesToUpdate);
+                console.log('Packages that need updating:', updatedPackagesToUpdate);
+        
+                return newMap;
+            });
+        
             const newQueue = await removeFromQueue(packageId);
-
+        
             console.log('Download completed:', event.payload);
             console.log('New Queue:', newQueue);
             console.log('New Queue length:', newQueue.length);
-
+        
             if (newQueue.length === 0) {
                 setTotalSize(0);
                 progressMapRef.current.clear();
@@ -114,6 +130,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
                 setQueue([]);
             }
         });
+        
 
         return () => {
             unlistenProgress.then(f => f());
