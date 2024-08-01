@@ -12,6 +12,9 @@ function Footer() {
     PUG: { count: 0, names: [] }
   });
   const [isGameRunning, setIsGameRunning] = useState(false);
+  const queue = getQueue();
+  const isDownloading = queue.length > 0;
+  const isButtonDisabled = isGameRunning || isDownloading;
 
   useEffect(() => {
     async function fetchPlayerCounts() {
@@ -79,7 +82,7 @@ function Footer() {
       <button
         className='glowing-btn'
         onClick={handleLaunchOrUpdate}
-        disabled={isGameRunning}
+        disabled={isButtonDisabled}
         style={{ opacity: isGameRunning ? 0.5 : 1, cursor: isGameRunning ? 'not-allowed' : 'pointer' }}
       >
         {packagesToUpdate.length > 0 ? (
