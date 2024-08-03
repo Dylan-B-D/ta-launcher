@@ -101,27 +101,33 @@ function App() {
               <Route path="/" element={<FirstTimeSetup onComplete={handleSetupComplete} />} />
             ) : (
               <Route
-                 path="*"
+                path="*"
                 element={
                   <AppShell
                     padding="0"
                     header={{ height: 40 }}
                     footer={{ height: 60 }}
+                    bg={
+                      "radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
+                      "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0.1)), " +
+                      "radial-gradient(circle at top left, rgba(120, 128, 128, 1), transparent), " +
+                      "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.7), transparent)"
+                    }
                   >
-                    <AppShell.Header bg={'rgba(0,0,0,1)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
+                    <AppShell.Header bg={'none'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Header />
                     </AppShell.Header>
-                    <AppShell.Main bg={'rgba(0,0,0,1)'}>
+                    <AppShell.Main bg={'none'}>
                       <Routes>
                         <Route path="/" element={<MainPage />} />
                         <Route path="/settings" element={<SettingsPage />} />
                         <Route path="/package-manager" element={<PackageManagerPage />} />
-                        <Route path="/route-manager" element={<RouteManagerPage />}/>
-                        <Route path="/resources" element={<ResourcesPage />}/>
-                        <Route path="/config" element={<ConfigPage />}/>
+                        <Route path="/route-manager" element={<RouteManagerPage />} />
+                        <Route path="/resources" element={<ResourcesPage />} />
+                        <Route path="/config" element={<ConfigPage />} />
                       </Routes>
                     </AppShell.Main>
-                    <AppShell.Footer bg={'rgba(0,0,0,1)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
+                    <AppShell.Footer bg={'none'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Footer />
                     </AppShell.Footer>
                   </AppShell>

@@ -21,7 +21,7 @@ export const configPresets = [
       id: 'veryhigh',
       displayName: 'Very High Graphics',
       author: 'Sorwis',
-      description: 'Max graphics, beyong in game settings.'
+      description: 'Max graphics, beyond in game settings.'
     },
     {
       id: 'verylow',

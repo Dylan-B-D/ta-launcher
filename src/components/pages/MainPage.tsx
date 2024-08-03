@@ -13,7 +13,7 @@ const MainPage = () => {
 
   return (
     <Container>
-      <Grid mt="sm" gutter="lg">
+      <Grid mt="sm" gutter="md">
         <Grid.Col span={6}>
           <Card
             shadow="sm"
