@@ -6,6 +6,7 @@ use async_process::Command;
 use winreg::RegKey;
 use winreg::enums::*;
 use std::fs;
+use std::path::PathBuf;
 use sysinfo::System;
 use tauri::Emitter;
 
@@ -47,50 +48,55 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     let game_folder = get_game_folder(&handle); // Path to DLLs to Hijack
     let app_data_dir = get_app_local_data_dir(&handle); // Path to TAMods DLLs that will Hijack the game DLLs
 
-    // Get DLL based what is selected in the config file by the user
+    // Get DLL based on what is selected in the config file by the user
     let tamods_dll_name = match dll_version {
-        "Release" => "TAMods.dll",
-        "Beta" => "tamods-beta.dll",
-        "Edge" => "tamods-edge.dll",
+        "Release" => Some("TAMods.dll"),
+        "Beta" => Some("tamods-beta.dll"),
+        "Edge" => Some("tamods-edge.dll"),
+        "None" | "Custom" => None,
         _ => return Err("Invalid DLL version".to_string()),
     };
-    let tamods_dll_path = app_data_dir.join("dlls").join(tamods_dll_name);
 
-    // Read the content of the chosen TAMods DLL
-    let tamods_dll_content =
-        fs::read(&tamods_dll_path).map_err(|e| format!("Failed to read TAMods DLL: {}", e))?;
-
-    // Get all DLL names from the originalDLLs folder
-    let original_dlls = fs::read_dir(&original_dll_path)
-        .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
-        .filter_map(|entry| {
-            entry.ok().and_then(|e| {
-                let path = e.path();
-                if path.extension() == Some(std::ffi::OsStr::new("dll")) {
-                    path.file_name().map(|n| n.to_string_lossy().to_string())
-                } else {
-                    None
-                }
-            })
-        })
-        .collect::<Vec<String>>();
-
-    // Replace the content of matching DLLs in the game folder
     let mut replaced_dlls = Vec::new();
-    for dll_name in &original_dlls {
-        let game_dll_path = match game_folder {
-            Ok(ref folder) => folder.join(dll_name),
-            Err(err) => return Err(format!("Failed to get game folder: {}", err)),
-        };
-        if game_dll_path.exists() {
-            // Backup the original DLL content
-            let original_content = fs::read(&game_dll_path)
-                .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
-            replaced_dlls.push((game_dll_path.clone(), original_content));
 
-            // Replace with TAMods DLL content
-            fs::write(&game_dll_path, &tamods_dll_content)
-                .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+    if let Some(dll_name) = tamods_dll_name {
+        let tamods_dll_path = app_data_dir.join("dlls").join(dll_name);
+    
+        // Read the content of the chosen TAMods DLL
+        let tamods_dll_content =
+            fs::read(&tamods_dll_path).map_err(|e| format!("Failed to read TAMods DLL: {}", e))?;
+    
+        // Get all DLL names from the originalDLLs folder
+        let original_dlls = fs::read_dir(&original_dll_path)
+            .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
+            .filter_map(|entry| {
+                entry.ok().and_then(|e| {
+                    let path = e.path();
+                    if path.extension() == Some(std::ffi::OsStr::new("dll")) {
+                        path.file_name().map(|n| n.to_string_lossy().to_string())
+                    } else {
+                        None
+                    }
+                })
+            })
+            .collect::<Vec<String>>();
+    
+        // Replace the content of matching DLLs in the game folder
+        for dll_name in &original_dlls {
+            let game_dll_path = match game_folder {
+                Ok(ref folder) => folder.join(dll_name),
+                Err(err) => return Err(format!("Failed to get game folder: {}", err)),
+            };
+            if game_dll_path.exists() {
+                // Backup the original DLL content
+                let original_content = fs::read(&game_dll_path)
+                    .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
+                replaced_dlls.push((game_dll_path.clone(), original_content));
+    
+                // Replace with TAMods DLL content
+                fs::write(&game_dll_path, &tamods_dll_content)
+                    .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+            }
         }
     }
 
@@ -110,54 +116,46 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     // Launch the game
     match launch_method {
         "Non-Steam" => {
-            let mut command = Command::new(game_path);
-            command.arg(login_server_arg);
+    let mut command = Command::new(game_path);
+    command.arg(login_server_arg);
 
-            // Add any other necessary arguments here
+    match command.spawn() {
+        Ok(mut child) => {
+            handle
+                .emit("game-launched", true)
+                .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
 
-            match command.spawn() {
-                Ok(mut child) => {
-                    // Emit an event to the frontend indicating the game has launched
-                    handle
-                        .emit("game-launched", true)
-                        .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
-
-                    // Spawn a new task to monitor the child process and emit an event when it exits
-                    let handle_clone = handle.clone();
-                    tauri::async_runtime::spawn(async move {
-                        match child.status().await {
-                            Ok(status) => {
-                                // Revert the DLLs
-                                for (path, content) in replaced_dlls {
-                                    if let Err(e) = fs::write(&path, content) {
-                                        eprintln!("Failed to revert DLL {}: {}", path.display(), e);
-                                    }
-                                }
-
-                                if let Err(e) = handle_clone.emit("game-exited", status.success()) {
-                                    eprintln!("Failed to emit game-exited event: {}", e);
-                                }
-                            }
-                            Err(e) => {
-                                eprintln!("Failed to wait for child process: {}", e);
-                                // Still attempt to revert DLLs even if there was an error
-                                for (path, content) in replaced_dlls {
-                                    if let Err(e) = fs::write(&path, content) {
-                                        eprintln!("Failed to revert DLL {}: {}", path.display(), e);
-                                    }
-                                }
-                                if let Err(e) = handle_clone.emit("game-exited", false) {
-                                    eprintln!("Failed to emit game-exited event: {}", e);
-                                }
-                            }
+            let handle_clone = handle.clone();
+            tauri::async_runtime::spawn(async move {
+                match child.status().await {
+                    Ok(status) => {
+                        // Restore DLLs
+                        if let Err(e) = restore_original_dlls(original_dll_path, game_folder.clone().unwrap()) {
+                            eprintln!("Failed to restore original DLLs: {}", e);
                         }
-                    });
-
-                    Ok(())
+                        
+                        if let Err(e) = handle_clone.emit("game-exited", status.success()) {
+                            eprintln!("Failed to emit game-exited event: {}", e);
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("Failed to wait for child process: {}", e);
+                        // Restore DLLs in case of error
+                        if let Err(e) = restore_original_dlls(original_dll_path, game_folder.clone().unwrap()) {
+                            eprintln!("Failed to restore original DLLs: {}", e);
+                        }
+                        if let Err(e) = handle_clone.emit("game-exited", false) {
+                            eprintln!("Failed to emit game-exited event: {}", e);
+                        }
+                    }
                 }
-                Err(e) => Err(format!("Failed to launch game: {}", e)),
-            }
+            });
+
+            Ok(())
         }
+        Err(e) => Err(format!("Failed to launch game: {}", e)),
+    }
+}
         "Steam" => {
             // Modify the installscript.vdf to remove the PreReqPatcher section, which causes InstallShield popups and UAC prompts
             if let Err(e) = modify_install_script(handle.clone()) {
@@ -182,28 +180,22 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 
             match Command::new(steam_path).args(args).spawn() {
                 Ok(_) => {
-                    // Emit an event to the frontend indicating the game has launched
                     handle
                         .emit("game-launched", true)
                         .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
-
-                    // Spawn a new task to monitor the game process and emit an event when it exits
+        
                     let handle_clone = handle.clone();
                     tauri::async_runtime::spawn(async move {
-                        // Wait for the game process to start
                         std::thread::sleep(std::time::Duration::from_secs(5));
-
-                        // Check periodically if the game is still running
+        
                         loop {
                             if !is_game_running() {
                                 // Game has exited
-                                // Revert the DLLs
-                                for (path, content) in replaced_dlls {
-                                    if let Err(e) = fs::write(&path, content) {
-                                        eprintln!("Failed to revert DLL {}: {}", path.display(), e);
-                                    }
+                                // Restore DLLs
+                                if let Err(e) = restore_original_dlls(original_dll_path, game_folder.clone().unwrap()) {
+                                    eprintln!("Failed to restore original DLLs: {}", e);
                                 }
-
+                    
                                 if let Err(e) = handle_clone.emit("game-exited", true) {
                                     eprintln!("Failed to emit game-exited event: {}", e);
                                 }
@@ -212,7 +204,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                             std::thread::sleep(std::time::Duration::from_secs(5));
                         }
                     });
-
+        
                     Ok(())
                 }
                 Err(e) => Err(format!("Failed to launch game through Steam: {}", e)),
@@ -291,4 +283,45 @@ fn find_steam_path() -> Result<String, String> {
         .map_err(|e| format!("Failed to get Steam installation path: {}", e))?;
 
     Ok(install_path)
+}
+
+/// Restore the original DLLs from the originalDLLs folder to the game folder on game exit.
+///
+/// # Arguments
+///
+/// * `original_dll_path` - Path to the directory containing the original DLLs.
+/// * `game_folder` - Path to the game folder where the DLLs should be restored.
+fn restore_original_dlls(original_dll_path: PathBuf, game_folder: PathBuf) -> Result<(), String> {
+    // Get all DLL names from the originalDLLs folder
+    let original_dlls = fs::read_dir(&original_dll_path)
+        .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
+        .filter_map(|entry| {
+            entry.ok().and_then(|e| {
+                let path = e.path();
+                if path.extension() == Some(std::ffi::OsStr::new("dll")) {
+                    path.file_name().map(|n| n.to_string_lossy().to_string())
+                } else {
+                    None
+                }
+            })
+        })
+        .collect::<Vec<String>>();
+
+    // Replace the content of matching DLLs in the game folder with the ones from the originalDLLs folder
+    for dll_name in &original_dlls {
+        let original_dll_file = original_dll_path.join(dll_name);
+        let game_dll_file = game_folder.join(dll_name);
+
+        if game_dll_file.exists() && original_dll_file.exists() {
+            // Read the original DLL content
+            let original_content = fs::read(&original_dll_file)
+                .map_err(|e| format!("Failed to read original DLL {}: {}", dll_name, e))?;
+
+            // Replace the game DLL with the original DLL content
+            fs::write(&game_dll_file, &original_content)
+                .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+        }
+    }
+
+    Ok(())
 }

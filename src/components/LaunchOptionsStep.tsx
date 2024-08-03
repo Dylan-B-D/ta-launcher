@@ -1,12 +1,18 @@
-import { Divider, Space, SegmentedControl, Title, Text, TextInput } from '@mantine/core';
+import { Divider, Space, SegmentedControl, Title, Text, TextInput, Modal, Button } from '@mantine/core';
 import { useConfig } from '../contexts/ConfigContext';
 import { useEffect, useState } from 'react';
-
+import { useDownloadContext } from '../contexts/DownloadContext';
 
 const LaunchOptions = () => {
   const { config, setConfig } = useConfig();
   const [customServerIP, setCustomServerIP] = useState(config.customServerIP || '');
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [pendingDLL, setPendingDLL] = useState('');
+  const [pendingVersion, setPendingVersion] = useState('');
+  const [downloadRequested, setDownloadRequested] = useState(false);
+  const { addToQueue, getCompletedPackages } = useDownloadContext();
+  const completedPackages = getCompletedPackages();
 
   useEffect(() => {
     if (config.loginServer === 'Custom') {
@@ -14,11 +20,33 @@ const LaunchOptions = () => {
     } else {
       setCustomServerIP('');
     }
-  }, [config.loginServer, config.customServerIP]);
+
+    // Check if the current DLL version in config is available; if not, prompt the user
+    const packageMap: { [key: string]: string } = {
+      Release: 'tamods-dll',
+      Beta: 'tamods-dll-beta',
+      Edge: 'tamods-dll-edge',
+    };
+
+    const currentPackageId = packageMap[config.dllVersion];
+    if (config.dllVersion !== 'None' && !completedPackages.has(currentPackageId)) {
+      setPendingDLL(currentPackageId);
+      setPendingVersion(config.dllVersion);
+      setShowModal(true);
+    }
+  }, [config.loginServer, config.customServerIP, config.dllVersion, completedPackages, setConfig]);
+
+  useEffect(() => {
+    if (downloadRequested && completedPackages.has(pendingDLL)) {
+      setConfig((prev) => ({ ...prev, dllVersion: pendingVersion }));
+      setDownloadRequested(false);
+      setPendingDLL('');
+      setPendingVersion('');
+    }
+  }, [completedPackages, pendingDLL, pendingVersion, downloadRequested, setConfig]);
 
   const handleServerChange = (value: string) => {
     setConfig((prev) => ({ ...prev, loginServer: value }));
-    console.log(config.loginServer);
     if (value !== 'Custom') {
       setCustomServerIP('');
       setError('');
@@ -40,7 +68,44 @@ const LaunchOptions = () => {
       setError('');
     }
   };
-  
+
+  const checkAndSetDLLVersion = (version: string) => {
+    if (version === 'None') {
+      setConfig((prev) => ({ ...prev, dllVersion: 'None' }));
+      return;
+    }
+
+    const packageMap: { [key: string]: string } = {
+      Release: 'tamods-dll',
+      Beta: 'tamods-dll-beta',
+      Edge: 'tamods-dll-edge',
+    };
+    const packageId = packageMap[version];
+
+    if (completedPackages.has(packageId)) {
+      setConfig((prev) => ({ ...prev, dllVersion: version }));
+    } else {
+      setPendingDLL(packageId);
+      setPendingVersion(version);
+      setShowModal(true);
+    }
+  };
+
+  const handleAddToQueue = () => {
+    if (pendingDLL) {
+      addToQueue(pendingDLL);
+      setDownloadRequested(true);
+    }
+    setShowModal(false);
+  };
+
+  const handleModalCancel = () => {
+    setPendingDLL('');
+    setPendingVersion('');
+    setConfig((prev) => ({ ...prev, dllVersion: 'None' }));
+    setShowModal(false);
+  };
+
   return (
     <>
       <Title order={4}>Launch Method</Title>
@@ -129,7 +194,7 @@ const LaunchOptions = () => {
       <SegmentedControl
         color="rgba(0, 128, 158, 0.7)"
         value={config.dllVersion}
-        onChange={(value) => setConfig((prev: any) => ({ ...prev, dllVersion: value }))}
+        onChange={(value) => checkAndSetDLLVersion(value)}
         data={["Release", "Beta", "Edge", "None"]}
         style={{
           background: 'linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))',
@@ -137,6 +202,22 @@ const LaunchOptions = () => {
           color: 'transparent', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
         }}
       />
+
+      <Modal
+        opened={showModal}
+        onClose={handleModalCancel}
+        centered
+        withCloseButton={false}
+      >
+        <Text size="sm">
+          The selected DLL version is not downloaded. Would you like to add it to the download queue?
+        </Text>
+        <Space h="md" />
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="outline" onClick={handleModalCancel} style={{ marginRight: 10 }}>Cancel</Button>
+          <Button onClick={handleAddToQueue}>Download</Button>
+        </div>
+      </Modal>
     </>
   );
 }
