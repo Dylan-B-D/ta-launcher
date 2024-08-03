@@ -3,12 +3,12 @@ use crate::commands::data::{
     get_app_local_data_dir, get_game_folder, get_launcher_config_file, get_original_dlls_dir,
 };
 use async_process::Command;
-use winreg::RegKey;
-use winreg::enums::*;
 use std::fs;
 use std::path::PathBuf;
 use sysinfo::System;
 use tauri::Emitter;
+use winreg::enums::*;
+use winreg::RegKey;
 
 /// Launch the game with the specified configuration.
 ///
@@ -61,11 +61,11 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 
     if let Some(dll_name) = tamods_dll_name {
         let tamods_dll_path = app_data_dir.join("dlls").join(dll_name);
-    
+
         // Read the content of the chosen TAMods DLL
         let tamods_dll_content =
             fs::read(&tamods_dll_path).map_err(|e| format!("Failed to read TAMods DLL: {}", e))?;
-    
+
         // Get all DLL names from the originalDLLs folder
         let original_dlls = fs::read_dir(&original_dll_path)
             .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
@@ -80,7 +80,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 })
             })
             .collect::<Vec<String>>();
-    
+
         // Replace the content of matching DLLs in the game folder
         for dll_name in &original_dlls {
             let game_dll_path = match game_folder {
@@ -92,7 +92,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 let original_content = fs::read(&game_dll_path)
                     .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
                 replaced_dlls.push((game_dll_path.clone(), original_content));
-    
+
                 // Replace with TAMods DLL content
                 fs::write(&game_dll_path, &tamods_dll_content)
                     .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
@@ -116,46 +116,52 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     // Launch the game
     match launch_method {
         "Non-Steam" => {
-    let mut command = Command::new(game_path);
-    command.arg(login_server_arg);
+            let mut command = Command::new(game_path);
+            command.arg(login_server_arg);
 
-    match command.spawn() {
-        Ok(mut child) => {
-            handle
-                .emit("game-launched", true)
-                .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
+            match command.spawn() {
+                Ok(mut child) => {
+                    handle
+                        .emit("game-launched", true)
+                        .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
 
-            let handle_clone = handle.clone();
-            tauri::async_runtime::spawn(async move {
-                match child.status().await {
-                    Ok(status) => {
-                        // Restore DLLs
-                        if let Err(e) = restore_original_dlls(original_dll_path, game_folder.clone().unwrap()) {
-                            eprintln!("Failed to restore original DLLs: {}", e);
+                    let handle_clone = handle.clone();
+                    tauri::async_runtime::spawn(async move {
+                        match child.status().await {
+                            Ok(status) => {
+                                // Restore DLLs
+                                if let Err(e) = restore_original_dlls(
+                                    original_dll_path,
+                                    game_folder.clone().unwrap(),
+                                ) {
+                                    eprintln!("Failed to restore original DLLs: {}", e);
+                                }
+
+                                if let Err(e) = handle_clone.emit("game-exited", status.success()) {
+                                    eprintln!("Failed to emit game-exited event: {}", e);
+                                }
+                            }
+                            Err(e) => {
+                                eprintln!("Failed to wait for child process: {}", e);
+                                // Restore DLLs in case of error
+                                if let Err(e) = restore_original_dlls(
+                                    original_dll_path,
+                                    game_folder.clone().unwrap(),
+                                ) {
+                                    eprintln!("Failed to restore original DLLs: {}", e);
+                                }
+                                if let Err(e) = handle_clone.emit("game-exited", false) {
+                                    eprintln!("Failed to emit game-exited event: {}", e);
+                                }
+                            }
                         }
-                        
-                        if let Err(e) = handle_clone.emit("game-exited", status.success()) {
-                            eprintln!("Failed to emit game-exited event: {}", e);
-                        }
-                    }
-                    Err(e) => {
-                        eprintln!("Failed to wait for child process: {}", e);
-                        // Restore DLLs in case of error
-                        if let Err(e) = restore_original_dlls(original_dll_path, game_folder.clone().unwrap()) {
-                            eprintln!("Failed to restore original DLLs: {}", e);
-                        }
-                        if let Err(e) = handle_clone.emit("game-exited", false) {
-                            eprintln!("Failed to emit game-exited event: {}", e);
-                        }
-                    }
+                    });
+
+                    Ok(())
                 }
-            });
-
-            Ok(())
+                Err(e) => Err(format!("Failed to launch game: {}", e)),
+            }
         }
-        Err(e) => Err(format!("Failed to launch game: {}", e)),
-    }
-}
         "Steam" => {
             // Modify the installscript.vdf to remove the PreReqPatcher section, which causes InstallShield popups and UAC prompts
             if let Err(e) = modify_install_script(handle.clone()) {
@@ -183,19 +189,22 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                     handle
                         .emit("game-launched", true)
                         .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
-        
+
                     let handle_clone = handle.clone();
                     tauri::async_runtime::spawn(async move {
                         std::thread::sleep(std::time::Duration::from_secs(5));
-        
+
                         loop {
                             if !is_game_running() {
                                 // Game has exited
                                 // Restore DLLs
-                                if let Err(e) = restore_original_dlls(original_dll_path, game_folder.clone().unwrap()) {
+                                if let Err(e) = restore_original_dlls(
+                                    original_dll_path,
+                                    game_folder.clone().unwrap(),
+                                ) {
                                     eprintln!("Failed to restore original DLLs: {}", e);
                                 }
-                    
+
                                 if let Err(e) = handle_clone.emit("game-exited", true) {
                                     eprintln!("Failed to emit game-exited event: {}", e);
                                 }
@@ -204,7 +213,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                             std::thread::sleep(std::time::Duration::from_secs(5));
                         }
                     });
-        
+
                     Ok(())
                 }
                 Err(e) => Err(format!("Failed to launch game through Steam: {}", e)),
@@ -215,9 +224,9 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 }
 
 /// Check if the game is running.
-/// 
+///
 /// # Returns
-/// 
+///
 /// * `bool` - True if the game is running, false otherwise
 fn is_game_running() -> bool {
     let mut system = System::new_all();
@@ -230,15 +239,15 @@ fn is_game_running() -> bool {
 }
 
 /// Modify the InstallScript to remove the PreReqPatcher section.
-/// 
+///
 /// This section causes InstallShield popups and UAC prompts when launching the game through Steam.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `handle` - The AppHandle object
-/// 
+///
 /// # Returns
-/// 
+///
 /// * `Result<(), String>` - An empty result or an error message
 fn modify_install_script(handle: tauri::AppHandle) -> Result<(), String> {
     let tribes_dir = get_tribes_dir(&handle)?;
@@ -248,7 +257,8 @@ fn modify_install_script(handle: tauri::AppHandle) -> Result<(), String> {
     if let Ok(mut script_content) = fs::read_to_string(&install_script_path) {
         // Find and remove the "PreReqPatcher" block from the script
         if let Some(start_index) = script_content.find("\"PreReqPatcher\"") {
-            if let Some(end_index) = script_content[start_index..].find("}")
+            if let Some(end_index) = script_content[start_index..]
+                .find("}")
                 .map(|i| start_index + i + 1)
             {
                 script_content.replace_range(start_index..end_index, "");
@@ -267,9 +277,9 @@ fn modify_install_script(handle: tauri::AppHandle) -> Result<(), String> {
 }
 
 /// Find the Steam installation path from the registry.
-/// 
+///
 /// # Returns
-/// 
+///
 /// * `Result<String, String>` - The Steam installation path or an error message
 fn find_steam_path() -> Result<String, String> {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
