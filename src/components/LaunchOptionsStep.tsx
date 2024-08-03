@@ -43,15 +43,12 @@ const LaunchOptions = () => {
   
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title order={4}>Launch Method</Title>
-        <Text size="sm" c="dimmed"><strong>Recommended:</strong> Non-Steam</Text>
-      </div>
+      <Title order={4}>Launch Method</Title>
       <Text size="sm" c="dimmed">
-        <strong>Non-Steam:</strong> Launches the executable directly, and can inject based on game events.
+        <strong>Non-Steam:</strong> Launches the executable directly.
       </Text>
       <Text size="sm" c="dimmed">
-        <strong>Steam:</strong> Launches the game through Steam, using a timer for injection.
+        <strong>Steam:</strong> Launches the game through the Steam CLI.
       </Text>
       <Space h="sm" />
       <SegmentedControl

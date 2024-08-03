@@ -31,6 +31,8 @@ pub const CONFIG_FILES: [ConfigFileInfo; 4] = [
     ConfigFileInfo { name: "TribesUser.ini", default_path: "../public/configs/defaulttribesuser/TribesUser.ini" },  // Default
 ];
 
+pub const TRIBES_STEAM_ID: u32 = 17080;                                          // The Steam game ID for Tribes Ascend
+
 pub const LOGIN_SERVER_PUG: &str = "ta.dodgesdomain.com";
 pub const LOGIN_SERVER_COMMUNITY: &str = "ta.kfk4ever.com";
 
