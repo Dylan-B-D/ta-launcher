@@ -16,6 +16,7 @@ const MainPage = () => {
       <Grid mt="sm" gutter="md">
         <Grid.Col span={6}>
           <Card
+            className="card-custom"
             shadow="sm"
             padding="lg"
             onClick={() => openDirectory("config")}
@@ -32,12 +33,13 @@ const MainPage = () => {
               <IoOpenOutline style={{ fontSize: '24px' }} />
             </Group>
             <Text size="sm" c="dimmed">
-              Contains your INI files, TAMods config, presets, and routes.
+              Contains INI files, TAMods config, presets, and routes.
             </Text>
           </Card>
         </Grid.Col>
         <Grid.Col span={6}>
           <Card
+            className="card-custom"
             shadow="sm"
             padding="lg"
             onClick={() => openDirectory("tribes")}
@@ -60,6 +62,7 @@ const MainPage = () => {
         </Grid.Col>
         <Grid.Col span={6}>
           <Card
+            className="card-custom"
             shadow="sm"
             padding="lg"
             onClick={() => openDirectory("game_folder")}
@@ -82,6 +85,7 @@ const MainPage = () => {
         </Grid.Col>
         <Grid.Col span={6}>
           <Card
+            className="card-custom"
             shadow="sm"
             padding="lg"
             onClick={() => openDirectory("launcher_config")}

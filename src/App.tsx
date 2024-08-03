@@ -104,16 +104,15 @@ function App() {
                 path="*"
                 element={
                   <AppShell
-                    padding="0"
-                    header={{ height: 40 }}
-                    footer={{ height: 60 }}
-                    bg={
-                      "radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
-                      "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0.1)), " +
-                      "radial-gradient(circle at top left, rgba(120, 128, 128, 1), transparent), " +
-                      "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.7), transparent)"
-                    }
-                  >
+                      padding="0"
+                      header={{ height: 40 }}
+                      footer={{ height: 60 }}
+                      bg={"radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
+                        "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)), " +
+                        "radial-gradient(circle at top left, rgba(120, 128, 128, 0.6), transparent), " +
+                        "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.6), transparent), " +
+                        "url('../public/images/bg1.jpg') no-repeat center center / cover"}
+                    >
                     <AppShell.Header bg={'none'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Header />
                     </AppShell.Header>
@@ -127,7 +126,7 @@ function App() {
                         <Route path="/config" element={<ConfigPage />} />
                       </Routes>
                     </AppShell.Main>
-                    <AppShell.Footer bg={'none'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
+                    <AppShell.Footer bg={'rgba(255, 255, 255, 0)'} style={{ display: 'flex', alignItems: 'center', border: 'none', backdropFilter:'blur(12px)' }}>
                       <Footer />
                     </AppShell.Footer>
                   </AppShell>

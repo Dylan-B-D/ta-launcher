@@ -40,7 +40,7 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
         }
     }, [mouseSensitivity, FOVSetting, dpi, units]);
 
-    const getDistanceLabel = () => (units === 'Imperial' ? 'inches per 360°' : 'centimeters per 360°');
+    const getDistanceLabel = () => (units === 'Imperial' ? 'in per 360°' : 'cm per 360°');
 
     const handleDistance360Change = (value: number) => {
         setDistance360(value);

@@ -114,39 +114,47 @@ function Footer() {
           <Group style={{ gap: '4px' }}>
             <Tooltip label={playerData.Community.names.join(", ") || "No players"} withArrow>
               <Badge
+                fw={500}
                 variant={config.loginServer === 'Community' ? "filled" : "light"}
-                color={config.loginServer === 'Community' ? "cyan" : "gray"}
+                color={config.loginServer === 'Community' ? "teal" : "gray"}
                 size="lg"
                 radius="xs"
                 onClick={() => handleServerChange('Community')}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
+                style={{ cursor: 'pointer', userSelect: 'none', boxShadow: config.loginServer === 'Community' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none', }}
               >
                 Community: {playerData.Community.count}
               </Badge>
             </Tooltip>
             <Tooltip label={playerData.PUG.names.join(", ") || "No players"} withArrow>
               <Badge
+                fw={500}
                 variant={config.loginServer === 'PUG' ? "filled" : "light"}
-                color={config.loginServer === 'PUG' ? "cyan" : "gray"}
+                color={config.loginServer === 'PUG' ? "teal" : "gray"}
                 size="lg"
                 radius="xs"
                 onClick={() => handleServerChange('PUG')}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
+                style={{ cursor: 'pointer', userSelect: 'none', boxShadow: config.loginServer === 'PUG' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none', }}
               >
                 PUG: {playerData.PUG.count}
               </Badge>
             </Tooltip>
             <Tooltip label="Select Custom Server" withArrow>
               <Badge
+                fw={500}
                 variant={config.loginServer === 'Custom' ? "filled" : "light"}
-                color={config.loginServer === 'Custom' ? "cyan" : "gray"}
+                color={config.loginServer === 'Custom' ? "teal" : "gray"}
                 size="lg"
                 radius="xs"
                 onClick={() => handleServerChange('Custom')}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
+                style={{
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  boxShadow: config.loginServer === 'Custom' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none',
+                }}
               >
                 Custom
               </Badge>
+
             </Tooltip>
             {config.loginServer === 'Custom' && (
               <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -160,15 +168,15 @@ function Footer() {
                   error={!!error}
                   onBlur={handleBlur}
                   styles={{
-                    input: { padding: '6px', maxWidth: '150px', fontSize: '14px' },
+                    input: { padding: '6px', maxWidth: '150px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.1)' },
                   }}
                 />
-                
+
               </div>
             )}
             <Divider orientation="vertical" mx="4px" />
             <Tooltip label={`Current: ${config.launchMethod}`} withArrow>
-              <ActionIcon size='26px' radius='xs' onClick={toggleLaunchMethod} variant="filled" color="cyan">
+              <ActionIcon size='26px' radius='xs' onClick={toggleLaunchMethod} variant="light" color="teal" style={{ boxShadow: '0 4px 10px rgba(0, 128, 128, 0.1)' }}>
                 {config.launchMethod === 'Steam' ? <FaSteam size={20} /> : <MdGames size={20} />}
               </ActionIcon>
             </Tooltip>

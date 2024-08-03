@@ -1,62 +1,62 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway");
 
 .full-size-button {
-    width: 100% !important;
-    height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 table,
 tr,
 td {
-    height: 100%;
+  height: 100%;
 }
 
 .card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 0 4px 4px 0 !important;
-    transition:
-        transform 150ms ease,
-        box-shadow 100ms ease;
-    padding: var(--mantine-spacing-xs);
-    padding-left: calc(var(--mantine-spacing-xs) * 2);
-    background-image: linear-gradient(to right,
-            var(--mantine-color-dark-8),
-            var(--mantine-color-dark-8)) !important;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 4px 4px 0 !important;
+  transition:
+    transform 150ms ease,
+    box-shadow 100ms ease;
+  padding: var(--mantine-spacing-xs);
+  padding-left: calc(var(--mantine-spacing-xs) * 2);
+  background-image: linear-gradient(to right,
+      var(--mantine-color-dark-8),
+      var(--mantine-color-dark-8)) !important;
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 4px;
-        background-image: linear-gradient(0,
-                var(--mantine-color-teal-6),
-                var(--mantine-color-cyan-6));
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background-image: linear-gradient(0,
+        var(--mantine-color-teal-6),
+        var(--mantine-color-cyan-6));
+  }
 }
 
 
 
 :root {
-  --glow-color: hsl(186 100% 69%);
+  --glow-color: rgba(97, 239, 255, 0.85);
 }
 
 .glowing-btn {
-    position: relative;
-    color: var(--glow-color);
-    cursor: pointer;
-    padding: 2px 8px;
-    border: 0.15em solid transparent;
-    border-radius: 2px;
-    background: none;
-    perspective: 2em;
-    font-family: "Raleway", sans-serif;
-    font-weight: 900;
-    letter-spacing: 1em;
-    animation: border-flicker 2s linear infinite;
-  }
+  position: relative;
+  color: var(--glow-color);
+  cursor: pointer;
+  padding: 2px 8px;
+  border: 0.15em solid transparent;
+  border-radius: 2px;
+  background: none;
+  perspective: 2em;
+  font-family: "Raleway", sans-serif;
+  font-weight: 900;
+  letter-spacing: 1em;
+  animation: border-flicker 2s linear infinite;
+}
 
 .glowing-txt {
   float: left;
@@ -72,20 +72,6 @@ td {
 .faulty-letter {
   opacity: 0.5;
   animation: faulty-flicker 4s linear infinite;
-}
-
-.glowing-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  opacity: 0.7;
-  filter: blur(1em);
-  transform: translateY(120%) rotateX(95deg) scale(1, 0.35);
-  background: var(--glow-color);
-  pointer-events: none;
 }
 
 .glowing-btn::after {
@@ -104,11 +90,11 @@ td {
 }
 
 .glowing-btn:hover {
-    color: rgba(0, 0, 0, 0.8);
-    text-shadow: none;
-    animation: none;
-  }
-  
+  color: rgba(0, 0, 0, 0.8);
+  text-shadow: none;
+  animation: none;
+}
+
 
 .glowing-btn:hover .glowing-txt {
   animation: none;
@@ -130,77 +116,96 @@ td {
 }
 
 @keyframes faulty-flicker {
-    0% {
-      opacity: 0.1;
-    }
-    2% {
-      opacity: 0.1;
-    }
-    4% {
-      opacity: 0.5;
-    }
-    19% {
-      opacity: 0.5;
-    }
-    21% {
-      opacity: 0.1;
-    }
-    23% {
-      opacity: 1;
-    }
-    80% {
-      opacity: 0.5;
-    }
-    83% {
-      opacity: 0.4;
-    }
-  
-    87% {
-      opacity: 1;
-    }
+  0% {
+    opacity: 0.1;
   }
-  
-  @keyframes text-flicker {
-    0% {
-      opacity: 0.1;
-    }
-  
-    2% {
-      opacity: 1;
-    }
-  
-    8% {
-      opacity: 0.1;
-    }
-  
-    9% {
-      opacity: 1;
-    }
-  
-    12% {
-      opacity: 0.1;
-    }
-    20% {
-      opacity: 1;
-    }
-    25% {
-      opacity: 0.3;
-    }
-    30% {
-      opacity: 1;
-    }
-  
-    70% {
-      opacity: 0.7;
-    }
-    72% {
-      opacity: 0.2;
-    }
-  
-    77% {
-      opacity: 0.9;
-    }
-    100% {
-      opacity: 0.9;
-    }
+
+  2% {
+    opacity: 0.1;
   }
+
+  4% {
+    opacity: 0.5;
+  }
+
+  19% {
+    opacity: 0.5;
+  }
+
+  21% {
+    opacity: 0.1;
+  }
+
+  23% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0.5;
+  }
+
+  83% {
+    opacity: 0.4;
+  }
+
+  87% {
+    opacity: 1;
+  }
+}
+
+@keyframes text-flicker {
+  0% {
+    opacity: 0.1;
+  }
+
+  2% {
+    opacity: 1;
+  }
+
+  8% {
+    opacity: 0.1;
+  }
+
+  9% {
+    opacity: 1;
+  }
+
+  12% {
+    opacity: 0.1;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  25% {
+    opacity: 0.3;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.7;
+  }
+
+  72% {
+    opacity: 0.2;
+  }
+
+  77% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0.9;
+  }
+}
+.card-custom {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.card-custom:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}

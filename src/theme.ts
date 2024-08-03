@@ -13,6 +13,32 @@ const createAppTheme = () => {
           },
         }),
       },
+      Card: {
+        styles: () => ({
+          root: {
+            backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+            backdropFilter: 'blur(8px)',
+            backgroundImage: 'radial-gradient(circle at bottom right,rgba(122,133,153, 0.1), rgba(9,146,104, 0.1))',
+          }
+        }),
+      },
+      Badge: {
+        styles: () => ({
+          root: {
+            backdropFilter: 'blur(8px)',
+            backgroundImage: 'radial-gradient(circle at bottom right,rgba(122,133,153, 0.1), rgba(9,146,104, 0.1))',
+          }
+        }),
+      },
+      Tooltip: {
+        styles: () => ({
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(10px)',
+            color: 'white',
+          },
+        }),
+      },
     },
   });
 };
