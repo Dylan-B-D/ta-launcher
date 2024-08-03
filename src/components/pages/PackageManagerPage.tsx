@@ -3,7 +3,7 @@ import PackagesTable from "../PackageTable";
 
 const PackageManagerPage = () => {
   return (
-    <Container>
+    <Container fluid p='md'>
       <PackagesTable />
     </Container>
   );

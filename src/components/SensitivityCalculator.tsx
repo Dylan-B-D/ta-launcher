@@ -14,7 +14,7 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
     onSensitivityChange
 }) => {
     const [distance360, setDistance360] = useState(0);
-    const  { config, setConfig } = useConfig();
+    const { config, setConfig } = useConfig();
     const dpi = config.dpi;
     const units = config.units;
 
@@ -48,44 +48,43 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
     };
 
     return (
-<Paper w='100%' mt="xs" shadow="xs" radius="xs" withBorder style={{ padding: '4px', marginBottom: '-10px' }}>
-    <Group gap="xs" align="center">
-        <Text fw={500} style={{ marginRight: 'auto' }}>Sensitivity Calculator</Text>
-        <Divider orientation="vertical" />
-        <Group gap="xs" style={{ flex: 1, justifyContent: 'left' }}>
-            <Switch
-                size="lg"
-                onLabel="Inch" offLabel="CM"
-                color="gray"
-                checked={units === 'Imperial'}
-                onChange={(event) => setConfig(prev => ({ ...prev, units: event.currentTarget.checked ? 'Imperial' : 'Metric' }))}
-            />
-                    <Divider orientation="vertical" />
-        </Group>
+        <Paper w='100%' mt="xs" shadow="xs" radius="md" style={{ padding: '4px 8px', marginBottom: '-10px' }}>
+            <Group gap="xs" align="center">
+                <Text fw={400} style={{ marginRight: 'auto' }}>Sensitivity Calculator</Text>
+                <Divider orientation="vertical" />
+                <Group gap="xs" style={{ flex: 1, justifyContent: 'left' }}>
+                    <Switch
+                        size="lg"
+                        onLabel="Inch" offLabel="CM"
+                        color="gray"
+                        checked={units === 'Imperial'}
+                        onChange={(event) => setConfig(prev => ({ ...prev, units: event.currentTarget.checked ? 'Imperial' : 'Metric' }))}
+                    />
+                </Group>
 
-        <Group gap="0" align="center">
-            <Text fz='sm' >Enter Mouse DPI:</Text>
-            <NumberInput
-                variant="filled"
-                size="xs"
-                value={dpi}
-                onChange={(value) => handleDpiChange(Number(value))}
-                style={{ maxWidth: 90 }}
-            />
-        </Group>
-        <Divider orientation="vertical" />
-        <Group gap="xs" align="center">
-            <NumberInput
-                variant="filled"
-                size="xs"
-                value={distance360}
-                onChange={(value) => handleDistance360Change(Number(value))}
-                style={{ maxWidth: 90 }}
-            />
-            <Text fz='sm'>{getDistanceLabel()}</Text>
-        </Group>
-    </Group>
-</Paper>
+                <Group gap="0" align="center">
+                    <Text fz='sm' >Enter Mouse DPI:</Text>
+                    <NumberInput
+                        variant="filled"
+                        size="xs"
+                        value={dpi}
+                        onChange={(value) => handleDpiChange(Number(value))}
+                        style={{ maxWidth: 90 }}
+                    />
+                </Group>
+                <Divider orientation="vertical" />
+                <Group gap="xs" align="center">
+                    <NumberInput
+                        variant="filled"
+                        size="xs"
+                        value={distance360}
+                        onChange={(value) => handleDistance360Change(Number(value))}
+                        style={{ maxWidth: 90 }}
+                    />
+                    <Text fz='sm'>{getDistanceLabel()}</Text>
+                </Group>
+            </Group>
+        </Paper>
     );
 };
 

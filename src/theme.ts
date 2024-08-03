@@ -22,11 +22,29 @@ const createAppTheme = () => {
           }
         }),
       },
+      Paper: {
+        styles: () => ({
+          root: {
+            backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+            backdropFilter: 'blur(8px)',
+            backgroundImage: 'radial-gradient(circle at bottom right,rgba(122,133,153, 0.1), rgba(9,146,104, 0.1))',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+          }
+        }),
+      },
       Badge: {
         styles: () => ({
           root: {
             backdropFilter: 'blur(8px)',
             backgroundImage: 'radial-gradient(circle at bottom right,rgba(122,133,153, 0.1), rgba(9,146,104, 0.1))',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+          }
+        }),
+      },
+      ActionIcon: {
+        styles: () => ({
+          root: {
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.75)',
           }
         }),
       },
@@ -47,6 +65,44 @@ const createAppTheme = () => {
           },
         }),
       },
+      Table: {
+        styles: () => ({
+          table: {
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(6px)',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+          },
+        }),
+      },
+      SegmentedControl: {
+        styles: () => ({
+          root: {
+            backgroundColor: 'none',
+            outline: 'none',
+            padding: '0',
+            border: 'none',
+            margin: '0',
+          },
+          control: {
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+          },
+        }),
+      },
+      Stepper: {
+        styles: () => ({
+          stepIcon: {
+            backgroundColor: 'transparent',
+            backdropFilter: 'blur(8px)',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+          },
+          separator: {
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)',
+          },
+          stepLabel: {
+            textShadow: '0 4px 8px rgba(0, 0, 0, 0.25)',
+          },
+        }),
+      }
     },
   });
 };

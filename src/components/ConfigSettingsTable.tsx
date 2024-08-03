@@ -21,9 +21,7 @@ const ConfigSettingsTable: React.FC<ConfigSettingsTableProps> = ({ fields, iniVa
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               handleInputChange(field.key, event.currentTarget.checked)
             }
-            size="md"
-            onLabel="On"
-            offLabel="Off"
+            size="xs"
             color="teal"
             thumbIcon={
               iniValues[field.key] ? (
@@ -51,11 +49,15 @@ const ConfigSettingsTable: React.FC<ConfigSettingsTableProps> = ({ fields, iniVa
             onChange={(value: string | number) =>
               handleInputChange(field.key, Number(value) || 0)
             }
-            size="xs"
+            size="18px"
             w={75}
             variant="filled"
-            radius={0}
-            style={{ marginBottom: '-3px', marginTop: '-3px' }} // Fix for NumberInput height to match Switch
+            radius='sm'
+            styles={{
+              input: {
+                fontSize: '13px',
+              },
+            }}
           />
         </div>
       );
@@ -64,17 +66,17 @@ const ConfigSettingsTable: React.FC<ConfigSettingsTableProps> = ({ fields, iniVa
 
   return (
     <Box style={{ width: '100%' }}>
-      <Table striped withTableBorder withRowBorders={false} style={{ tableLayout: 'fixed', width: '100%' }}>
+      <Table withRowBorders={false} style={{ tableLayout: 'fixed', width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th style={{ textAlign: 'left', width: '72%', padding: '4px' }}>Setting</Table.Th>
+            <Table.Th style={{ textAlign: 'left', width: '72%', padding: '4px 8px' }}>Setting</Table.Th>
             <Table.Th style={{ textAlign: 'right', width: '28%', padding: '4px' }}>Value</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {fields.map(field => (
             <Table.Tr key={field.key} style={{ padding: '4px 0' }}>
-              <Table.Td style={{ textAlign: 'left', padding: '4px' }}>
+              <Table.Td style={{ textAlign: 'left', padding: '4px 8px' }}>
                 <Tooltip label={field.description} withArrow>
                   <div>{field.displayName}</div>
                 </Tooltip>

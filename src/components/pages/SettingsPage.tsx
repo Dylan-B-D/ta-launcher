@@ -9,7 +9,7 @@ const SettingsPage = () => {
 
   return (
     <Container>
-      <Paper shadow="sm" p="md">
+      <Paper shadow="sm" p="lg" radius='lg'>
         <Title order={3}>Settings</Title>
         <Space h='md'/>
         <Text c='dimmed'>Return to the first time setup</Text>

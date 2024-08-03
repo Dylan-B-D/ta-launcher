@@ -222,6 +222,11 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     }
 }
 
+/// Check if the game is running.
+/// 
+/// # Returns
+/// 
+/// * `bool` - True if the game is running, false otherwise
 fn is_game_running() -> bool {
     let mut system = System::new_all();
     system.refresh_all();
@@ -232,6 +237,17 @@ fn is_game_running() -> bool {
         .any(|process| process.name().to_ascii_lowercase() == "tribesascend.exe")
 }
 
+/// Modify the InstallScript to remove the PreReqPatcher section.
+/// 
+/// This section causes InstallShield popups and UAC prompts when launching the game through Steam.
+/// 
+/// # Arguments
+/// 
+/// * `handle` - The AppHandle object
+/// 
+/// # Returns
+/// 
+/// * `Result<(), String>` - An empty result or an error message
 fn modify_install_script(handle: tauri::AppHandle) -> Result<(), String> {
     let tribes_dir = get_tribes_dir(&handle)?;
     let install_script_path = tribes_dir.join("installscript.vdf");
@@ -258,6 +274,11 @@ fn modify_install_script(handle: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// Find the Steam installation path from the registry.
+/// 
+/// # Returns
+/// 
+/// * `Result<String, String>` - The Steam installation path or an error message
 fn find_steam_path() -> Result<String, String> {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let steam_key = hklm

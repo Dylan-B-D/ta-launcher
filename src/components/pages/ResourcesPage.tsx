@@ -1,11 +1,11 @@
-import { Container } from "@mantine/core";
+import { Center } from "@mantine/core";
 import UsefulResources from "../UsefulResources";
 
 const ResourcesPage = () => {
   return (
-    <Container>
+    <Center p='lg' style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
       <UsefulResources />
-    </Container>
+    </Center>
   );
 };
 

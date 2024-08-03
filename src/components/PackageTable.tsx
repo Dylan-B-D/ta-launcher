@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, Space, Table, Button, Group, Progress, Loader } from "@mantine/core";
 import { formatSize } from '../utils/formatters';
-import {  useDownloadContext, usePackages } from '../contexts/DownloadContext';
+import { useDownloadContext, usePackages } from '../contexts/DownloadContext';
 import NotificationPopup from './NotificationPopup';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useConfig } from '../contexts/ConfigContext';
@@ -152,49 +152,53 @@ const PackagesTable = () => {
                 <strong>Recommended:</strong> TAMods Core Library, TAMods Standard Library, Community Made Maps, and Recommended GOTY Routes Library
             </Text>
 
-            <Space h="4px" />
+            <Space h="8px" />
             <Group grow preventGrowOverflow={false} wrap="nowrap" gap="xs">
-            <Button
+                <Button
                     variant='light'
-                    size='xs'
+                    size='18px'
+                    style={{ fontSize: '0.8em' }}
                     color='cyan'
                     onClick={handleInstallMinimum}
                     disabled={isButtonDisabled(minimumPackages)}
                 >
-                    Minimum ({formatSize(minimumSize)})
+                    Minimum {formatSize(minimumSize)}
                 </Button>
                 <Button
                     variant='light'
-                    size='xs'
                     color='cyan'
                     onClick={handleInstallStandard}
                     disabled={isButtonDisabled(standardPackages)}
+                    size='18px'
+                    style={{ fontSize: '0.8em' }}
                 >
-                    Standard ({formatSize(standardSize)})
+                    Standard {formatSize(standardSize)}
                 </Button>
                 <Button
                     variant='light'
-                    size='xs'
                     color='cyan'
                     onClick={handleInstallRecommended}
                     disabled={isButtonDisabled(recommendedPackages)}
+                    size='18px'
+                    style={{ fontSize: '0.8em' }}
                 >
-                    Recommended ({formatSize(recommendedSize)})
+                    Recommended {formatSize(recommendedSize)}
                 </Button>
                 <Button
                     variant='light'
-                    size='xs'
                     color='cyan'
                     onClick={handleInstallAll}
                     disabled={isButtonDisabled(order)}
+                    size='18px'
+                    style={{ fontSize: '0.8em' }}
                 >
-                    All ({formatSize(allSize)})
+                    All {formatSize(allSize)}
                 </Button>
             </Group>
 
-            <Space h="4px" />
+            <Space h="8px" />
 
-            <Table withTableBorder withColumnBorders striped highlightOnHover verticalSpacing="2px" fz="xs">
+            <Table verticalSpacing="2px" fz="xs" style={{ borderRadius: '8px' }}>
                 <Table.Thead>
                     <Table.Tr>
                         <Table.Th>Name</Table.Th>
@@ -207,7 +211,7 @@ const PackagesTable = () => {
                 <Table.Tbody>
                     {sortedPackages.map(({ package: pkg }) => (
                         <Table.Tr key={pkg.id}>
-                            <Table.Td style={{ color: getStatus(pkg.id) === 'completed' ? 'lightgreen' : 'inherit', fontWeight: getStatus(pkg.id) === 'completed' ? 'bold' : 'normal' }}>
+                            <Table.Td style={{ color: getStatus(pkg.id) === 'completed' ? 'lightgreen' : 'inherit', fontWeight: getStatus(pkg.id) === 'completed' ? 'bold' : 'normal', textShadow: getStatus(pkg.id) === 'completed' ? '1px 1px 10px rgba(255,255,255,0.2), 1px 1px 1px rgba(255,255,255,0.0)' : 'none' }}>
                                 {pkg.displayName}
                             </Table.Td>
                             <Table.Td>{pkg.description}</Table.Td>

@@ -103,7 +103,12 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
         onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
         icon={notification.icon}
       />
-      <Container p={0} fluid style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Container bg={"radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
+        "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)), " +
+        "radial-gradient(circle at top left, rgba(120, 128, 128, 0.6), transparent), " +
+        "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.6), transparent), " +
+        "url('/images/bg1.jpg') no-repeat center center / cover"}
+        p={0} fluid style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           <Stepper p={"md"} color="teal" size="sm" active={active} onStepClick={setActive}>
 

@@ -74,7 +74,6 @@ export function ConfigCard({ title, author, description, configId, setNotificati
 
     return (
         <Paper
-            withBorder
             radius="sm"
             className={classes.card}
             p={0}
