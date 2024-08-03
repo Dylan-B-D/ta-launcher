@@ -6,3 +6,4 @@ pub mod package_downloader;
 pub mod data;
 pub mod fetch_player_counts;
 pub mod launch_game;
+pub mod directory_shortcuts;

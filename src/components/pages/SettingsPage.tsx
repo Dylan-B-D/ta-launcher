@@ -1,4 +1,5 @@
-import { Container, Button, Title, Space } from "@mantine/core";
+import { Container, Button, Title, Space, Text, Paper, Divider } from "@mantine/core";
+import LaunchOptionsStep from "../LaunchOptionsStep";
 
 const SettingsPage = () => {
   const handleButtonClick = () => {
@@ -8,9 +9,14 @@ const SettingsPage = () => {
 
   return (
     <Container>
-      <Title>Settings</Title>
-      <Space h='md'/>
-      <Button color="cyan" variant='light' onClick={handleButtonClick}>Return to First Time Setup</Button>
+      <Paper shadow="sm" p="md">
+        <Title order={3}>Settings</Title>
+        <Space h='md'/>
+        <Text c='dimmed'>Return to the first time setup</Text>
+        <Button color="cyan" variant='light' onClick={handleButtonClick}>Return to First Time Setup</Button>
+        <Divider mt='sm' h='sm'/>
+        <LaunchOptionsStep />
+      </Paper>
     </Container>
   );
 };

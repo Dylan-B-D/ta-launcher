@@ -47,17 +47,15 @@ td {
     position: relative;
     color: var(--glow-color);
     cursor: pointer;
-    padding: 10px 1em;
+    padding: 2px 8px;
     border: 0.15em solid transparent;
-    border-radius: 0.5em;
+    border-radius: 2px;
     background: none;
     perspective: 2em;
     font-family: "Raleway", sans-serif;
-    font-size: 1em;
     font-weight: 900;
     letter-spacing: 1em;
     animation: border-flicker 2s linear infinite;
-    margin-right: -0.8rem;
   }
 
 .glowing-txt {
