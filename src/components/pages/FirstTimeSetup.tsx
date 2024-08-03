@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem } from "@mantine/core";
+import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, Paper } from "@mantine/core";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
@@ -145,7 +145,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
             {/* ----------- Launch Options ----------- */}
             <Stepper.Step label="Options">
-              <LaunchOptions />
+              <Paper p='lg' bg='rgba(255,255,255,0.04)' radius='lg'>
+                <LaunchOptions />
+              </Paper>
             </Stepper.Step>
 
             {/* ----------- Config Options ----------- */}
@@ -207,7 +209,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
           style={{
             position: "sticky",
             bottom: 0,
-            backgroundColor: "rgba(128, 128, 128, 0.1)",
+            backgroundColor: "rgba(128, 128, 128, 0.04)",
+            backdropFilter: "blur(6px)",
             borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -221,9 +224,9 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
           <Group>
             <Button color="cyan" radius="xl" variant="subtle" size="sm" onClick={prevStep}>Back</Button>
             {active === 4 ? (
-              <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup}>Finish</Button>
+              <Button radius="md" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} >Finish</Button>
             ) : (
-              <Button radius="xl" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep}>Next</Button>
+              <Button radius="md" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }}>Next</Button>
             )}
           </Group>
         </Group>

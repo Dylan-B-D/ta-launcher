@@ -157,7 +157,7 @@ const PackagesTable = () => {
                 <Button
                     variant='light'
                     size='18px'
-                    style={{ fontSize: '0.8em' }}
+                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                     color='cyan'
                     onClick={handleInstallMinimum}
                     disabled={isButtonDisabled(minimumPackages)}
@@ -170,7 +170,7 @@ const PackagesTable = () => {
                     onClick={handleInstallStandard}
                     disabled={isButtonDisabled(standardPackages)}
                     size='18px'
-                    style={{ fontSize: '0.8em' }}
+                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                 >
                     Standard {formatSize(standardSize)}
                 </Button>
@@ -180,7 +180,7 @@ const PackagesTable = () => {
                     onClick={handleInstallRecommended}
                     disabled={isButtonDisabled(recommendedPackages)}
                     size='18px'
-                    style={{ fontSize: '0.8em' }}
+                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                 >
                     Recommended {formatSize(recommendedSize)}
                 </Button>
@@ -190,7 +190,7 @@ const PackagesTable = () => {
                     onClick={handleInstallAll}
                     disabled={isButtonDisabled(order)}
                     size='18px'
-                    style={{ fontSize: '0.8em' }}
+                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                 >
                     All {formatSize(allSize)}
                 </Button>

@@ -71,6 +71,7 @@ const createAppTheme = () => {
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(6px)',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+            textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
           },
         }),
       },
@@ -84,14 +85,13 @@ const createAppTheme = () => {
             margin: '0',
           },
           control: {
-            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            backgroundColor: 'rgba(200, 200, 200, 0.15)',
           },
         }),
       },
       Stepper: {
         styles: () => ({
           stepIcon: {
-            backgroundColor: 'transparent',
             backdropFilter: 'blur(8px)',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
           },
@@ -102,7 +102,21 @@ const createAppTheme = () => {
             textShadow: '0 4px 8px rgba(0, 0, 0, 0.25)',
           },
         }),
-      }
+      },
+      Text: {
+        styles: () => ({
+          root: {
+            textShadow: '0 4px 8px rgba(0, 0, 0, 0.35)',
+          },
+        }),
+      },
+      Title: {
+        styles: () => ({
+          root: {
+            textShadow: '0 4px 8px rgba(0, 0, 0, 0.25)',
+          },
+        }),
+      },
     },
   });
 };

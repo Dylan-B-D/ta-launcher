@@ -52,10 +52,14 @@ const LaunchOptions = () => {
       </Text>
       <Space h="sm" />
       <SegmentedControl
-        color="cyan"
+        color="rgba(0, 128, 158, 0.7)"
         value={config.launchMethod}
         onChange={(value) => setConfig((prev: any) => ({ ...prev, launchMethod: value }))}
         data={["Non-Steam", "Steam"]}
+        style={{
+          background: 'linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))',
+          borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
+        }}
       />
 
       <Divider my="xs" />
@@ -76,20 +80,29 @@ const LaunchOptions = () => {
       <Space h="sm" />
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <SegmentedControl
-          color="cyan"
+          color="rgba(0, 128, 158, 0.7)"
           value={config.loginServer}
           onChange={handleServerChange}
           data={["Community", "PUG", "Custom"]}
+          style={{
+            background: 'linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))',
+            borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
+          }}
         />
         {config.loginServer === 'Custom' && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
             <TextInput
+              variant='filled'
               value={customServerIP}
               onChange={(event) => handleCustomIPChange(event.currentTarget.value)}
               placeholder="Enter custom IP"
-              style={{ marginLeft: '10px' }}
+              styles={{
+                input: { marginLeft: '12px', padding: '6px', width: '200px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
+              }}
               error={!!error}
               onBlur={handleBlur}
+              radius='md'
+              size='32px'
             />
             {error && (
               <Text fz="sm" c="red" style={{ opacity: 0.9, marginLeft: '10px' }}>
@@ -114,10 +127,15 @@ const LaunchOptions = () => {
       </Text>
       <Space h="sm" />
       <SegmentedControl
-        color="cyan"
+        color="rgba(0, 128, 158, 0.7)"
         value={config.dllVersion}
         onChange={(value) => setConfig((prev: any) => ({ ...prev, dllVersion: value }))}
-        data={["Release", "Beta", "Edge"]}
+        data={["Release", "Beta", "Edge", "None"]}
+        style={{
+          background: 'linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))',
+          borderRadius: '8px',
+          color: 'transparent', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
+        }}
       />
     </>
   );
