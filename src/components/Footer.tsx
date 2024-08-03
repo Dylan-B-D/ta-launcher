@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Badge, Group, Tooltip, TextInput } from "@mantine/core";
+import { Badge, Group, Tooltip, TextInput, ActionIcon, Divider } from "@mantine/core";
+import { FaSteam } from "react-icons/fa";
+import { MdGames } from "react-icons/md";
 import DownloadProgressIndicator from "./DownloadProgressIndicator";
 import { useDownloadContext } from "../contexts/DownloadContext";
 import { useConfig } from "../contexts/ConfigContext";
@@ -96,13 +98,20 @@ function Footer() {
     }
   }, [config.customServerIP, config.loginServer]);
 
+  const toggleLaunchMethod = () => {
+    setConfig((prev) => ({
+      ...prev,
+      launchMethod: prev.launchMethod === 'Steam' ? 'Non-Steam' : 'Steam'
+    }));
+  };
+
   return (
     <Group p='md' justify="space-between" align="center" style={{ width: '100%' }}>
       <Group>
         {isDownloading ? (
           <DownloadProgressIndicator />
         ) : (
-          <Group style={{ gap: '4px' }}> 
+          <Group style={{ gap: '4px' }}>
             <Tooltip label={playerData.Community.names.join(", ") || "No players"} withArrow>
               <Badge
                 variant={config.loginServer === 'Community' ? "filled" : "light"}
@@ -143,15 +152,26 @@ function Footer() {
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <TextInput
                   variant="filled"
-                  size="xs"
+                  size="26px"
+                  radius="xs"
                   value={customServerIP}
                   onChange={(event) => handleCustomIPChange(event.currentTarget.value)}
                   placeholder="Enter custom IP"
                   error={!!error}
                   onBlur={handleBlur}
+                  styles={{
+                    input: { padding: '6px', maxWidth: '150px', fontSize: '14px' },
+                  }}
                 />
+                
               </div>
             )}
+            <Divider orientation="vertical" mx="4px" />
+            <Tooltip label={`Current: ${config.launchMethod}`} withArrow>
+              <ActionIcon size='26px' radius='xs' onClick={toggleLaunchMethod} variant="filled" color="cyan">
+                {config.launchMethod === 'Steam' ? <FaSteam size={20} /> : <MdGames size={20} />}
+              </ActionIcon>
+            </Tooltip>
           </Group>
         )}
       </Group>
