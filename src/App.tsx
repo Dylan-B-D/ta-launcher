@@ -6,7 +6,7 @@ import { DownloadProvider } from "./contexts/DownloadContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { AppShell, Button, Container, Group, Modal, Stack, Text } from "@mantine/core";
+import { AppShell, Button, Container, Group, Modal, ScrollArea, Stack, Text } from "@mantine/core";
 import { Header } from "./components/Header";
 import Footer from "./components/Footer";
 import SettingsPage from "./components/pages/SettingsPage";
@@ -104,29 +104,31 @@ function App() {
                 path="*"
                 element={
                   <AppShell
-                      padding="0"
-                      header={{ height: 40 }}
-                      footer={{ height: 60 }}
-                      bg={"radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
-                        "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)), " +
-                        "radial-gradient(circle at top left, rgba(120, 128, 128, 0.6), transparent), " +
-                        "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.6), transparent), " +
-                        "url('../public/images/bg1.jpg') no-repeat center center / cover"}
-                    >
+                    padding="0"
+                    header={{ height: 40 }}
+                    footer={{ height: 60 }}
+                    bg={"radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
+                      "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)), " +
+                      "radial-gradient(circle at top left, rgba(120, 128, 128, 0.6), transparent), " +
+                      "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.6), transparent), " +
+                      "url('/images/bg1.jpg') no-repeat center center / cover"}
+                  >
                     <AppShell.Header bg={'none'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Header />
                     </AppShell.Header>
                     <AppShell.Main bg={'none'}>
-                      <Routes>
-                        <Route path="/" element={<MainPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/package-manager" element={<PackageManagerPage />} />
-                        <Route path="/route-manager" element={<RouteManagerPage />} />
-                        <Route path="/resources" element={<ResourcesPage />} />
-                        <Route path="/config" element={<ConfigPage />} />
-                      </Routes>
+                      <ScrollArea h="calc(100vh - 40px - 60px)" scrollbarSize={6}>
+                        <Routes>
+                          <Route path="/" element={<MainPage />} />
+                          <Route path="/settings" element={<SettingsPage />} />
+                          <Route path="/package-manager" element={<PackageManagerPage />} />
+                          <Route path="/route-manager" element={<RouteManagerPage />} />
+                          <Route path="/resources" element={<ResourcesPage />} />
+                          <Route path="/config" element={<ConfigPage />} />
+                        </Routes>
+                      </ScrollArea>
                     </AppShell.Main>
-                    <AppShell.Footer bg={'rgba(255, 255, 255, 0)'} style={{ display: 'flex', alignItems: 'center', border: 'none', backdropFilter:'blur(12px)' }}>
+                    <AppShell.Footer bg={'rgba(255, 255, 255, 0)'} style={{ display: 'flex', alignItems: 'center', border: 'none' }}>
                       <Footer />
                     </AppShell.Footer>
                   </AppShell>

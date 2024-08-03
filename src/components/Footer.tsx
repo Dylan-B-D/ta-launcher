@@ -116,7 +116,8 @@ function Footer() {
               <Badge
                 fw={500}
                 variant={config.loginServer === 'Community' ? "filled" : "light"}
-                color={config.loginServer === 'Community' ? "teal" : "gray"}
+                color={config.loginServer === 'Community' ? "teal" : "dimmed"}
+                bg={config.loginServer === 'Community' ? "teal" : "rgba(0, 128, 128, 0.1)"}
                 size="lg"
                 radius="xs"
                 onClick={() => handleServerChange('Community')}
@@ -129,7 +130,8 @@ function Footer() {
               <Badge
                 fw={500}
                 variant={config.loginServer === 'PUG' ? "filled" : "light"}
-                color={config.loginServer === 'PUG' ? "teal" : "gray"}
+                color={config.loginServer === 'PUG' ? "teal" : "dimmed"}
+                bg={config.loginServer === 'PUG' ? "teal" : "rgba(0, 128, 128, 0.1)"}
                 size="lg"
                 radius="xs"
                 onClick={() => handleServerChange('PUG')}
@@ -142,7 +144,8 @@ function Footer() {
               <Badge
                 fw={500}
                 variant={config.loginServer === 'Custom' ? "filled" : "light"}
-                color={config.loginServer === 'Custom' ? "teal" : "gray"}
+                color={config.loginServer === 'Custom' ? "teal" : "dimmed"}
+                bg={config.loginServer === 'Custom' ? "teal" : "rgba(0, 128, 128, 0.1)"}
                 size="lg"
                 radius="xs"
                 onClick={() => handleServerChange('Custom')}
@@ -168,7 +171,7 @@ function Footer() {
                   error={!!error}
                   onBlur={handleBlur}
                   styles={{
-                    input: { padding: '6px', maxWidth: '150px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+                    input: { padding: '6px', maxWidth: '150px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)' },
                   }}
                 />
 

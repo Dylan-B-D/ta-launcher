@@ -3,6 +3,8 @@ use crate::commands::data::{
     get_app_local_data_dir, get_game_folder, get_launcher_config_file, get_original_dlls_dir,
 };
 use async_process::Command;
+use winreg::RegKey;
+use winreg::enums::*;
 use std::fs;
 use sysinfo::System;
 use tauri::Emitter;
@@ -162,11 +164,17 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 eprintln!("{}", e);
             }
 
-            // Try to find Steam executable
+            // Find Steam executable
             let steam_path = if cfg!(target_os = "windows") {
-                "C:\\Program Files (x86)\\Steam\\steam.exe"
+                match find_steam_path() {
+                    Ok(path) => path + "\\steam.exe",
+                    Err(e) => {
+                        eprintln!("Failed to find Steam path: {}", e);
+                        "C:\\Program Files (x86)\\Steam\\steam.exe".to_string() // Fallback to default path
+                    }
+                }
             } else {
-                "/usr/bin/steam"
+                "/usr/bin/steam".to_string()
             };
 
             let tribes_steam_id_str = TRIBES_STEAM_ID.to_string();
@@ -248,4 +256,18 @@ fn modify_install_script(handle: tauri::AppHandle) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn find_steam_path() -> Result<String, String> {
+    let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+    let steam_key = hklm
+        .open_subkey("SOFTWARE\\WOW6432Node\\Valve\\Steam")
+        .or_else(|_| hklm.open_subkey("SOFTWARE\\Valve\\Steam"))
+        .map_err(|e| format!("Failed to open Steam registry key: {}", e))?;
+
+    let install_path: String = steam_key
+        .get_value("InstallPath")
+        .map_err(|e| format!("Failed to get Steam installation path: {}", e))?;
+
+    Ok(install_path)
 }
