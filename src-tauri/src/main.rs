@@ -11,7 +11,7 @@ use commands::{
     fetch_player_counts::fetch_players_online,
     launch_game::launch_game,
     directory_shortcuts::open_directory,
-    routes::{ delete_route_file, get_route_files, decode_route, python_route_decoder }
+    routes::{ delete_route_file, get_route_files, decode_route, python_route_decoder, check_python_installed }
 };
 
 fn main() {
@@ -42,7 +42,8 @@ fn main() {
             delete_route_file,
             get_route_files,
             decode_route,
-            python_route_decoder
+            python_route_decoder,
+            check_python_installed
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

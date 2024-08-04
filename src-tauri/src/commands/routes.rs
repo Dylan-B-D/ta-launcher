@@ -274,6 +274,18 @@ pub fn decode_route(file: String) -> Result<RouteData, String> {
 
 #[command]
 pub fn python_route_decoder(file: String, axis: Option<String>) -> Result<String, String> {
+
+    println!("Python route decoder");
+
+    // Check if Python is installed
+    let python_check = Command::new("python")
+    .arg("--version")
+    .output();
+
+    if python_check.is_err() {
+        return Err("Python is not installed on this system".to_string());
+    }
+
     // Default to "xy" if axis is not provided
     let axis = axis.unwrap_or_else(|| "xy".to_string());
     // Get the project root directory
@@ -316,4 +328,13 @@ pub fn python_route_decoder(file: String, axis: Option<String>) -> Result<String
     }
 
     Ok(String::from_utf8_lossy(&output.stdout).to_string())
+}
+
+// Check if Python is installed
+#[command]
+pub fn check_python_installed() -> Result<bool, String> {
+    match Command::new("python").arg("--version").output() {
+        Ok(output) => Ok(output.status.success()),
+        Err(_) => Ok(false),
+    }
 }

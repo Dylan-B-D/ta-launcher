@@ -29,6 +29,7 @@ type MirroringAxis = 'xy' | 'x' | 'y';
 const RouteManagerPage = () => {
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
+  const [isPythonInstalled, setIsPythonInstalled] = useState(false);
   const controlsRef = useRef<HTMLDivElement>(null);
   const [scrollAreaHeight, setScrollAreaHeight] = useState<number>(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -54,6 +55,20 @@ const RouteManagerPage = () => {
 
   useEffect(() => {
     fetchRoutes();
+  }, []);
+
+  useEffect(() => {
+    // Check if Python is installed
+    const checkPythonInstallation = async () => {
+      try {
+        const isInstalled = await invoke<boolean>('check_python_installed');
+        setIsPythonInstalled(isInstalled);
+      } catch (error) {
+        console.error('Error checking Python installation:', error);
+      }
+    };
+
+    checkPythonInstallation();
   }, []);
 
   const fetchRoutes = async () => {
@@ -216,7 +231,7 @@ const RouteManagerPage = () => {
         centered
         withCloseButton={false}
       >
-        <div style={{ paddingTop: '20px' }}>
+        <div>
           {(['xy', 'x', 'y'] as MirroringAxis[]).map(axis => (
             <Tooltip
               key={axis}
@@ -224,12 +239,14 @@ const RouteManagerPage = () => {
               withArrow
             >
               <Button
+                variant='light'
+                color='cyan'
                 onClick={() => {
                   setSelectedAxis(axis);
                   mirrorSelectedRoutesWithAxis(axis);
                 }}
                 style={{
-                  marginRight: '10px',
+                  marginRight: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
                 }}
               >
                 {axis.toUpperCase()} Mirroring
@@ -251,7 +268,13 @@ const RouteManagerPage = () => {
                 <Button variant='light' color='cyan' style={{ width: '100%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} onClick={decodeSelectedRoutes}>View Selected</Button>
               </div>
               <div style={{ flexGrow: 1 }}>
-                <Button variant='light' color='cyan' style={{ width: '100%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} onClick={openMirrorModal}>Mirror Selected</Button>
+                {isPythonInstalled ? (
+                  <Button variant='light' color='cyan' style={{ width: '100%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} onClick={openMirrorModal}>Mirror Selected</Button>
+                ) : (
+                  <Tooltip label="Currently a Python install is required to mirror routes" withArrow>
+                    <Button variant='light' color='cyan' style={{ width: '100%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} disabled>Mirror Selected</Button>
+                  </Tooltip>
+                )}
               </div>
               <div style={{ flexGrow: 1 }}>
                 <Button variant='light' color='cyan' style={{ width: '100%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} onClick={resetFilters}>Reset Filters</Button>
@@ -274,7 +297,7 @@ const RouteManagerPage = () => {
         </Center>
         <Space h="xs" />
         <ScrollArea style={{ height: `${scrollAreaHeight}px` }}>
-          <Table withRowBorders={false}verticalSpacing="0" style={{borderRadius: '8px ' }}>
+          <Table withRowBorders={false} verticalSpacing="0" style={{ borderRadius: '8px ' }}>
             <Table.Thead style={{ textAlign: 'left', borderRadius: '8px' }}>
               <Table.Tr style={{ textAlign: 'left', borderRadius: '8px' }}>
                 <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)', borderRadius: '8px 0 0 0' }}>Game Mode</Table.Th>
@@ -327,8 +350,8 @@ const RouteManagerPage = () => {
             </ul>
           </ScrollArea>
           <Group mt="md">
-            <Button variant="default" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
-            <Button color="red" onClick={confirmDelete}>Delete</Button>
+            <Button variant="light" color='cyan' onClick={() => setIsDeleteModalOpen(false)} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }}>Cancel</Button>
+            <Button variant="light" color="red" onClick={confirmDelete} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }}>Delete</Button>
           </Group>
         </Modal>
 

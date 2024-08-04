@@ -56,21 +56,21 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       return;
     }
 
-    // Check for empty config values
-    const emptyFields = Object.entries(config)
-      .filter(([, value]) => value === "")
-      .map(([key]) => key);
+  // Check for empty config values, excluding "launchArgs"
+  const emptyFields = Object.entries(config)
+    .filter(([key, value]) => value === "" && key !== "launchArgs")
+    .map(([key]) => key);
 
-    if (emptyFields.length > 0) {
-      setNotification({
-        visible: true,
-        message: `You cannot continue without: ${emptyFields.join(", ")}`,
-        title: "Missing Configuration",
-        color: "red",
-        icon: <IconAlertCircle />,
-      });
-      return;
-    }
+  if (emptyFields.length > 0) {
+    setNotification({
+      visible: true,
+      message: `You cannot continue without: ${emptyFields.join(", ")}`,
+      title: "Missing Configuration",
+      color: "red",
+      icon: <IconAlertCircle />,
+    });
+    return;
+  }
     await saveConfig(config);
     localStorage.setItem("isFirstTime", "false"); // TODO: Uncomment when first-time setup is complete
     onComplete();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Paper, Space, Text, TextInput } from '@mantine/core';
+import { Button, Container, Paper, Space, Text, TextInput, Tooltip } from '@mantine/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useConfig } from '../contexts/ConfigContext';
 import { findGamePath } from '../utils/utils';
@@ -44,15 +44,17 @@ export const GamePathStep: React.FC<GamePathStepProps> = ({
           </Text>
           <Space h="md" />
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-            <Button
-              component="a"
-              href="steam://install/17080"
-              variant="light"
-              color="cyan"
-              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
-            >
-              Steam Install
-            </Button>
+            <Tooltip label="Won't work if already installed via Steam">
+              <Button
+                component="a"
+                href="steam://install/17080"
+                variant="light"
+                color="cyan"
+                style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+              >
+                Steam Install
+              </Button>
+            </Tooltip>
             <Button
               component="a"
               href="https://library.theexiled.pwnageservers.com/file.php?id=2962"
