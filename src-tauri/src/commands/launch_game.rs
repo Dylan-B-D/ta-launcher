@@ -43,6 +43,14 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
         .as_str()
         .ok_or("Login server not found")?;
 
+    // Get launch arguments from config
+    let launch_args = config["launchArgs"].as_str().unwrap_or("").trim();
+    let launch_args: Vec<&str> = if !launch_args.is_empty() {
+        launch_args.split(',').map(|s| s.trim()).collect()
+    } else {
+        Vec::new()
+    };
+
     // Get the paths
     let original_dll_path = get_original_dlls_dir(&handle)?; // Contains list of DLLs to Hijack
     let game_folder = get_game_folder(&handle); // Path to DLLs to Hijack
@@ -53,20 +61,22 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
         "Release" => {
             let path = app_data_dir.join("dlls").join("TAMods.dll");
             fs::read(&path).map_err(|e| format!("Failed to read Release TAMods DLL: {}", e))?
-        },
+        }
         "Beta" => {
             let path = app_data_dir.join("dlls").join("tamods-beta.dll");
             fs::read(&path).map_err(|e| format!("Failed to read Beta TAMods DLL: {}", e))?
-        },
+        }
         "Edge" => {
             let path = app_data_dir.join("dlls").join("tamods-edge.dll");
             fs::read(&path).map_err(|e| format!("Failed to read Edge TAMods DLL: {}", e))?
-        },
+        }
         "Custom" => {
-            let custom_dll_path = config["customDLLPath"].as_str().ok_or("Custom DLL path not found")?;
+            let custom_dll_path = config["customDLLPath"]
+                .as_str()
+                .ok_or("Custom DLL path not found")?;
             let path = std::path::PathBuf::from(custom_dll_path);
             fs::read(&path).map_err(|e| format!("Failed to read Custom DLL: {}", e))?
-        },
+        }
         "None" => return Ok(()), // No DLL injection, just launch the game
         _ => return Err("Invalid DLL version".to_string()),
     };
@@ -124,6 +134,11 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
         "Non-Steam" => {
             let mut command = Command::new(game_path);
             command.arg(login_server_arg);
+
+            // Add launch arguments
+            for arg in launch_args {
+                command.arg(arg);
+            }
 
             match command.spawn() {
                 Ok(mut child) => {
@@ -188,7 +203,10 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
             };
 
             let tribes_steam_id_str = TRIBES_STEAM_ID.to_string();
-            let args = vec!["-applaunch", &tribes_steam_id_str, &login_server_arg];
+            let mut args = vec!["-applaunch", &tribes_steam_id_str, &login_server_arg];
+
+            // Add launch arguments
+            args.extend(launch_args.iter().map(|&s| s));
 
             match Command::new(steam_path).args(args).spawn() {
                 Ok(_) => {
