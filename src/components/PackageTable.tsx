@@ -42,7 +42,36 @@ const PackagesTable = () => {
                 ...pkg,
                 package: {
                     ...pkg.package,
-                    description: `${pkg.package.description} And Nerves Routes.`
+                    description: 'Contains: JP\'s Easy, JP\'s SLD, Jack\'s, Nerve\'s, Soni\'s Routes', // Fix description to include nerve and soni
+                    displayName: 'Recommended GOTY Routes' // Shorten name
+                }
+            };
+        }
+        if (pkg.package.id === 'tamods-dll-beta') {
+            return {
+                ...pkg,
+                package: {
+                    ...pkg.package,
+                    description: 'TAMods Core Beta preview releases of the TAMods DLL' // Fix description to remove typo, and extra info
+                }
+            };
+        }
+        if (pkg.package.id === 'tamods-stdlib') {
+            return {
+                ...pkg,
+                package: {
+                    ...pkg.package,
+                    description: 'Contains: Lua libraries, Ubermenu and custom HUDs' // Shorten description
+                }
+            };
+        }
+        if (pkg.package.id === 'tamods-routesjphard') {
+            return {
+                ...pkg,
+                package: {
+                    ...pkg.package,
+                    description: 'Hard Pathfinder Routes for competitive maps', // Simplify description
+                    displayName: 'JP\'s Hard Pathfinder Routes' // Shorten name
                 }
             };
         }
