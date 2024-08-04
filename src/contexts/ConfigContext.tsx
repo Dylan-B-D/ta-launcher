@@ -20,6 +20,8 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         dpi: 800,
         units: "Metric",
         customServerIP: "",
+        launchArgs: "",
+        customDLLPath: "",
     });
     const [loaded, setLoaded] = useState(false);
 

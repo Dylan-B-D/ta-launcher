@@ -7,6 +7,9 @@ import { useDownloadContext } from "../contexts/DownloadContext";
 import { useConfig } from "../contexts/ConfigContext";
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from "@tauri-apps/api/core";
+import NotificationPopup from "./NotificationPopup";
+import { Notification } from "../interfaces";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 function Footer() {
   const { getQueue, packagesToUpdate, addToQueue } = useDownloadContext();
@@ -21,10 +24,16 @@ function Footer() {
   const queue = getQueue();
   const isDownloading = queue.length > 0;
   const isButtonDisabled = isGameRunning || isDownloading;
+  const [notification, setNotification] = useState<Notification>({
+    visible: false,
+    message: '',
+    title: '',
+    color: '',
+    icon: null,
+  });
 
   useEffect(() => {
     async function fetchPlayerCounts() {
-      console.log("Fetching player counts...");
       try {
         const result = await invoke("fetch_players_online");
         setPlayerData(result as { Community: { count: number; names: never[] }; PUG: { count: number; names: never[] } });
@@ -57,10 +66,28 @@ function Footer() {
       // Add packages to the update queue
       packagesToUpdate.forEach(packageId => addToQueue(packageId));
     } else {
-      try {
-        await invoke("launch_game");
-      } catch (error) {
-        console.error("Failed to launch game:", error);
+      if (config.gamePath === '') {
+        setNotification({
+          visible: true,
+          message: 'Please set the game path in the settings',
+          title: 'Game path not set',
+          color: 'red',
+          icon: <IconAlertCircle />,
+        });
+        return;
+      } else {
+        try {
+          await invoke("launch_game");
+        } catch (error) {
+          console.error("Failed to launch game:", error);
+          setNotification({
+            visible: true,
+            message: error as string,
+            title: 'Error',
+            color: 'red',
+            icon: <IconAlertCircle />,
+          });
+        }
       }
     }
   };
@@ -106,101 +133,109 @@ function Footer() {
   };
 
   return (
-    <Group p='md' justify="space-between" align="center" style={{ width: '100%' }}>
-      <Group>
-        {isDownloading ? (
-          <DownloadProgressIndicator />
-        ) : (
-          <Group style={{ gap: '4px' }}>
-            <Tooltip label={playerData.Community.names.join(", ") || "No players"} withArrow>
-              <Badge
-                fw={500}
-                variant={config.loginServer === 'Community' ? "filled" : "light"}
-                color={config.loginServer === 'Community' ? "teal" : "dimmed"}
-                bg={config.loginServer === 'Community' ? "teal" : "rgba(0, 128, 128, 0.1)"}
-                size="lg"
-                radius="xs"
-                onClick={() => handleServerChange('Community')}
-                style={{ cursor: 'pointer', userSelect: 'none', boxShadow: config.loginServer === 'Community' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none', }}
-              >
-                Community: {playerData.Community.count}
-              </Badge>
-            </Tooltip>
-            <Tooltip label={playerData.PUG.names.join(", ") || "No players"} withArrow>
-              <Badge
-                fw={500}
-                variant={config.loginServer === 'PUG' ? "filled" : "light"}
-                color={config.loginServer === 'PUG' ? "teal" : "dimmed"}
-                bg={config.loginServer === 'PUG' ? "teal" : "rgba(0, 128, 128, 0.1)"}
-                size="lg"
-                radius="xs"
-                onClick={() => handleServerChange('PUG')}
-                style={{ cursor: 'pointer', userSelect: 'none', boxShadow: config.loginServer === 'PUG' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none', }}
-              >
-                PUG: {playerData.PUG.count}
-              </Badge>
-            </Tooltip>
-            <Tooltip label="Select Custom Server" withArrow>
-              <Badge
-                fw={500}
-                variant={config.loginServer === 'Custom' ? "filled" : "light"}
-                color={config.loginServer === 'Custom' ? "teal" : "dimmed"}
-                bg={config.loginServer === 'Custom' ? "teal" : "rgba(0, 128, 128, 0.1)"}
-                size="lg"
-                radius="xs"
-                onClick={() => handleServerChange('Custom')}
-                style={{
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                  boxShadow: config.loginServer === 'Custom' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none',
-                }}
-              >
-                Custom
-              </Badge>
-
-            </Tooltip>
-            {config.loginServer === 'Custom' && (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <TextInput
-                  variant="filled"
-                  size="26px"
+    <>
+      {/* Notification Popup */}
+      <NotificationPopup
+        visible={notification.visible}
+        message={notification.message}
+        title={notification.title}
+        color={notification.color}
+        onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
+        icon={notification.icon} />
+      <Group p='md' justify="space-between" align="center" style={{ width: '100%' }}>
+        <Group>
+          {isDownloading ? (
+            <DownloadProgressIndicator />
+          ) : (
+            <Group style={{ gap: '4px' }}>
+              <Tooltip label={playerData.Community.names.join(", ") || "No players"} withArrow>
+                <Badge
+                  fw={500}
+                  variant={config.loginServer === 'Community' ? "filled" : "light"}
+                  color={config.loginServer === 'Community' ? "teal" : "dimmed"}
+                  bg={config.loginServer === 'Community' ? "teal" : "rgba(0, 128, 128, 0.1)"}
+                  size="lg"
                   radius="xs"
-                  value={customServerIP}
-                  onChange={(event) => handleCustomIPChange(event.currentTarget.value)}
-                  placeholder="Enter custom IP"
-                  error={!!error}
-                  onBlur={handleBlur}
-                  styles={{
-                    input: { padding: '6px', maxWidth: '150px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)' },
+                  onClick={() => handleServerChange('Community')}
+                  style={{ cursor: 'pointer', userSelect: 'none', boxShadow: config.loginServer === 'Community' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none', }}
+                >
+                  Community: {playerData.Community.count}
+                </Badge>
+              </Tooltip>
+              <Tooltip label={playerData.PUG.names.join(", ") || "No players"} withArrow>
+                <Badge
+                  fw={500}
+                  variant={config.loginServer === 'PUG' ? "filled" : "light"}
+                  color={config.loginServer === 'PUG' ? "teal" : "dimmed"}
+                  bg={config.loginServer === 'PUG' ? "teal" : "rgba(0, 128, 128, 0.1)"}
+                  size="lg"
+                  radius="xs"
+                  onClick={() => handleServerChange('PUG')}
+                  style={{ cursor: 'pointer', userSelect: 'none', boxShadow: config.loginServer === 'PUG' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none', }}
+                >
+                  PUG: {playerData.PUG.count}
+                </Badge>
+              </Tooltip>
+              <Tooltip label="Select Custom Server" withArrow>
+                <Badge
+                  fw={500}
+                  variant={config.loginServer === 'Custom' ? "filled" : "light"}
+                  color={config.loginServer === 'Custom' ? "teal" : "dimmed"}
+                  bg={config.loginServer === 'Custom' ? "teal" : "rgba(0, 128, 128, 0.1)"}
+                  size="lg"
+                  radius="xs"
+                  onClick={() => handleServerChange('Custom')}
+                  style={{
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    boxShadow: config.loginServer === 'Custom' ? '0 4px 10px rgba(0, 128, 128, 0.5)' : 'none',
                   }}
-                />
+                >
+                  Custom
+                </Badge>
 
-              </div>
-            )}
-            <Divider orientation="vertical" mx="4px" />
-            <Tooltip label={`Current: ${config.launchMethod}`} withArrow>
-              <ActionIcon size='26px' radius='xs' onClick={toggleLaunchMethod} variant="light" color="teal" style={{ boxShadow: '0 4px 10px rgba(0, 128, 128, 0.1)' }}>
-                {config.launchMethod === 'Steam' ? <FaSteam size={20} /> : <MdGames size={20} />}
-              </ActionIcon>
-            </Tooltip>
-          </Group>
-        )}
-      </Group>
-      <button
-        className='glowing-btn'
-        onClick={handleLaunchOrUpdate}
-        disabled={isButtonDisabled}
-        style={{ opacity: isGameRunning ? 0.5 : 1, cursor: isButtonDisabled ? 'not-allowed' : 'pointer' }}
-      >
-        {packagesToUpdate.length > 0 ? (
-          <span>UP<span className='faulty-letter'>D</span>ATE<sup><i style={{ letterSpacing: 2 }}>({packagesToUpdate.length})</i></sup></span>
-        ) : isGameRunning ? (
-          <span>LAUNCH</span>
-        ) : (
-          <span className='glowing-txt'>L<span className='faulty-letter'>A</span>UNCH</span>
-        )}
-      </button>
-    </Group>
+              </Tooltip>
+              {config.loginServer === 'Custom' && (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <TextInput
+                    variant="filled"
+                    size="26px"
+                    radius="xs"
+                    value={customServerIP}
+                    onChange={(event) => handleCustomIPChange(event.currentTarget.value)}
+                    placeholder="Enter custom IP"
+                    error={!!error}
+                    onBlur={handleBlur}
+                    styles={{
+                      input: { padding: '6px', maxWidth: '150px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)' },
+                    }} />
+
+                </div>
+              )}
+              <Divider orientation="vertical" mx="4px" />
+              <Tooltip label={`Current: ${config.launchMethod}`} withArrow>
+                <ActionIcon size='26px' radius='xs' onClick={toggleLaunchMethod} variant="light" color="teal" style={{ boxShadow: '0 4px 10px rgba(0, 128, 128, 0.1)' }}>
+                  {config.launchMethod === 'Steam' ? <FaSteam size={20} /> : <MdGames size={20} />}
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          )}
+        </Group>
+        <button
+          className='glowing-btn'
+          onClick={handleLaunchOrUpdate}
+          disabled={isButtonDisabled}
+          style={{ opacity: isGameRunning ? 0.5 : 1, cursor: isButtonDisabled ? 'not-allowed' : 'pointer' }}
+        >
+          {packagesToUpdate.length > 0 ? (
+            <span>UP<span className='faulty-letter'>D</span>ATE<sup><i style={{ letterSpacing: 2 }}>({packagesToUpdate.length})</i></sup></span>
+          ) : isGameRunning ? (
+            <span>LAUNCH</span>
+          ) : (
+            <span className='glowing-txt'>L<span className='faulty-letter'>A</span>UNCH</span>
+          )}
+        </button>
+      </Group></>
   );
 }
 

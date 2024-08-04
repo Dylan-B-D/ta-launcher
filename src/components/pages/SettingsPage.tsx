@@ -3,6 +3,7 @@ import LaunchOptionsStep from "../LaunchOptionsStep";
 import { open } from '@tauri-apps/plugin-dialog';
 import { useConfig } from "../../contexts/ConfigContext";
 import { findGamePath } from "../../utils/utils";
+import { Config } from "../../interfaces";
 
 const SettingsPage = () => {
   const { config, setConfig } = useConfig();
@@ -12,25 +13,28 @@ const SettingsPage = () => {
     window.location.reload();
   };
 
-  const handleGamePathChange = (value: string) => {
-    const trimmedValue = value.trim();
-    setConfig((prevConfig) => ({ ...prevConfig, gamePath: trimmedValue }));
+  const handleInputChange = (field: keyof Config) => (value: string) => {
+    setConfig((prevConfig) => ({ ...prevConfig, [field]: value }));
   };
 
-  const selectFile = async () => {
+  const selectFile = async (field: 'gamePath' | 'customDLLPath') => {
     try {
       const selected = await open();
 
-      if (selected && typeof selected.path === "string" && selected.path.endsWith(".exe")) {
-        setConfig((prevConfig) => ({ ...prevConfig, gamePath: selected.path }));
+      if (selected && typeof selected.path === "string") {
+        if (field === 'gamePath' && !selected.path.endsWith(".exe")) return;
+        if (field === 'customDLLPath' && !selected.path.endsWith(".dll")) return;
+        
+        setConfig((prevConfig) => ({ ...prevConfig, [field]: selected.path }));
       }
     } catch (error) {
-      console.error("Error selecting file:", error);
+      console.error(`Error selecting file for ${field}:`, error);
     }
   };
 
   return (
     <Container>
+      <Space h='xs'/>
       <Paper shadow="sm" p="lg" radius='lg'>
         <Title order={3}><u>Settings</u></Title>
         <Space h='md'/>
@@ -44,21 +48,55 @@ const SettingsPage = () => {
           <TextInput
             style={{ flexGrow: 1 }}
             value={config.gamePath}
-            onChange={(e) => handleGamePathChange(e.currentTarget.value)}
+            onChange={(e) => handleInputChange('gamePath')(e.currentTarget.value)}
             placeholder="Enter game path..."
+            error={config.gamePath === ''}
             styles={{
               input: { padding: '6px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
             }}
           />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-          <Button color="cyan" variant='light' onClick={selectFile} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}>Choose File</Button>
+          <Button color="cyan" variant='light' onClick={() => selectFile('gamePath')} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}>Choose File</Button>
           <Button color="cyan" variant='light' onClick={() => findGamePath(setConfig)} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}>Find Steam Game Path</Button>
         </div>
         
         <Divider my='md'/>
+        
+        <Title order={4}>Launch Arguments</Title>
+        <Space h='2px'/>
+        <TextInput
+          value={config.launchArgs}
+          onChange={(e) => handleInputChange('launchArgs')(e.currentTarget.value)}
+          placeholder="Enter launch arguments (comma-separated)..."
+          styles={{
+            input: { padding: '6px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
+          }}
+        />
+        
+        <Divider my='md'/>
         <LaunchOptionsStep />
+                
+        <Space h='md'/>
+        
+        <Title order={4}>Custom DLL Path</Title>
+        <Space h='2px'/>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <TextInput
+            style={{ flexGrow: 1 }}
+            value={config.customDLLPath}
+            onChange={(e) => handleInputChange('customDLLPath')(e.currentTarget.value)}
+            placeholder="Enter custom DLL path..."
+            styles={{
+              input: { padding: '6px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
+            }}
+          />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '8px' }}>
+          <Button color="cyan" variant='light' onClick={() => selectFile('customDLLPath')} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}>Choose DLL File</Button>
+        </div>
       </Paper>
+      <Space h='xs'/>
     </Container>
   );
 };

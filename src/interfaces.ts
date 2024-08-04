@@ -68,6 +68,8 @@ export interface Config {
     dpi: number;
     units: string;
     customServerIP: string;
+    launchArgs: string;
+    customDLLPath: string;
 }
 
 export interface SensitivityCalculatorProps {
