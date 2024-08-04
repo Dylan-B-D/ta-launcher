@@ -8,3 +8,4 @@ pub mod fetch_player_counts;
 pub mod launch_game;
 pub mod directory_shortcuts;
 pub mod routes;
+pub mod config_backup_manager;

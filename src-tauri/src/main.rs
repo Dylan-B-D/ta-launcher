@@ -11,7 +11,8 @@ use commands::{
     fetch_player_counts::fetch_players_online,
     launch_game::launch_game,
     directory_shortcuts::open_directory,
-    routes::{ delete_route_file, get_route_files, decode_route, python_route_decoder, check_python_installed }
+    routes::{ delete_route_file, get_route_files, decode_route, python_route_decoder, check_python_installed },
+    config_backup_manager::{ load_backup_ini_file, backup_ini_files, delete_backup, get_backups }
 };
 
 fn main() {
@@ -43,7 +44,11 @@ fn main() {
             get_route_files,
             decode_route,
             python_route_decoder,
-            check_python_installed
+            check_python_installed,
+            load_backup_ini_file,
+            backup_ini_files,
+            delete_backup,
+            get_backups
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

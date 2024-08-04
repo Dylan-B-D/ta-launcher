@@ -1,4 +1,4 @@
-import { Center, Grid, Group, Space, Text } from "@mantine/core";
+import { Card, Center, Container, Grid, Group, Space, Text } from "@mantine/core";
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
 import { fetchConfigFiles, handleInputChange, handleSensitivityChange } from "../../utils/utils";
@@ -9,6 +9,9 @@ import NotificationPopup from "../NotificationPopup";
 import { useEffect, useState } from "react";
 import { Notification } from "../../interfaces";
 import { useConfig } from "../../contexts/ConfigContext";
+import { IoOpenOutline } from "react-icons/io5";
+import { invoke } from "@tauri-apps/api/core";
+import ConfigBackupManager from "../ConfigBackupManager ";
 
 const ConfigPage = () => {
   const { config } = useConfig();
@@ -23,10 +26,18 @@ const ConfigPage = () => {
     icon: null,
   });
 
+  const openDirectory = async (pathType: string) => {
+    try {
+      await invoke("open_directory", { pathType });
+    } catch (error) {
+      console.error("Failed to open directory:", error);
+    }
+  };
+
   useEffect(() => {
     fetchConfigFiles(setIniValues);
   }, []);
-  
+
   return (
     <>
       {/* Notification Popup */}
@@ -38,11 +49,11 @@ const ConfigPage = () => {
         onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
         icon={notification.icon}
       />
-      <Center p='xs' style={{ flexDirection: 'column', textAlign: 'center'}}>
+      <Center p='xs' style={{ flexDirection: 'column', textAlign: 'center' }}>
         <Text c="dimmed" size="sm">
           *INI files are graphics config files that let you change more options that in-game.
         </Text>
-        <Grid mt="xs" gutter="xs">
+        <Grid w='100%' mt="xs" gutter="xs">
           {configPresets.map((config) => (
             <Grid.Col span={4} key={config.id}>
               <ConfigCard
@@ -59,7 +70,7 @@ const ConfigPage = () => {
           ))}
         </Grid>
         <Space h="xs" />
-        <Group align="flex-start" gap='sm' grow style={{ width: '100%' }}>
+        <Group align="flex-start" gap='sm' grow style={{ width: '100%', height: '100%' }}>
           <ConfigSettingsTable
             fields={iniFields.slice(0, third)}
             iniValues={iniValues}
@@ -70,11 +81,33 @@ const ConfigPage = () => {
             iniValues={iniValues}
             handleInputChange={(key, value) => handleInputChange('main', key, value, setIniValues)}
           />
-          <ConfigSettingsTable
-            fields={inputIniFields}
-            iniValues={iniValues}
-            handleInputChange={(key, value) => handleInputChange('input', key, value, setIniValues)}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <ConfigSettingsTable
+              fields={inputIniFields}
+              iniValues={iniValues}
+              handleInputChange={(key, value) => handleInputChange('input', key, value, setIniValues)}
+            />
+            <div style={{ marginTop: '0.7rem', flexShrink: 0 }}>
+              <Card
+                className="card-custom"
+                radius='md'
+                shadow="sm"
+                padding="lg"
+                onClick={() => openDirectory("config")}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                }}
+              >
+                <Group justify='space-between'>
+                  <Text fz={24} fw={500}>Config Folder</Text>
+                  <IoOpenOutline style={{ fontSize: '32px' }} />
+                </Group>
+              </Card>
+            </div>
+          </div>
         </Group>
 
         <SensitivityCalculator
@@ -84,6 +117,10 @@ const ConfigPage = () => {
         />
 
       </Center>
+      <Container fluid p='xs'>
+        <Space mt="lg" />
+        <ConfigBackupManager />
+      </Container>
     </>
   );
 };

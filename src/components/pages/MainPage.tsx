@@ -42,7 +42,7 @@ const MainPage = () => {
             className="card-custom"
             shadow="sm"
             padding="lg"
-            onClick={() => openDirectory("tribes")}
+            onClick={() => openDirectory("launcher_config")}
             style={() => ({
               height: '100%',
               display: 'flex',
@@ -52,11 +52,11 @@ const MainPage = () => {
             })}
           >
             <Group justify='space-between'>
-              <Text fw={500}>Tribes Install Folder</Text>
+              <Text fw={500}>Launcher Config</Text>
               <IoOpenOutline style={{ fontSize: '24px' }} />
             </Group>
             <Text size="sm" c="dimmed">
-              The location of your Tribes installation.
+              Contains TAMods DLLs, launcher configuration, and downloaded packages.
             </Text>
           </Card>
         </Grid.Col>
@@ -88,7 +88,7 @@ const MainPage = () => {
             className="card-custom"
             shadow="sm"
             padding="lg"
-            onClick={() => openDirectory("launcher_config")}
+            onClick={() => openDirectory("tribes")}
             style={() => ({
               height: '100%',
               display: 'flex',
@@ -98,11 +98,11 @@ const MainPage = () => {
             })}
           >
             <Group justify='space-between'>
-              <Text fw={500}>Launcher Config</Text>
+              <Text fw={500}>Tribes Install Folder</Text>
               <IoOpenOutline style={{ fontSize: '24px' }} />
             </Group>
             <Text size="sm" c="dimmed">
-              Contains TAMods DLLs, launcher configuration, and downloaded packages.
+              The location of your Tribes installation.
             </Text>
           </Card>
         </Grid.Col>

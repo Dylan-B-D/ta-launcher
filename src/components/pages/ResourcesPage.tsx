@@ -3,7 +3,7 @@ import UsefulResources from "../UsefulResources";
 
 const ResourcesPage = () => {
   return (
-    <Center p='lg' style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
+    <Center w='100%' p='lg' style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
       <UsefulResources />
     </Center>
   );

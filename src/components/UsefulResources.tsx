@@ -8,7 +8,7 @@ const UsefulResources = () => {
     return (
         <>
             <Title mt="md" order={5}>Discord Links</Title>
-            <Grid mt="4px">
+            <Grid  mt="4px">
                 {discordResources.map((resource, index) => (
                     <Grid.Col span={4} key={index}>
                         <CardGradient

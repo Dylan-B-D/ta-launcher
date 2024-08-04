@@ -4,21 +4,14 @@ import { IconCheck, IconX } from '@tabler/icons-react';
 import { CheckConfigResult, ReplaceConfigResult } from '../interfaces';
 import classes from './CardGradient.module.css';
 import { confirm } from '@tauri-apps/plugin-dialog';
-
-interface NotificationType {
-    visible: boolean;
-    message: string;
-    title: string;
-    color: string;
-    icon: JSX.Element | null;
-}
+import { Notification } from '../interfaces';
 
 interface ConfigCardProps {
     title: string;
     author: string;
     description: string;
     configId: string;
-    setNotification: (notification: NotificationType) => void;
+    setNotification: (notification: Notification) => void;
     fetchConfigFiles: () => void;
 }
 
@@ -42,13 +35,7 @@ export function ConfigCard({ title, author, description, configId, setNotificati
                         title: "Success",
                     });
                 } else {
-                    setNotification({
-                        visible: true,
-                        message: 'Canceled loading preset',
-                        icon: <IconX />,
-                        color: 'yellow',
-                        title: "Canceled",
-                    });
+                    console.log('User cancelled the operation');
                 }
             } else {
                 setNotification({
