@@ -36,6 +36,8 @@
     "updater:allow-check",
     "updater:allow-download-and-install",
     "window-state:allow-restore-state",
-    "window-state:allow-save-window-state"
+    "window-state:allow-save-window-state",
+    "core:event:allow-listen",
+    "core:event:default"
   ]
 }

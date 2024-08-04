@@ -42,7 +42,7 @@ const PackagesTable = () => {
                 ...pkg,
                 package: {
                     ...pkg.package,
-                    description: `${pkg.package.description} And Nerve's routes.`
+                    description: `${pkg.package.description} And Nerves Routes.`
                 }
             };
         }
