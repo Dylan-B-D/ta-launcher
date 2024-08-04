@@ -3,6 +3,7 @@ use crate::commands::data::{
     get_app_local_data_dir, get_game_folder, get_launcher_config_file, get_original_dlls_dir,
 };
 use async_process::Command;
+use log::info;
 use std::fs;
 use std::path::PathBuf;
 use sysinfo::System;
@@ -31,17 +32,28 @@ use winreg::RegKey;
 /// * `game-exited` - When the game has exited
 #[tauri::command]
 pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
+    info!("Launching game...");
+
     let config = get_launcher_config_file(&handle)?;
+    info!("Configuration file loaded.");
+
     let game_path = config["gamePath"].as_str().ok_or("Game path not found")?;
+    info!("Game path: {}", game_path);
+
     let launch_method = config["launchMethod"]
         .as_str()
         .ok_or("Launch method not found")?;
+    info!("Launch method: {}", launch_method);
+
     let dll_version = config["dllVersion"]
         .as_str()
         .ok_or("DLL version not found")?;
+    info!("DLL version: {}", dll_version);
+
     let login_server = config["loginServer"]
         .as_str()
         .ok_or("Login server not found")?;
+    info!("Login server: {}", login_server);
 
     // Get launch arguments from config
     let launch_args = config["launchArgs"].as_str().unwrap_or("").trim();
@@ -50,24 +62,32 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     } else {
         Vec::new()
     };
+    info!("Launch arguments: {:?}", launch_args);
 
     // Get the paths
-    let original_dll_path = get_original_dlls_dir(&handle)?; // Contains list of DLLs to Hijack
-    let game_folder = get_game_folder(&handle); // Path to DLLs to Hijack
-    let app_data_dir = get_app_local_data_dir(&handle); // Path to TAMods DLLs that will Hijack the game DLLs
+    let original_dll_path = get_original_dlls_dir(&handle)?;
+    info!("Original DLLs path: {:?}", original_dll_path);
 
-    // Get DLL based on what is selected in the config file by the user
+    let game_folder = get_game_folder(&handle);
+    info!("Game folder: {:?}", game_folder);
+
+    let app_data_dir = get_app_local_data_dir(&handle);
+    info!("App data directory: {:?}", app_data_dir);
+
     let tamods_dll_content = match dll_version {
         "Release" => {
             let path = app_data_dir.join("dlls").join("TAMods.dll");
+            info!("TAMods Release DLL path: {:?}", path);
             fs::read(&path).map_err(|e| format!("Failed to read Release TAMods DLL: {}", e))?
         }
         "Beta" => {
             let path = app_data_dir.join("dlls").join("tamods-beta.dll");
+            info!("TAMods Beta DLL path: {:?}", path);
             fs::read(&path).map_err(|e| format!("Failed to read Beta TAMods DLL: {}", e))?
         }
         "Edge" => {
             let path = app_data_dir.join("dlls").join("tamods-edge.dll");
+            info!("TAMods Edge DLL path: {:?}", path);
             fs::read(&path).map_err(|e| format!("Failed to read Edge TAMods DLL: {}", e))?
         }
         "Custom" => {
@@ -75,48 +95,52 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 .as_str()
                 .ok_or("Custom DLL path not found")?;
             let path = std::path::PathBuf::from(custom_dll_path);
+            info!("Custom DLL path: {:?}", path);
             fs::read(&path).map_err(|e| format!("Failed to read Custom DLL: {}", e))?
         }
-        "None" => return Ok(()), // No DLL injection, just launch the game
+        "None" => Vec::new(), // No DLL injection, just launch the game
         _ => return Err("Invalid DLL version".to_string()),
     };
 
-    let mut replaced_dlls = Vec::new();
-
-    // Get all DLL names from the originalDLLs folder
-    let original_dlls = fs::read_dir(&original_dll_path)
-        .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
-        .filter_map(|entry| {
-            entry.ok().and_then(|e| {
-                let path = e.path();
-                if path.extension() == Some(std::ffi::OsStr::new("dll")) {
-                    path.file_name().map(|n| n.to_string_lossy().to_string())
-                } else {
-                    None
-                }
+    // Replace the content of matching DLLs in the game folder with the chosen TAMods DLL if DLL version != "None"
+    if dll_version != "None" {
+        let mut replaced_dlls = Vec::new();
+    
+        let original_dlls = fs::read_dir(&original_dll_path)
+            .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
+            .filter_map(|entry| {
+                entry.ok().and_then(|e| {
+                    let path = e.path();
+                    if path.extension() == Some(std::ffi::OsStr::new("dll")) {
+                        path.file_name().map(|n| n.to_string_lossy().to_string())
+                    } else {
+                        None
+                    }
+                })
             })
-        })
-        .collect::<Vec<String>>();
-
-    // Replace the content of matching DLLs in the game folder
-    for dll_name in &original_dlls {
-        let game_dll_path = match game_folder {
-            Ok(ref folder) => folder.join(dll_name),
-            Err(err) => return Err(format!("Failed to get game folder: {}", err)),
-        };
-        if game_dll_path.exists() {
-            // Backup the original DLL content
-            let original_content = fs::read(&game_dll_path)
-                .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
-            replaced_dlls.push((game_dll_path.clone(), original_content));
-
-            // Replace with TAMods DLL content
-            fs::write(&game_dll_path, &tamods_dll_content)
-                .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+            .collect::<Vec<String>>();
+        info!("Original DLLs found: {:?}", original_dlls);
+    
+        // Replace the content of matching DLLs in the game folder
+        for dll_name in &original_dlls {
+            let game_dll_path = match game_folder {
+                Ok(ref folder) => folder.join(dll_name),
+                Err(err) => return Err(format!("Failed to get game folder: {}", err)),
+            };
+            if game_dll_path.exists() {
+                // Backup the original DLL content
+                let original_content = fs::read(&game_dll_path)
+                    .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
+                replaced_dlls.push((game_dll_path.clone(), original_content));
+    
+                // Replace with TAMods DLL content
+                fs::write(&game_dll_path, &tamods_dll_content)
+                    .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+            }
         }
+        info!("DLLs replaced.");
     }
 
-    // Get the login server based on the config file
     let login_server_arg = match login_server {
         "PUG" => format!("-hostx={}", LOGIN_SERVER_PUG),
         "Community" => format!("-hostx={}", LOGIN_SERVER_COMMUNITY),
@@ -128,20 +152,21 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
         ),
         _ => return Err("Invalid login server".to_string()),
     };
+    info!("Login server argument: {}", login_server_arg);
 
-    // Launch the game
     match launch_method {
         "Non-Steam" => {
+            info!("Launching Non-Steam version of the game...");
             let mut command = Command::new(game_path);
             command.arg(login_server_arg);
 
-            // Add launch arguments
             for arg in launch_args {
                 command.arg(arg);
             }
 
             match command.spawn() {
                 Ok(mut child) => {
+                    info!("Game launched successfully.");
                     handle
                         .emit("game-launched", true)
                         .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
@@ -150,7 +175,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                     tauri::async_runtime::spawn(async move {
                         match child.status().await {
                             Ok(status) => {
-                                // Restore DLLs
+                                info!("Game exited with status: {}", status.success());
                                 if let Err(e) = restore_original_dlls(
                                     original_dll_path,
                                     game_folder.clone().unwrap(),
@@ -164,7 +189,6 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                             }
                             Err(e) => {
                                 eprintln!("Failed to wait for child process: {}", e);
-                                // Restore DLLs in case of error
                                 if let Err(e) = restore_original_dlls(
                                     original_dll_path,
                                     game_folder.clone().unwrap(),
@@ -180,36 +204,39 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 
                     Ok(())
                 }
-                Err(e) => Err(format!("Failed to launch game: {}", e)),
+                Err(e) => {
+                    eprintln!("Failed to launch game: {}", e);
+                    Err(format!("Failed to launch game: {}", e))
+                },
             }
         }
         "Steam" => {
-            // Modify the installscript.vdf to remove the PreReqPatcher section, which causes InstallShield popups and UAC prompts
+            info!("Launching Steam version of the game...");
             if let Err(e) = modify_install_script(handle.clone()) {
                 eprintln!("{}", e);
             }
 
-            // Find Steam executable
             let steam_path = if cfg!(target_os = "windows") {
                 match find_steam_path() {
                     Ok(path) => path + "\\steam.exe",
                     Err(e) => {
                         eprintln!("Failed to find Steam path: {}", e);
-                        "C:\\Program Files (x86)\\Steam\\steam.exe".to_string() // Fallback to default path
+                        "C:\\Program Files (x86)\\Steam\\steam.exe".to_string()
                     }
                 }
             } else {
                 "/usr/bin/steam".to_string()
             };
+            info!("Steam path: {}", steam_path);
 
             let tribes_steam_id_str = TRIBES_STEAM_ID.to_string();
             let mut args = vec!["-applaunch", &tribes_steam_id_str, &login_server_arg];
-
-            // Add launch arguments
             args.extend(launch_args.iter().map(|&s| s));
+            info!("Steam launch arguments: {:?}", args);
 
             match Command::new(steam_path).args(args).spawn() {
                 Ok(_) => {
+                    info!("Game launched successfully through Steam.");
                     handle
                         .emit("game-launched", true)
                         .map_err(|e| format!("Failed to emit game-launched event: {}", e))?;
@@ -220,8 +247,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 
                         loop {
                             if !is_game_running() {
-                                // Game has exited
-                                // Restore DLLs
+                                info!("Game is no longer running.");
                                 if let Err(e) = restore_original_dlls(
                                     original_dll_path,
                                     game_folder.clone().unwrap(),
@@ -240,12 +266,19 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
 
                     Ok(())
                 }
-                Err(e) => Err(format!("Failed to launch game through Steam: {}", e)),
+                Err(e) => {
+                    eprintln!("Failed to launch game through Steam: {}", e);
+                    Err(format!("Failed to launch game through Steam: {}", e))
+                },
             }
         }
-        _ => Err("Invalid launch method".to_string()),
+        _ => {
+            println!("Invalid launch method specified.");
+            Err("Invalid launch method".to_string())
+        },
     }
 }
+
 
 /// Check if the game is running.
 ///

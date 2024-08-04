@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, Paper } from "@mantine/core";
+import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, Paper, Card } from "@mantine/core";
 import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
 import { ConfigCard } from "../ConfigCard";
 import { configPresets } from "../../data/configPresets";
@@ -16,6 +16,8 @@ import { useDownloadContext } from "../../contexts/DownloadContext";
 import { useConfig } from "../../contexts/ConfigContext";
 import UsefulResources from "../UsefulResources";
 import DownloadProgressIndicator from "../DownloadProgressIndicator";
+import { IoOpenOutline } from "react-icons/io5";
+import { invoke } from "@tauri-apps/api/core";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
@@ -96,6 +98,14 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const prevStep = () => {
     checkAndFindGamePath(config, setConfig);
     setActive((current) => (current > 0 ? current - 1 : current));
+  };
+
+  const openDirectory = async (pathType: string) => {
+    try {
+      await invoke("open_directory", { pathType });
+    } catch (error) {
+      console.error("Failed to open directory:", error);
+    }
   };
 
   return (
@@ -193,11 +203,33 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
                     iniValues={iniValues}
                     handleInputChange={(key, value) => handleInputChange('main', key, value, setIniValues)}
                   />
-                  <ConfigSettingsTable
-                    fields={inputIniFields}
-                    iniValues={iniValues}
-                    handleInputChange={(key, value) => handleInputChange('input', key, value, setIniValues)}
-                  />
+                  <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <ConfigSettingsTable
+                      fields={inputIniFields}
+                      iniValues={iniValues}
+                      handleInputChange={(key, value) => handleInputChange('input', key, value, setIniValues)}
+                    />
+                    <div style={{ marginTop: '0.7rem', flexShrink: 0 }}>
+                      <Card
+                        className="card-custom"
+                        radius='md'
+                        shadow="sm"
+                        padding="lg"
+                        onClick={() => openDirectory("config")}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Group justify='space-between'>
+                          <Text fz={24} fw={500}>Config Folder</Text>
+                          <IoOpenOutline style={{ fontSize: '32px' }} />
+                        </Group>
+                      </Card>
+                    </div>
+                  </div>
                 </Group>
 
                 <SensitivityCalculator

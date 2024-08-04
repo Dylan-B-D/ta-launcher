@@ -248,7 +248,7 @@ const PackagesTable = () => {
                         <Table.Th>Name</Table.Th>
                         <Table.Th>Description</Table.Th>
                         <Table.Th>Size</Table.Th>
-
+                        <Table.Th>Last Modified</Table.Th>
                         <Table.Th>Status</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
