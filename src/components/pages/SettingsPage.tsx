@@ -17,13 +17,12 @@ const SettingsPage = () => {
     setConfig((prevConfig) => ({ ...prevConfig, [field]: value }));
   };
 
-  const selectFile = async (field: 'gamePath' | 'customDLLPath') => {
+  const selectFile = async (field: 'gamePath') => {
     try {
       const selected = await open();
 
       if (selected && typeof selected.path === "string") {
         if (field === 'gamePath' && !selected.path.endsWith(".exe")) return;
-        if (field === 'customDLLPath' && !selected.path.endsWith(".dll")) return;
         
         setConfig((prevConfig) => ({ ...prevConfig, [field]: selected.path }));
       }
@@ -77,24 +76,6 @@ const SettingsPage = () => {
         <Divider my='md'/>
         <LaunchOptionsStep />
                 
-        <Space h='md'/>
-        
-        <Title order={4}>Custom DLL Path</Title>
-        <Space h='2px'/>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <TextInput
-            style={{ flexGrow: 1 }}
-            value={config.customDLLPath}
-            onChange={(e) => handleInputChange('customDLLPath')(e.currentTarget.value)}
-            placeholder="Enter custom DLL path..."
-            styles={{
-              input: { padding: '6px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
-            }}
-          />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '8px' }}>
-          <Button color="cyan" variant='light' onClick={() => selectFile('customDLLPath')} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}>Choose DLL File</Button>
-        </div>
       </Paper>
       <Space h='xs'/>
     </Container>

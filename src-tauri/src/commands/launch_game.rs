@@ -49,54 +49,60 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     let app_data_dir = get_app_local_data_dir(&handle); // Path to TAMods DLLs that will Hijack the game DLLs
 
     // Get DLL based on what is selected in the config file by the user
-    let tamods_dll_name = match dll_version {
-        "Release" => Some("TAMods.dll"),
-        "Beta" => Some("tamods-beta.dll"),
-        "Edge" => Some("tamods-edge.dll"),
-        "None" | "Custom" => None,
+    let tamods_dll_content = match dll_version {
+        "Release" => {
+            let path = app_data_dir.join("dlls").join("TAMods.dll");
+            fs::read(&path).map_err(|e| format!("Failed to read Release TAMods DLL: {}", e))?
+        },
+        "Beta" => {
+            let path = app_data_dir.join("dlls").join("tamods-beta.dll");
+            fs::read(&path).map_err(|e| format!("Failed to read Beta TAMods DLL: {}", e))?
+        },
+        "Edge" => {
+            let path = app_data_dir.join("dlls").join("tamods-edge.dll");
+            fs::read(&path).map_err(|e| format!("Failed to read Edge TAMods DLL: {}", e))?
+        },
+        "Custom" => {
+            let custom_dll_path = config["customDLLPath"].as_str().ok_or("Custom DLL path not found")?;
+            let path = std::path::PathBuf::from(custom_dll_path);
+            fs::read(&path).map_err(|e| format!("Failed to read Custom DLL: {}", e))?
+        },
+        "None" => return Ok(()), // No DLL injection, just launch the game
         _ => return Err("Invalid DLL version".to_string()),
     };
 
     let mut replaced_dlls = Vec::new();
 
-    if let Some(dll_name) = tamods_dll_name {
-        let tamods_dll_path = app_data_dir.join("dlls").join(dll_name);
-
-        // Read the content of the chosen TAMods DLL
-        let tamods_dll_content =
-            fs::read(&tamods_dll_path).map_err(|e| format!("Failed to read TAMods DLL: {}", e))?;
-
-        // Get all DLL names from the originalDLLs folder
-        let original_dlls = fs::read_dir(&original_dll_path)
-            .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
-            .filter_map(|entry| {
-                entry.ok().and_then(|e| {
-                    let path = e.path();
-                    if path.extension() == Some(std::ffi::OsStr::new("dll")) {
-                        path.file_name().map(|n| n.to_string_lossy().to_string())
-                    } else {
-                        None
-                    }
-                })
+    // Get all DLL names from the originalDLLs folder
+    let original_dlls = fs::read_dir(&original_dll_path)
+        .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
+        .filter_map(|entry| {
+            entry.ok().and_then(|e| {
+                let path = e.path();
+                if path.extension() == Some(std::ffi::OsStr::new("dll")) {
+                    path.file_name().map(|n| n.to_string_lossy().to_string())
+                } else {
+                    None
+                }
             })
-            .collect::<Vec<String>>();
+        })
+        .collect::<Vec<String>>();
 
-        // Replace the content of matching DLLs in the game folder
-        for dll_name in &original_dlls {
-            let game_dll_path = match game_folder {
-                Ok(ref folder) => folder.join(dll_name),
-                Err(err) => return Err(format!("Failed to get game folder: {}", err)),
-            };
-            if game_dll_path.exists() {
-                // Backup the original DLL content
-                let original_content = fs::read(&game_dll_path)
-                    .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
-                replaced_dlls.push((game_dll_path.clone(), original_content));
+    // Replace the content of matching DLLs in the game folder
+    for dll_name in &original_dlls {
+        let game_dll_path = match game_folder {
+            Ok(ref folder) => folder.join(dll_name),
+            Err(err) => return Err(format!("Failed to get game folder: {}", err)),
+        };
+        if game_dll_path.exists() {
+            // Backup the original DLL content
+            let original_content = fs::read(&game_dll_path)
+                .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
+            replaced_dlls.push((game_dll_path.clone(), original_content));
 
-                // Replace with TAMods DLL content
-                fs::write(&game_dll_path, &tamods_dll_content)
-                    .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
-            }
+            // Replace with TAMods DLL content
+            fs::write(&game_dll_path, &tamods_dll_content)
+                .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
         }
     }
 

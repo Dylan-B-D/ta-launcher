@@ -1,11 +1,13 @@
-import { Divider, Space, SegmentedControl, Title, Text, TextInput, Modal, Button } from '@mantine/core';
+import { Divider, Space, SegmentedControl, Title, Text, TextInput, Modal, Button, Group } from '@mantine/core';
 import { useConfig } from '../contexts/ConfigContext';
 import { useEffect, useState } from 'react';
 import { useDownloadContext } from '../contexts/DownloadContext';
+import { open } from '@tauri-apps/plugin-dialog';
 
 const LaunchOptions = () => {
   const { config, setConfig } = useConfig();
   const [customServerIP, setCustomServerIP] = useState(config.customServerIP || '');
+  const [customDLLPath, setCustomDLLPath] = useState(config.customDLLPath || '');
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [pendingDLL, setPendingDLL] = useState('');
@@ -21,7 +23,6 @@ const LaunchOptions = () => {
       setCustomServerIP('');
     }
 
-    // Check if the current DLL version in config is available; if not, prompt the user
     const packageMap: { [key: string]: string } = {
       Release: 'tamods-dll',
       Beta: 'tamods-dll-beta',
@@ -29,7 +30,7 @@ const LaunchOptions = () => {
     };
 
     const currentPackageId = packageMap[config.dllVersion];
-    if (config.dllVersion !== 'None' && !completedPackages.has(currentPackageId)) {
+    if (config.dllVersion !== 'None' && config.dllVersion !== 'Custom' && !completedPackages.has(currentPackageId)) {
       setPendingDLL(currentPackageId);
       setPendingVersion(config.dllVersion);
       setShowModal(true);
@@ -70,8 +71,8 @@ const LaunchOptions = () => {
   };
 
   const checkAndSetDLLVersion = (version: string) => {
-    if (version === 'None') {
-      setConfig((prev) => ({ ...prev, dllVersion: 'None' }));
+    if (version === 'None' || version === 'Custom') {
+      setConfig((prev) => ({ ...prev, dllVersion: version }));
       return;
     }
 
@@ -88,6 +89,18 @@ const LaunchOptions = () => {
       setPendingDLL(packageId);
       setPendingVersion(version);
       setShowModal(true);
+    }
+  };
+
+  const selectFile = async () => {
+    try {
+      const selected = await open();
+      if (selected && typeof selected.path === "string" && selected.path.endsWith(".dll")) {
+        setConfig((prevConfig) => ({ ...prevConfig, customDLLPath: selected.path }));
+        setCustomDLLPath(selected.path);
+      }
+    } catch (error) {
+      console.error(`Error selecting DLL file:`, error);
     }
   };
 
@@ -162,7 +175,7 @@ const LaunchOptions = () => {
               onChange={(event) => handleCustomIPChange(event.currentTarget.value)}
               placeholder="Enter custom IP"
               styles={{
-                input: { marginLeft: '12px', padding: '6px', width: '200px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
+                input: { marginTop: -1, marginLeft: '12px', padding: '6px', width: '200px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
               }}
               error={!!error}
               onBlur={handleBlur}
@@ -190,18 +203,47 @@ const LaunchOptions = () => {
       <Text size="sm" c="dimmed">
         <strong>Note:</strong> Other versions are primarily used for testing purposes.
       </Text>
-      <Space h="sm" />
-      <SegmentedControl
-        color="rgba(0, 128, 158, 0.7)"
-        value={config.dllVersion}
-        onChange={(value) => checkAndSetDLLVersion(value)}
-        data={["Release", "Beta", "Edge", "None"]}
-        style={{
-          background: 'linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))',
-          borderRadius: '8px',
-          color: 'transparent', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
-        }}
-      />
+      <Group style={{ marginTop: '10px', width: '100%' }}>
+        <SegmentedControl
+          color="rgba(0, 128, 158, 0.7)"
+          value={config.dllVersion}
+          onChange={(value) => checkAndSetDLLVersion(value)}
+          data={["Release", "Beta", "Edge", "None", "Custom"]}
+          style={{
+            background: 'linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))',
+            borderRadius: '8px',
+            color: 'transparent', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+            flexGrow: 1,
+          }}
+        />
+        {config.dllVersion === 'Custom' && (
+          <>
+            <TextInput
+              style={{ flexGrow: 1 }}
+              value={customDLLPath}
+              variant='filled'
+              radius='md'
+              size='32px'
+              onChange={(e) => {
+                setCustomDLLPath(e.currentTarget.value);
+                setConfig((prev) => ({ ...prev, customDLLPath: e.currentTarget.value }));
+              }}
+              placeholder="Enter custom DLL path..."
+              styles={{
+                input: { padding: '6px', fontSize: '14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' },
+              }}
+            />
+            <Button
+              color="cyan"
+              variant='light'
+              onClick={selectFile}
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+            >
+              Choose DLL File
+            </Button>
+          </>
+        )}
+      </Group>
 
       <Modal
         opened={showModal}
