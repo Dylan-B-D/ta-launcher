@@ -38,7 +38,7 @@ const SettingsPage = () => {
         <Title order={3}><u>Settings</u></Title>
         <Space h='md'/>
         <Text c='dimmed'>Return to the first time setup</Text>
-        <Button color="cyan" variant='light' onClick={handleButtonClick}>Return to First Time Setup</Button>
+        <Button color="cyan" variant='light' onClick={handleButtonClick} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}>Return to First Time Setup</Button>
         <Divider my='md'/>
         
         <Title order={4}>Game Path</Title>

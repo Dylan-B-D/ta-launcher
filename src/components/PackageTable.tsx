@@ -36,7 +36,19 @@ const PackagesTable = () => {
 
     const sortedPackages = Object.values(packages).sort((a, b) => {
         return order.indexOf(a.package.id) - order.indexOf(b.package.id);
+    }).map(pkg => {
+        if (pkg.package.id === 'tamods-routesrec') {
+            return {
+                ...pkg,
+                package: {
+                    ...pkg.package,
+                    description: `${pkg.package.description} And Nerve's routes.`
+                }
+            };
+        }
+        return pkg;
     });
+    
 
     const calculateTotalSize = (packageIds: string[]) => {
         return packageIds.reduce((total, id) => {
