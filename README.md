@@ -5,15 +5,17 @@
 
 - First time setup
 - No longer requires admin to run
-- Auto updater [Coming soon]
-- In launcher config tools [Coming soon]
-- Route manager [Coming soon]
-- Server population counts [Coming soon]
+- Auto updater [Partially Complete]
+- In launcher config tools
+- Route manager
+- Server population counts
 - Potential additions in the future may include (Integrated server hosting wizard and UDK setup for map making)
 
 
 This project is a Tauri 2.0 application using Rust for the backend, and React for the frontend. 
 Follow these instructions to set up and run the application on your system.
+Note: you may need bun instead of npm at the moment, but will try to fix soon.
+Nightly may not be required since there is no longer an injector, and DLL hijacking is used instead, although non-nighlty has not been tested.
 
 ## Prerequisites
 
