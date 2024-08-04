@@ -1,14 +1,35 @@
-use tauri::Emitter;
+use tauri::{Emitter, Listener};
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use futures::stream::StreamExt;
 use reqwest::Client;
+use tokio::sync::Notify;
 use zip::ZipArchive;
+use std::sync::Arc;
 use std::{io::Write, path::PathBuf};
 use std::path::Path;
 use std::fs::File as StdFile;
 use tempfile::TempDir;
 use super::data::{get_app_local_data_dir, get_tribes_dir, CONFIG_DIR, PKG_ENDPOINT};
+
+#[derive(Debug)]
+struct TempDirGuard {
+    dir: Option<TempDir>,
+}
+
+impl TempDirGuard {
+    fn new(dir: TempDir) -> Self {
+        TempDirGuard { dir: Some(dir) }
+    }
+}
+
+impl Drop for TempDirGuard {
+    fn drop(&mut self) {
+        if let Some(dir) = self.dir.take() {
+            let _ = dir.close();
+        }
+    }
+}
 
 /// Downloads a package from the update server and extracts it to the correct directories
 /// 
@@ -27,7 +48,6 @@ pub async fn download_package(
     object_key: String,
     package_hash: String,
 ) -> Result<(), String> {
-
     let tribes_dir = get_tribes_dir(&handle)?;
     let app_data_dir = get_app_local_data_dir(&handle);
 
@@ -40,21 +60,45 @@ pub async fn download_package(
 
     // Create a temporary directory to store the downloaded zip
     let temp_dir = TempDir::new().map_err(|e| e.to_string())?;
-    let file_path = temp_dir.path().join(format!("{}.zip", package_id));
+    let temp_dir_guard = TempDirGuard::new(temp_dir);
+    let file_path = temp_dir_guard.dir.as_ref().unwrap().path().join(format!("{}.zip", package_id));
+    println!("Downloading package to: {:?}", file_path);
     let mut file = File::create(&file_path).await.map_err(|e| e.to_string())?;
 
     // Initialize download progress
     let mut downloaded = 0;
     let mut stream = res.bytes_stream();
 
-    // Download the zip file
-    while let Some(item) = stream.next().await {
-        let chunk = item.map_err(|e| e.to_string())?;
-        file.write_all(&chunk).await.map_err(|e| e.to_string())?;
-        downloaded += chunk.len() as u64;
+    // Create a cancellation signal
+    let notify = Arc::new(Notify::new());
+    let notify_clone = notify.clone();
+    let handle_clone = handle.clone();
+    tokio::spawn(async move {
+        handle_clone.listen("cancel-download", move |_| {
+            notify_clone.notify_one();
+        });
+    });
 
-        handle.emit("download-progress", (package_id.clone(), downloaded))
-            .map_err(|e| e.to_string())?;
+    // Download the zip file
+    loop {
+        tokio::select! {
+            item = stream.next() => {
+                if let Some(chunk) = item {
+                    let chunk = chunk.map_err(|e| e.to_string())?;
+                    file.write_all(&chunk).await.map_err(|e| e.to_string())?;
+                    downloaded += chunk.len() as u64;
+
+                    handle.emit("download-progress", (package_id.clone(), downloaded))
+                        .map_err(|e| e.to_string())?;
+                } else {
+                    break;
+                }
+            },
+            _ = notify.notified() => {
+                println!("Download canceled for package: {}", package_id);
+                return Err("Download canceled".into());
+            }
+        }
     }
 
     // Ensure the file is fully written before we try to extract it

@@ -9,7 +9,7 @@ import { useConfig } from '../contexts/ConfigContext';
 const PackagesTable = () => {
     const [pendingPackages, setPendingPackages] = useState<string[]>([]);
     const [showNotification, setShowNotification] = useState(false);
-    const { addToQueue, getTotalSize, getOverallProgress, getQueue, getCompletedPackages } = useDownloadContext();
+    const { addToQueue, getTotalSize, getOverallProgress, getQueue, getCompletedPackages, cancelDownloads } = useDownloadContext();
     const totalSize = getTotalSize();
     const overallProgress = getOverallProgress();
     const progressPercentage = (overallProgress / totalSize) * 100;
@@ -48,7 +48,7 @@ const PackagesTable = () => {
         }
         return pkg;
     });
-    
+
 
     const calculateTotalSize = (packageIds: string[]) => {
         return packageIds.reduce((total, id) => {
@@ -154,22 +154,12 @@ const PackagesTable = () => {
 
     return (
         <>
-            <Text size="xs" c="dimmed">
-                <strong>Minimum </strong>(GOTY and TAMODs): TAMods Core Library
-            </Text>
-            <Text size="xs" c="dimmed">
-                <strong>Standard:</strong> TAMods Core Library, TAMods Standard Library, and Recommended GOTY Routes Library
-            </Text>
-            <Text size="xs" c="dimmed">
-                <strong>Recommended:</strong> TAMods Core Library, TAMods Standard Library, Community Made Maps, and Recommended GOTY Routes Library
-            </Text>
-
-            <Space h="8px" />
             <Group grow preventGrowOverflow={false} wrap="nowrap" gap="xs">
                 <Button
                     variant='light'
-                    size='18px'
-                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+                    size='1.8em'
+                    radius='lg'
+                    style={{ fontSize: '0.9em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                     color='cyan'
                     onClick={handleInstallMinimum}
                     disabled={isButtonDisabled(minimumPackages)}
@@ -179,44 +169,57 @@ const PackagesTable = () => {
                 <Button
                     variant='light'
                     color='cyan'
+                    radius='lg'
                     onClick={handleInstallStandard}
                     disabled={isButtonDisabled(standardPackages)}
-                    size='18px'
-                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+                    size='1.8em'
+                    style={{ fontSize: '0.9rem', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                 >
                     Standard {formatSize(standardSize)}
                 </Button>
                 <Button
                     variant='light'
                     color='cyan'
+                    radius='lg'
                     onClick={handleInstallRecommended}
                     disabled={isButtonDisabled(recommendedPackages)}
-                    size='18px'
-                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+                    size='1.8em'
+                    style={{ fontSize: '0.9rem', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                 >
                     Recommended {formatSize(recommendedSize)}
                 </Button>
                 <Button
                     variant='light'
                     color='cyan'
+                    radius='lg'
                     onClick={handleInstallAll}
                     disabled={isButtonDisabled(order)}
-                    size='18px'
-                    style={{ fontSize: '0.8em', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+                    size='1.8em'
+                    style={{ fontSize: '0.9rem', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
                 >
                     All {formatSize(allSize)}
                 </Button>
             </Group>
+            <Space h="8px" />
+            <Text size="sm" c="dimmed">
+                <strong>Minimum </strong>(GOTY and TAMODs): TAMods Core.
+            </Text>
+            <Text size="sm" c="dimmed">
+                <strong>Standard:</strong> TAMods Core, Standard Library, and Recommended GOTY Routes.
+            </Text>
+            <Text size="sm" c="dimmed">
+                <strong>Recommended:</strong> TAMods Core, Standard Library, Community Maps, and Recommended GOTY Routes.
+            </Text>
 
             <Space h="8px" />
 
-            <Table verticalSpacing="2px" fz="xs" style={{ borderRadius: '8px' }}>
+            <Table verticalSpacing="2px" fz="0.8rem" style={{ borderRadius: '8px' }}>
                 <Table.Thead>
                     <Table.Tr>
                         <Table.Th>Name</Table.Th>
                         <Table.Th>Description</Table.Th>
                         <Table.Th>Size</Table.Th>
-                        <Table.Th>Modified</Table.Th>
+
                         <Table.Th>Status</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
@@ -227,7 +230,7 @@ const PackagesTable = () => {
                                 {pkg.displayName}
                             </Table.Td>
                             <Table.Td>{pkg.description}</Table.Td>
-                            <Table.Td>{formatSize(pkg.totalSize || pkg.size)}</Table.Td>
+                            <Table.Td style={{ minWidth: '5rem' }}>{formatSize(pkg.totalSize || pkg.size)}</Table.Td>
                             <Table.Td>{new Date(pkg.lastModified).toLocaleDateString()}</Table.Td>
                             <Table.Td style={{ padding: 0, textAlign: 'center' }}>
                                 {getStatus(pkg.id) === 'completed' ? (
@@ -252,6 +255,21 @@ const PackagesTable = () => {
                     ))}
                 </Table.Tbody>
             </Table>
+            <Space h="8px" />
+            <Button
+                variant='light'
+                color='red'
+                radius='lg'
+                onClick={() => {
+                    cancelDownloads();
+                    setPendingPackages([]);
+                }}
+                disabled={queue.length === 0}
+                size='1.8em'
+                style={{ fontSize: '0.9rem', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)' }}
+            >
+                Cancel All Downloads
+            </Button>
             {totalSize > 0 && (
                 <div style={{ position: 'relative', width: '100%', marginTop: 4 }}>
                     <Text style={{ margin: '0', fontSize: '0.9em' }}>Progress: {formatSize(overallProgress)} / Total: {formatSize(totalSize)}</Text>

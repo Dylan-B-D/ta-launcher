@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { PackageNode, Packages } from '../interfaces';
-import { listen } from '@tauri-apps/api/event'
+import { emit, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core';
 import { loadDownloadedPackages, saveDownloadedPackages } from '../utils/config';
 import { getPackages } from '../utils/utils';
@@ -9,6 +9,7 @@ interface DownloadContextType {
     queue: string[];
     addToQueue: (packageId: string) => void;
     removeFromQueue: (packageId: string) => void;
+    cancelDownloads: () => void;
     getQueue: () => string[];
     getTotalItems: () => number;
     getTotalSizeInQueue: (packages: Packages) => number;
@@ -21,8 +22,9 @@ interface DownloadContextType {
 
 const DownloadContext = createContext<DownloadContextType>({
     queue: [],
-    addToQueue: () => {},
-    removeFromQueue: () => {},
+    addToQueue: () => { },
+    removeFromQueue: () => { },
+    cancelDownloads: () => { },
     getQueue: () => [],
     getTotalItems: () => 0,
     getTotalSizeInQueue: () => 0,
@@ -59,7 +61,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
             if (packageNode && packageNode.package.hash !== savedHash) {
                 toUpdate.add(packageId);
             }
-            
+
             // Check dependencies
             if (packageNode) {
                 checkPackageHashes(savedPackages, packageNode.dependencies, toUpdate);
@@ -74,18 +76,18 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
         const initializePackages = async () => {
             const savedPackages = await loadDownloadedPackages();
             const packagesToUpdate = Array.from(checkPackageHashes(savedPackages, packages));
-            
+
             setCompletedPackages(savedPackages);
             setPackagesToUpdate(packagesToUpdate);
-            
+
             if (packagesToUpdate.length > 0) {
-              console.log('Packages that need updating:', packagesToUpdate);
+                console.log('Packages that need updating:', packagesToUpdate);
             } else {
-              console.log('No packages need updating');
+                console.log('No packages need updating');
             }
-          };
-        
-          initializePackages();
+        };
+
+        initializePackages();
 
         const unlistenProgress = listen('download-progress', (event: any) => {
             const [packageId, downloaded] = event.payload;
@@ -96,33 +98,33 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
 
         const unlistenCompleted = listen('download-completed', async (event: any) => {
             const [packageId, hash] = event.payload;
-        
+
             // Update the completed packages
             setCompletedPackages(prev => {
                 const newMap = new Map(prev).set(packageId, hash);
                 saveDownloadedPackages(newMap);
                 return newMap;
             });
-        
+
             // Recalculate packages to update after updating completedPackages
             setCompletedPackages(prev => {
                 const newMap = new Map(prev).set(packageId, hash);
                 saveDownloadedPackages(newMap);
-        
+
                 // Recalculate the packages to update based on the new state of completedPackages
                 const updatedPackagesToUpdate = Array.from(checkPackageHashes(newMap, packages));
                 setPackagesToUpdate(updatedPackagesToUpdate);
                 console.log('Packages that need updating:', updatedPackagesToUpdate);
-        
+
                 return newMap;
             });
-        
+
             const newQueue = await removeFromQueue(packageId);
-        
+
             console.log('Download completed:', event.payload);
             console.log('New Queue:', newQueue);
             console.log('New Queue length:', newQueue.length);
-        
+
             if (newQueue.length === 0) {
                 setTotalSize(0);
                 progressMapRef.current.clear();
@@ -130,7 +132,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
                 setQueue([]);
             }
         });
-        
+
 
         return () => {
             unlistenProgress.then(f => f());
@@ -157,6 +159,16 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
         });
     };
 
+    const cancelDownloads = () => {
+        emit('cancel-download'); // Emit the cancel-download event to the Tauri backend
+
+        setQueue([]); // Clear the queue
+        setTotalSize(0); // Reset total size
+        progressMapRef.current.clear(); // Clear progress tracking
+
+        console.log('All downloads have been cancelled.');
+    };
+
     const findPackageNode = (packageId: string, packages: Packages): PackageNode | null => {
         for (const key in packages) {
             if (key === packageId) {
@@ -176,8 +188,8 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
         if (packageNode) {
             const packageDetails = packageNode.package;
             try {
-                await invoke('download_package', { 
-                    packageId, 
+                await invoke('download_package', {
+                    packageId,
                     objectKey: packageDetails.objectKey,
                     packageHash: packageDetails.hash,
                 });
@@ -207,11 +219,12 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
     }
 
     return (
-        <DownloadContext.Provider value={{ 
-            queue, 
-            addToQueue, 
-            removeFromQueue, 
-            getQueue, 
+        <DownloadContext.Provider value={{
+            queue,
+            addToQueue,
+            removeFromQueue,
+            cancelDownloads,
+            getQueue,
             getTotalItems,
             getTotalSizeInQueue,
             packages,
