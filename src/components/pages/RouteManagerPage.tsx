@@ -1,6 +1,6 @@
-// RoutesView.tsx
+// RoutesView.tstyle
 import { useState, useEffect, useRef } from 'react';
-import { Button, Table, Text, Space, Fieldset, Divider, ScrollArea, Paper, Group, Modal, Tooltip } from '@mantine/core';
+import { Button, Table, Text, Space, Fieldset, ScrollArea, Group, Modal, Tooltip, Center } from '@mantine/core';
 import { invoke } from '@tauri-apps/api/core';
 import LocationChart from '../RouteGraphs';
 import RouteFilters from '../RouteFilters';
@@ -74,7 +74,7 @@ const RouteManagerPage = () => {
 
       if (mainContainerRef.current) {
         const mainContainerTopOffset = mainContainerRef.current.getBoundingClientRect().top;
-        setScrollAreaHeight(windowHeight - mainContainerTopOffset - otherElementsHeight - 110 - 32);
+        setScrollAreaHeight(windowHeight - mainContainerTopOffset - otherElementsHeight - 110 - 26);
       }
     };
 
@@ -269,54 +269,48 @@ const RouteManagerPage = () => {
         </div>
 
         <Space h="xs" />
-        <Paper>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text>Click on a row to select or deselect it</Text>
-            <Text>{filteredRoutes.length} routes displayed</Text>
-          </div>
-          <Divider my="sm" />
-          <div>
-            <ScrollArea style={{ height: `${scrollAreaHeight}px`, padding: '12px' }}>
-              <Table>
-                <thead>
-                  <tr style={{ textAlign: 'left' }}>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Game Mode</th>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Map</th>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Side</th>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Class</th>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Username</th>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Route Name</th>
-                    <th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Route Time</th>
-                  </tr>
-                </thead>
-                <tbody style={{ userSelect: 'none' }}>
-                  {filteredRoutes.map((route, index) => (
-                    <tr
-                      key={index}
-                      style={{
-                        textShadow: selectedRows.has(route.file_name) ? '1px 1px 2px black, 0 0 1em black, 0 0 0.2em black' : 'none',
-                        backgroundColor: selectedRows.has(route.file_name) ? 'rgba(50,255,190)' : 'transparent',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid',
-                        borderColor: 'rgba(255, 255, 255,0.075)',
-                      }}
-                      onClick={() => handleRowSelect(route.file_name)}
-                    >
-                      <td>{route.game_mode}</td>
-                      <td>{route.map}</td>
-                      <td>{route.side}</td>
-                      <td>{route.class}</td>
-                      <td>{route.username}</td>
-                      <td>{route.route_name}</td>
-                      <td>{route.time}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </ScrollArea>
-
-          </div>
-        </Paper>
+        <Center>
+          <Text>Click on a row to select or deselect it. Routes displayed: {filteredRoutes.length}</Text>
+        </Center>
+        <Space h="xs" />
+        <ScrollArea style={{ height: `${scrollAreaHeight}px` }}>
+          <Table withRowBorders={false}verticalSpacing="0" style={{borderRadius: '8px ' }}>
+            <Table.Thead style={{ textAlign: 'left', borderRadius: '8px' }}>
+              <Table.Tr style={{ textAlign: 'left', borderRadius: '8px' }}>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)', borderRadius: '8px 0 0 0' }}>Game Mode</Table.Th>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Map</Table.Th>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Side</Table.Th>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Class</Table.Th>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Username</Table.Th>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)' }}>Route Name</Table.Th>
+                <Table.Th style={{ position: 'sticky', top: 0, background: 'rgba(50,50,50)', borderRadius: '0 8px 0 0' }}>Route Time</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody style={{ userSelect: 'none' }}>
+              {filteredRoutes.map((route, index) => (
+                <Table.Tr
+                  key={index}
+                  style={{
+                    textShadow: selectedRows.has(route.file_name) ? '1px 1px 2px black, 0 0 1em black, 0 0 0.2em black' : 'none',
+                    backgroundColor: selectedRows.has(route.file_name) ? 'teal' : 'transparent',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid',
+                    borderColor: 'rgba(255, 255, 255,0.055)',
+                  }}
+                  onClick={() => handleRowSelect(route.file_name)}
+                >
+                  <Table.Td>{route.game_mode}</Table.Td>
+                  <Table.Td>{route.map}</Table.Td>
+                  <Table.Td>{route.side}</Table.Td>
+                  <Table.Td>{route.class}</Table.Td>
+                  <Table.Td>{route.username}</Table.Td>
+                  <Table.Td>{route.route_name}</Table.Td>
+                  <Table.Td>{route.time}</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
         <Modal
           opened={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}

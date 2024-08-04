@@ -21,10 +21,13 @@ const RouteFilters: React.FC<RouteFiltersProps> = ({ filters, handleFilterChange
         {Object.keys(filters).map((filterKey) => (
           <TextInput
             key={filterKey}
+            size='xs'
             placeholder={filterKey}
             value={filters[filterKey as keyof typeof filters]}
             onChange={handleFilterChange(filterKey)}
-            
+            styles={{
+                input: { padding: '2px', fontSize: '12px', backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)' },
+              }}
           />
         ))}
       </Group>
