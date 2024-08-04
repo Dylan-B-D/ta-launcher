@@ -32,6 +32,17 @@ const createAppTheme = () => {
           }
         }),
       },
+      Fieldset: {
+        styles: () => ({
+          root: {
+            border: 'none',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+            backdropFilter: 'blur(8px)',
+            backgroundImage: 'radial-gradient(circle at bottom right,rgba(122,133,153, 0.1), rgba(9,146,104, 0.1))',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.25)',
+          }
+        }),
+      },
       Badge: {
         styles: () => ({
           root: {
