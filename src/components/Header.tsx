@@ -3,25 +3,34 @@ import { IconChevronDown } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import { VscSettings } from "react-icons/vsc";
 
-const links = [
+interface LinkItem {
+  link: string;
+  label: string;
+  links?: LinkItem[];
+}
+
+const links: LinkItem[] = [
   { link: '/', label: 'Home' },
   { link: '/package-manager', label: 'Packages' },
-  {
-    link: '#more',
-    label: 'More',
-    links: [
-      { link: '/config', label: 'Config' },
-      { link: '/route-manager', label: 'Routes' },
-      { link: '/resources', label: 'Resources' },
-    ],
-  },
+  // {
+  //   link: '#more',
+  //   label: 'More',
+  //   links: [
+  //     { link: '/config', label: 'Config' },
+  //     { link: '/route-manager', label: 'Routes' },
+  //     { link: '/resources', label: 'Resources' },
+  //   ],
+  // },
+  { link: '/config', label: 'Config' },
+  { link: '/route-manager', label: 'Routes' },
+  { link: '/resources', label: 'Resources' },
 ];
 
 const buttonColor = 'rgba(255,255,255,0.8)';
 
 export function Header() {
-  const items = links.map((link) => {
-    const menuItems = link.links?.map((item) => (
+  const items = links.map((link: LinkItem) => {
+    const menuItems = link.links?.map((item: LinkItem) => (
       <Menu.Item key={item.link} component={Link} to={item.link}>
         {item.label}
       </Menu.Item>

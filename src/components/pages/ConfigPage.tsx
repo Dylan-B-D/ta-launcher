@@ -92,7 +92,7 @@ const ConfigPage = () => {
                 className="card-custom"
                 radius='md'
                 shadow="sm"
-                padding="lg"
+                padding="1.64rem"
                 onClick={() => openDirectory("config")}
                 style={{
                   display: 'flex',
@@ -102,8 +102,8 @@ const ConfigPage = () => {
                 }}
               >
                 <Group justify='space-between'>
-                  <Text fz={24} fw={500}>Config Folder</Text>
-                  <IoOpenOutline style={{ fontSize: '32px' }} />
+                  <Text fz={16} fw={500}>Config Folder</Text>
+                  <IoOpenOutline style={{ fontSize: '24px' }} />
                 </Group>
               </Card>
             </div>
