@@ -38,6 +38,12 @@
     "window-state:allow-restore-state",
     "window-state:allow-save-window-state",
     "core:event:allow-listen",
-    "core:event:default"
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:image:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default"
   ]
 }
