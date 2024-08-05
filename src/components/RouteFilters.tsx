@@ -1,6 +1,5 @@
-// RouteFilters.tsx
-import React from 'react';
-import { Fieldset, TextInput, Group } from '@mantine/core';
+import React from "react";
+import { Fieldset, TextInput, Group } from "@mantine/core";
 
 interface RouteFiltersProps {
   filters: {
@@ -12,20 +11,33 @@ interface RouteFiltersProps {
     routeName: string;
     routeTime: string;
   };
-  handleFilterChange: (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFilterChange: (
+    field: string
+  ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const RouteFilters: React.FC<RouteFiltersProps> = ({ filters, handleFilterChange }) => {
+const RouteFilters: React.FC<RouteFiltersProps> = ({
+  filters,
+  handleFilterChange,
+}) => {
   return (
     <Fieldset legend="Filters">
       <Group grow>
         {Object.keys(filters).map((filterKey) => (
           <TextInput
             key={filterKey}
+            size="xs"
             placeholder={filterKey}
             value={filters[filterKey as keyof typeof filters]}
             onChange={handleFilterChange(filterKey)}
-            style={{ flex: 1, minWidth: '150px'}}
+            styles={{
+              input: {
+                padding: "2px",
+                fontSize: "12px",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)",
+              },
+            }}
           />
         ))}
       </Group>

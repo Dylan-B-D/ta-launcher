@@ -1,134 +1,100 @@
-// HeaderComponent.tsx
-import React, { useEffect, useState } from 'react';
-import { AppShell, Badge, Code, Progress, useMantineTheme } from '@mantine/core';
-import { invoke } from '@tauri-apps/api';
-import { listen } from '@tauri-apps/api/event';
-import { formatSpeed, hexToRgba } from '../utils.ts';
+import { Button, Group, Center, Menu } from "@mantine/core";
+import { IconChevronDown } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
+import { VscSettings } from "react-icons/vsc";
 
-interface DownloadProgress {
-  download_id: number;
-  filesize: number;
-  transferred: number;
-  transfer_rate: number;
-  percentage: number;
+interface LinkItem {
+  link: string;
+  label: string;
+  links?: LinkItem[];
 }
 
+const links: LinkItem[] = [
+  { link: "/", label: "Home" },
+  { link: "/package-manager", label: "Packages" },
+  // {
+  //   link: '#more',
+  //   label: 'More',
+  //   links: [
+  //     { link: '/config', label: 'Config' },
+  //     { link: '/route-manager', label: 'Routes' },
+  //     { link: '/resources', label: 'Resources' },
+  //   ],
+  // },
+  { link: "/config", label: "Config" },
+  { link: "/route-manager", label: "Routes" },
+  { link: "/resources", label: "Resources" },
+];
 
+const buttonColor = "rgba(255,255,255,0.8)";
 
-const HeaderComponent: React.FC = () => {
-  const theme = useMantineTheme();
-  const [playerCounts, setPlayerCounts] = useState({ PUG: 0, Community: 0 });
-  const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
+export function Header() {
+  const items = links.map((link: LinkItem) => {
+    const menuItems = link.links?.map((item: LinkItem) => (
+      <Menu.Item key={item.link} component={Link} to={item.link}>
+        {item.label}
+      </Menu.Item>
+    ));
 
-  useEffect(() => {
-    invoke('fetch_players_online')
-      .then((response) => {
-        if (typeof response === 'string') {
-          const data = JSON.parse(response);
-          setPlayerCounts({ PUG: data.PUG, Community: data.Community });
-        } else {
-          console.error('Response is not a string:', response);
-        }
-      })
-      .catch((error) => console.error('Error fetching players:', error));
+    if (menuItems) {
+      return (
+        <Menu
+          key={link.label}
+          trigger="hover"
+          transitionProps={{ exitDuration: 0 }}
+          withinPortal
+        >
+          <Menu.Target>
+            <Button
+              fw={200}
+              style={{ letterSpacing: 1 }}
+              variant="subtle"
+              color={buttonColor}
+              component="a"
+              href={link.link}
+              onClick={(event) => event.preventDefault()}
+            >
+              <Center>
+                <span>{link.label}</span>
+                <IconChevronDown
+                  size="0.9rem"
+                  stroke={2.5}
+                  style={{ marginLeft: 8 }}
+                />
+              </Center>
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>{menuItems}</Menu.Dropdown>
+        </Menu>
+      );
+    }
 
-  }, []);
-
-  useEffect(() => {
-    // Function to handle download progress
-    const handleDownloadProgress = (event: { payload: any; }) => {
-      const progressData = event.payload;
-      setDownloadProgress(progressData);
-    };
-
-    // Function to handle download completion
-    const handleDownloadComplete = () => {
-      console.log("Download complete");
-      setDownloadProgress(null); // Reset progress on completion
-    };
-
-
-    const unsubscribeProgress = listen('DOWNLOAD_PROGRESS', handleDownloadProgress);
-
-
-    const unsubscribeComplete = listen('DOWNLOAD_FINISHED', handleDownloadComplete);
-
-    
-    return () => {
-      unsubscribeProgress.then((fn) => fn());
-      unsubscribeComplete.then((fn) => fn());
-    };
-  }, []);
+    return (
+      <Button
+        key={link.label}
+        component={Link}
+        to={link.link}
+        variant="subtle"
+        color={buttonColor}
+        fw={200}
+        style={{ letterSpacing: 1 }}
+      >
+        {link.label}
+      </Button>
+    );
+  });
 
   return (
-    <AppShell.Header
-      styles={() => ({
-        header: {
-          borderBottomWidth: '1px',
-          borderBottomStyle: 'solid',
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          background: `linear-gradient(135deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[6]} 50%, ${theme.colors[theme.tertiaryColor][9]} 100%)`,
-          boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.6)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.tertiaryColor][9], 0.3)}`,
-        },
-      })}
-    >
-      {/* Left-aligned badges */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-      <Badge 
-          variant="gradient"
-          style={{
-            borderRadius: '4px',
-            background: `linear-gradient(90deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][7]} 50%, ${theme.colors.dark[4]} 100%)`,
-            marginLeft: '10px', 
-            color: theme.colors.gray[3],
-            fontWeight:"normal",
-            boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.4)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
-          }}
-        >
-          Community: <strong><span style={{ color: theme.colors.green[4] }}>{playerCounts.Community}</span></strong>
-        </Badge>
-        <Badge 
-          variant="gradient"
-          style={{
-            borderRadius: '4px',
-            background: `linear-gradient(90deg, ${theme.colors.dark[4]} 0%, ${theme.colors[theme.primaryColor][7]} 50%, ${theme.colors.dark[4]} 100%)`,
-            marginLeft: '10px', 
-            color: theme.colors.gray[3],
-            fontWeight:"normal",
-            boxShadow: `0 4px 8px 0 ${hexToRgba(theme.colors.dark[9], 0.4)}, 0 6px 20px 0 ${hexToRgba(theme.colors[theme.primaryColor][9], 0.3)}`,
-          }}
-        >
-          PUG: <strong><span style={{ color: theme.colors.green[4] }}>{playerCounts.PUG}</span></strong>
-        </Badge>
-      </div>
-  
-      {/* Centered download progress and text */}
-      {downloadProgress && (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Progress
-            value={downloadProgress.percentage}
-            color="green"
-            animated
-            size="xs"
-            style={{ width: '200px', backgroundColor: 'black' }} // Fixed width for the progress bar
-          />
-          <span style={{ marginLeft: '15px', whiteSpace: 'nowrap', width: '150px' }}>
-            {downloadProgress.percentage.toFixed(2)}% at {formatSpeed(downloadProgress.transfer_rate)}
-          </span>
-        </div>
-      )}
-  
-      {/* Right-aligned version code */}
-      <div style={{ paddingRight: '10px' }}>
-        <Code fw={700} style={{
-          color: theme.colors.gray[4],
-          background: `linear-gradient(90deg, ${theme.colors.dark[5]} 0%, ${theme.colors[theme.primaryColor][9]} 50%, ${theme.colors.dark[5]} 100%)`,
-        }}>Alpha v0.1.1</Code>
-      </div>
-    </AppShell.Header>
+    <Group p="0 2px" h={40} w={"100%"} gap="0" justify="space-between">
+      <Group gap="0">{items}</Group>
+      <Button
+        component={Link}
+        to="/settings"
+        variant="subtle"
+        color={buttonColor}
+      >
+        <VscSettings size={20} />
+      </Button>
+    </Group>
   );
-};
-
-export default HeaderComponent;
+}

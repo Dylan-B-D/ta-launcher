@@ -1,15 +1,16 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import { ThemeProvider } from './context/ThemeContext.tsx'
-import { SettingsProvider } from './context/SettingsContext.tsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "@mantine/core/styles.css";
+import { MantineProvider } from "@mantine/core";
+import createAppTheme from "./theme";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <ThemeProvider>
-    <SettingsProvider>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </SettingsProvider>
-  </ThemeProvider>
-)
+const theme = createAppTheme();
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
+      <App />
+    </MantineProvider>
+  </React.StrictMode>
+);

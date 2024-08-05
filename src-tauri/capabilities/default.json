@@ -1,0 +1,49 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "shell:allow-open",
+    "fs:default",
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        {
+          "path": "$APPDATA/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-applocaldata-write-recursive",
+      "allow": [
+        {
+          "path": "$APPDATA/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-document-read-recursive",
+      "allow": [{ "path": "$DOCUMENTS/*" }]
+    },
+    {
+      "identifier": "fs:allow-document-write-recursive",
+      "allow": [{ "path": "$DOCUMENTS/*" }]
+    },
+    "dialog:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install",
+    "window-state:allow-restore-state",
+    "window-state:allow-save-window-state",
+    "core:event:allow-listen",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:image:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default"
+  ]
+}

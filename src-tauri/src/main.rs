@@ -1,61 +1,59 @@
-// main.rs
-
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
 use commands::{
-    inject_command, 
-    launch_game_command, 
-    fetch_players_command, 
-    fetch_packages_command, 
-    downloader_command,
-    find_executable_command,
-    get_available_fonts_command,
-    util_command,
-    log_cleaner_command,
-    directory_shortcuts_command,
-    config_parser_command,
-    route_parser_command,
-    route_decoder_command,
-    fetch_available_dlls,
-    python_decoder_command
+    config_backup_manager::{backup_ini_files, delete_backup, get_backups, load_backup_ini_file},
+    config_manager::{fetch_config_files, update_ini_file},
+    config_preset_manager::{check_config, replace_config},
+    directory_shortcuts::open_directory,
+    fetch_player_counts::fetch_players_online,
+    find_game_path::find_path,
+    launch_game::launch_game,
+    package_downloader::download_package,
+    packages::fetch_packages,
+    routes::{
+        check_python_installed, decode_route, delete_route_file, get_route_files,
+        python_route_decoder,
+    },
 };
 
-
 fn main() {
-    // Tauri app builder and run
+    env_logger::Builder::from_default_env()
+        .filter_level(log::LevelFilter::Info) // Set the level for printing debug to console (Off, Warn, Info, Debug etc)
+        .init();
     tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![
-        inject_command::inject, 
-        launch_game_command::launch_game,
-        launch_game_command::launch_game_non_steam,
-        fetch_players_command::fetch_players_online, 
-        fetch_packages_command::fetch_package_metadata,
-        fetch_packages_command::fetch_packages,
-        fetch_packages_command::fetch_dependency_tree,
-        downloader_command::download_package,
-        find_executable_command:: find_executable,
-        get_available_fonts_command::get_system_fonts,
-        util_command::is_process_running,
-        util_command::is_pid_running,
-        util_command::get_process_pid,
-        log_cleaner_command::check_directory_stats,
-        log_cleaner_command::clear_log_folder,
-        directory_shortcuts_command::open_config_dir,
-        directory_shortcuts_command::open_routes_sub_dir,
-        directory_shortcuts_command::open_hud_modules_sub_dir,
-        directory_shortcuts_command::open_launcher_dir,
-        config_parser_command::parse_tribes_ini,
-        config_parser_command::parse_tribes_input_ini,
-        config_parser_command::update_ini_file,
-        route_parser_command::get_route_files,
-        route_parser_command::delete_route_file,
-        route_decoder_command::decode_route,
-        fetch_available_dlls::get_available_dlls,
-        python_decoder_command::python_route_decoder,
-        
-    ])
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+        .setup(|app| {
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
+            Ok(())
+        })
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_window_state::Builder::default().build())
+        .invoke_handler(tauri::generate_handler![
+            find_path,
+            fetch_packages,
+            check_config,
+            replace_config,
+            fetch_config_files,
+            update_ini_file,
+            download_package,
+            fetch_players_online,
+            launch_game,
+            open_directory,
+            delete_route_file,
+            get_route_files,
+            decode_route,
+            python_route_decoder,
+            check_python_installed,
+            load_backup_ini_file,
+            backup_ini_files,
+            delete_backup,
+            get_backups,
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }
