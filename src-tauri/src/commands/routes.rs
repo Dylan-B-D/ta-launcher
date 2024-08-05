@@ -1,9 +1,12 @@
+use crate::commands::data::CREATE_NO_WINDOW;
+
 use super::data::CONFIG_DIR;
 use serde::Serialize;
 use std::convert::TryInto;
 use std::env;
 use std::fs::{self, File};
 use std::io::{self, BufReader, Read};
+use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::process::Command;
 use tauri::command;
@@ -378,6 +381,7 @@ pub fn python_route_decoder(file: String, axis: Option<String>) -> Result<String
         )
         .arg(file_name)
         .arg(&axis)
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| e.to_string())?;
 
@@ -406,7 +410,6 @@ pub fn check_python_installed() -> Result<bool, String> {
     #[cfg(target_os = "windows")]
     {
         use std::os::windows::process::CommandExt;
-        const CREATE_NO_WINDOW: u32 = 0x08000000;
 
         match Command::new("python")
             .arg("--version")

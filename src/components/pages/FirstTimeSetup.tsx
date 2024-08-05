@@ -59,28 +59,29 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
       return;
     }
 
-    // Check for empty config values, excluding "launchArgs"
-    const emptyFields = Object.entries(config)
-      .filter(([key, value]) => {
-        if (key === "launchArgs") return false;
-        if (key === "customServerIP" && config.loginServer !== "Custom")
-          return false;
-        if (key === "customDLLPath" && config.dllVersion !== "Custom")
-          return false;
-        return value === "";
-      })
-      .map(([key]) => key);
+  // Check for empty config values: "gamePath", "customServerIP", and "customDLLPath"
+  const requiredFields = ["gamePath", "customServerIP", "customDLLPath"];
+  const emptyFields = Object.entries(config)
+    .filter(([key, value]) => {
+      if (!requiredFields.includes(key)) return false;
+      if (key === "customServerIP" && config.loginServer !== "Custom")
+        return false;
+      if (key === "customDLLPath" && config.dllVersion !== "Custom")
+        return false;
+      return value === "";
+    })
+    .map(([key]) => key);
 
-    if (emptyFields.length > 0) {
-      setNotification({
-        visible: true,
-        message: `You cannot continue without: ${emptyFields.join(", ")}`,
-        title: "Missing Configuration",
-        color: "red",
-        icon: <IconAlertCircle />,
-      });
-      return;
-    }
+  if (emptyFields.length > 0) {
+    setNotification({
+      visible: true,
+      message: `You cannot continue without: ${emptyFields.join(", ")}`,
+      title: "Missing Configuration",
+      color: "red",
+      icon: <IconAlertCircle />,
+    });
+    return;
+  }
 
     await saveConfig(config);
     localStorage.setItem("isFirstTime", "false");

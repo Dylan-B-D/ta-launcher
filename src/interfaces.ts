@@ -66,7 +66,7 @@ export interface Config {
   launchMethod: string;
   dllVersion: string;
   dpi: number;
-  units: string;
+  units: string; // Currently only "cm" is supported
   customServerIP: string;
   launchArgs: string;
   customDLLPath: string;

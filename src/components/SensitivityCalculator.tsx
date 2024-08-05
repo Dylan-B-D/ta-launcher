@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Paper,
-  Group,
-  Text,
-  Switch,
-  NumberInput,
-  Divider,
-} from "@mantine/core";
+import { Paper, Group, Text, NumberInput, Divider } from "@mantine/core";
 import { useConfig } from "../contexts/ConfigContext";
 
 interface SensitivityCalculatorProps {
@@ -23,7 +16,6 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
   const [distance360, setDistance360] = useState(0);
   const { config, setConfig } = useConfig();
   const dpi = config.dpi;
-  const units = config.units;
 
   const maxFOV = 120;
 
@@ -34,19 +26,14 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
   useEffect(() => {
     if (mouseSensitivity && FOVSetting && dpi) {
       const fovScale = maxFOV / FOVSetting;
-      const constant = 124_846.176;
-      let result = (constant / (dpi * mouseSensitivity)) * fovScale;
-
-      if (units === "Imperial") {
-        result /= 2.54;
-      }
+      const constant = 124_846.176; // Bruteforce constant
+      const result = (constant / (dpi * mouseSensitivity)) * fovScale;
 
       setDistance360(Number(result.toFixed(2)));
     }
-  }, [mouseSensitivity, FOVSetting, dpi, units]);
+  }, [mouseSensitivity, FOVSetting, dpi]);
 
-  const getDistanceLabel = () =>
-    units === "Imperial" ? "in per 360°" : "cm per 360°";
+  const getDistanceLabel = () => "cm per 360°";
 
   const handleDistance360Change = (value: number) => {
     setDistance360(value);
@@ -65,25 +52,8 @@ const SensitivityCalculator: React.FC<SensitivityCalculatorProps> = ({
         <Text fw={400} style={{ marginRight: "auto" }}>
           Sensitivity Calculator
         </Text>
-        <Divider orientation="vertical" />
-        <Group gap="xs" style={{ flex: 1, justifyContent: "left" }}>
-          <Switch
-            size="lg"
-            onLabel="Inch"
-            offLabel="CM"
-            color="gray"
-            checked={units === "Imperial"}
-            onChange={(event) =>
-              setConfig((prev) => ({
-                ...prev,
-                units: event.currentTarget.checked ? "Imperial" : "Metric",
-              }))
-            }
-          />
-        </Group>
-
         <Group gap="0" align="center">
-          <Text fz="sm">Enter Mouse DPI:</Text>
+          <Text fz="sm" style={{ paddingRight: 4 }}>Mouse DPI </Text>
           <NumberInput
             variant="filled"
             size="xs"

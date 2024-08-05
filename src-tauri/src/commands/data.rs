@@ -12,6 +12,8 @@ pub struct ConfigFileInfo {
 pub const PKG_ENDPOINT: &str = "https://client.update.tamods.org/"; // The endpoint for downloading packages
 pub const PKG_CFG_FILE: &str = "packageconfig.yaml"; // File that contains package list and dependencies
 
+pub const CREATE_NO_WINDOW: u32 = 0x08000000;   // Flag to create a window with no UI
+
 pub static DOCS_DIR: Lazy<PathBuf> = Lazy::new(|| {
     // The user's documents directory
     dirs::document_dir().expect("Failed to get documents directory")
