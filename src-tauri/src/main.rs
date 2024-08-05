@@ -2,17 +2,20 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
-use commands::{ 
-    find_game_path::find_path,
-    packages::fetch_packages,
-    config_preset_manager::{ check_config, replace_config },
-    config_manager::{ fetch_config_files, update_ini_file },
-    package_downloader::download_package,
-    fetch_player_counts::fetch_players_online,
-    launch_game::launch_game,
+use commands::{
+    config_backup_manager::{backup_ini_files, delete_backup, get_backups, load_backup_ini_file},
+    config_manager::{fetch_config_files, update_ini_file},
+    config_preset_manager::{check_config, replace_config},
     directory_shortcuts::open_directory,
-    routes::{ delete_route_file, get_route_files, decode_route, python_route_decoder, check_python_installed },
-    config_backup_manager::{ load_backup_ini_file, backup_ini_files, delete_backup, get_backups }
+    fetch_player_counts::fetch_players_online,
+    find_game_path::find_path,
+    launch_game::launch_game,
+    package_downloader::download_package,
+    packages::fetch_packages,
+    routes::{
+        check_python_installed, decode_route, delete_route_file, get_route_files,
+        python_route_decoder,
+    },
 };
 
 fn main() {
@@ -22,7 +25,8 @@ fn main() {
     tauri::Builder::default()
         .setup(|app| {
             #[cfg(desktop)]
-            app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
             Ok(())
         })
         .plugin(tauri_plugin_dialog::init())
@@ -49,8 +53,7 @@ fn main() {
             backup_ini_files,
             delete_backup,
             get_backups,
-            
-            ])
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

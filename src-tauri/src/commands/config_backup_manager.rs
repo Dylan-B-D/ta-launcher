@@ -1,12 +1,16 @@
-use std::{fs, io::ErrorKind, time::SystemTime};
+use super::data::{get_app_local_data_dir, CONFIG_DIR};
 use chrono::Local;
 use serde::Serialize;
+use std::{fs, io::ErrorKind, time::SystemTime};
 use tauri::AppHandle;
-use super::data::{get_app_local_data_dir, CONFIG_DIR};
 
 /// Backup the INI files
 #[tauri::command]
-pub fn backup_ini_files(handle: AppHandle, backup_name: String, selected_files: Vec<String>) -> Result<(), String> {
+pub fn backup_ini_files(
+    handle: AppHandle,
+    backup_name: String,
+    selected_files: Vec<String>,
+) -> Result<(), String> {
     let backup_dir = get_app_local_data_dir(&handle).join("config_backups");
     let _ = fs::create_dir_all(&backup_dir);
 
@@ -24,7 +28,9 @@ pub fn backup_ini_files(handle: AppHandle, backup_name: String, selected_files: 
 pub fn load_backup_ini_file(handle: AppHandle, backup_name: String) -> Result<(), String> {
     let backup_dir = get_app_local_data_dir(&handle).join("config_backups");
 
-    for entry in fs::read_dir(&backup_dir).map_err(|err| format!("Failed to read backup directory: {}", err))? {
+    for entry in fs::read_dir(&backup_dir)
+        .map_err(|err| format!("Failed to read backup directory: {}", err))?
+    {
         let entry = entry.map_err(|err| format!("Failed to read directory entry: {}", err))?;
         let file_name = entry.file_name();
         let file_name_str = file_name.to_string_lossy();
@@ -41,15 +47,26 @@ pub fn load_backup_ini_file(handle: AppHandle, backup_name: String) -> Result<()
                         .map_err(|err| format!("Failed to load backup file: {}", err))?;
                     continue;
                 }
-                Err(e) => return Err(format!("Failed to get metadata for {}: {}", dest_path.display(), e)),
+                Err(e) => {
+                    return Err(format!(
+                        "Failed to get metadata for {}: {}",
+                        dest_path.display(),
+                        e
+                    ))
+                }
             };
 
             let readonly = dest_metadata.permissions().readonly();
             if readonly {
                 let mut perms = dest_metadata.permissions();
                 perms.set_readonly(false);
-                fs::set_permissions(&dest_path, perms)
-                    .map_err(|err| format!("Failed to change permissions for {}: {}", dest_path.display(), err))?;
+                fs::set_permissions(&dest_path, perms).map_err(|err| {
+                    format!(
+                        "Failed to change permissions for {}: {}",
+                        dest_path.display(),
+                        err
+                    )
+                })?;
             }
 
             // Copy the file from the backup
@@ -60,8 +77,13 @@ pub fn load_backup_ini_file(handle: AppHandle, backup_name: String) -> Result<()
             if readonly {
                 let mut perms = dest_metadata.permissions();
                 perms.set_readonly(true);
-                fs::set_permissions(&dest_path, perms)
-                    .map_err(|err| format!("Failed to revert permissions for {}: {}", dest_path.display(), err))?;
+                fs::set_permissions(&dest_path, perms).map_err(|err| {
+                    format!(
+                        "Failed to revert permissions for {}: {}",
+                        dest_path.display(),
+                        err
+                    )
+                })?;
             }
         }
     }
@@ -73,7 +95,9 @@ pub fn load_backup_ini_file(handle: AppHandle, backup_name: String) -> Result<()
 pub fn delete_backup(handle: AppHandle, backup_name: String) -> Result<(), String> {
     let backup_dir = get_app_local_data_dir(&handle).join("config_backups");
 
-    for entry in fs::read_dir(&backup_dir).map_err(|err| format!("Failed to read backup directory: {}", err))? {
+    for entry in fs::read_dir(&backup_dir)
+        .map_err(|err| format!("Failed to read backup directory: {}", err))?
+    {
         let entry = entry.map_err(|err| format!("Failed to read directory entry: {}", err))?;
         let file_name = entry.file_name();
         let file_name_str = file_name.to_string_lossy();
@@ -81,11 +105,13 @@ pub fn delete_backup(handle: AppHandle, backup_name: String) -> Result<(), Strin
             let file_path = backup_dir.join(&file_name);
 
             // Check if the file is read-only and change permissions if necessary
-            let metadata = fs::metadata(&file_path).map_err(|err| format!("Failed to get file metadata: {}", err))?;
+            let metadata = fs::metadata(&file_path)
+                .map_err(|err| format!("Failed to get file metadata: {}", err))?;
             if metadata.permissions().readonly() {
                 let mut permissions = metadata.permissions();
                 permissions.set_readonly(false);
-                fs::set_permissions(&file_path, permissions).map_err(|err| format!("Failed to change file permissions: {}", err))?;
+                fs::set_permissions(&file_path, permissions)
+                    .map_err(|err| format!("Failed to change file permissions: {}", err))?;
             }
 
             fs::remove_file(file_path)

@@ -1,45 +1,46 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Stepper, Group, Space, Center, Title, Text, Grid, rem, Paper, Card } from "@mantine/core";
-import { IconAlertCircle, IconCircleX } from '@tabler/icons-react';
-import { ConfigCard } from "../ConfigCard";
-import { configPresets } from "../../data/configPresets";
+import {
+  Container,
+  Button,
+  Stepper,
+  Group,
+  Center,
+  Title,
+  Text,
+  rem,
+  Paper,
+} from "@mantine/core";
+import { IconAlertCircle, IconCircleX } from "@tabler/icons-react";
 import { FirstTimeSetupProps, Notification } from "../../interfaces";
-import { iniFields, inputIniFields } from "../../data/iniFields";
-import ConfigSettingsTable from "../ConfigSettingsTable";
-import SensitivityCalculator from "../SensitivityCalculator";
+
 import { GamePathStep } from "../GamePathStep";
 import NotificationPopup from "../NotificationPopup";
 import LaunchOptions from "../LaunchOptionsStep";
-import { checkAndFindGamePath, fetchConfigFiles, findGamePath, handleInputChange, handleSensitivityChange } from "../../utils/utils";
+import { checkAndFindGamePath, findGamePath } from "../../utils/utils";
 import PackagesTable from "../PackageTable";
 import { useDownloadContext } from "../../contexts/DownloadContext";
 import { useConfig } from "../../contexts/ConfigContext";
 import UsefulResources from "../UsefulResources";
 import DownloadProgressIndicator from "../DownloadProgressIndicator";
-import { IoOpenOutline } from "react-icons/io5";
-import { invoke } from "@tauri-apps/api/core";
+import ConfigStep from "../ConfigStep";
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
   const [active, setActive] = useState(0);
   const [gamePathError, setGamePathError] = useState(false);
-  const [iniValues, setIniValues] = useState<{ [key: string]: boolean | number }>({});
-  const allFields = [...iniFields, ...inputIniFields];
-  const third = Math.ceil(allFields.length / 3); // Divides fields into 3 columns
   const { getQueue } = useDownloadContext();
   const { config, setConfig, saveConfig } = useConfig();
   const queueLength = getQueue().length;
   const [notification, setNotification] = useState<Notification>({
     visible: false,
-    message: '',
-    title: '',
-    color: '',
+    message: "",
+    title: "",
+    color: "",
     icon: null,
   });
 
   // Initilize: Game Path, and Config Files
   useEffect(() => {
     findGamePath(setConfig);
-    fetchConfigFiles(setIniValues);
   }, []);
 
   const handleSetup = async (e: React.FormEvent) => {
@@ -62,8 +63,10 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     const emptyFields = Object.entries(config)
       .filter(([key, value]) => {
         if (key === "launchArgs") return false;
-        if (key === "customServerIP" && config.loginServer !== "Custom") return false;
-        if (key === "customDLLPath" && config.dllVersion !== "Custom") return false;
+        if (key === "customServerIP" && config.loginServer !== "Custom")
+          return false;
+        if (key === "customDLLPath" && config.dllVersion !== "Custom")
+          return false;
         return value === "";
       })
       .map(([key]) => key);
@@ -86,7 +89,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
   useEffect(() => {
     if (active === 1) {
-      setGamePathError(config.gamePath.trim() === '');
+      setGamePathError(config.gamePath.trim() === "");
     }
   }, [active, config.gamePath]);
 
@@ -100,14 +103,6 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
     setActive((current) => (current > 0 ? current - 1 : current));
   };
 
-  const openDirectory = async (pathType: string) => {
-    try {
-      await invoke("open_directory", { pathType });
-    } catch (error) {
-      console.error("Failed to open directory:", error);
-    }
-  };
-
   return (
     <>
       {/* Notification Popup */}
@@ -116,26 +111,43 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
         message={notification.message}
         title={notification.title}
         color={notification.color}
-        onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
+        onClose={() => setNotification((prev) => ({ ...prev, visible: false }))}
         icon={notification.icon}
       />
-      <Container bg={"radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
-        "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)), " +
-        "radial-gradient(circle at top left, rgba(120, 128, 128, 0.6), transparent), " +
-        "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.6), transparent), " +
-        "url('/images/bg1.jpg') no-repeat center center / cover"}
-        p={0} fluid style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          <Stepper p={"md"} color="teal" size="sm" active={active} onStepClick={setActive}>
-
+      <Container
+        bg={
+          "radial-gradient(circle at top center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), " +
+          "radial-gradient(circle at bottom center, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)), " +
+          "radial-gradient(circle at top left, rgba(120, 128, 128, 0.6), transparent), " +
+          "radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.6), transparent), " +
+          "url('/images/bg1.jpg') no-repeat center center / cover"
+        }
+        p={0}
+        fluid
+        style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+      >
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          <Stepper
+            p={"md"}
+            color="teal"
+            size="sm"
+            active={active}
+            onStepClick={setActive}
+          >
             {/* ----------- Welcome ----------- */}
             <Stepper.Step label="Welcome">
-              <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%' }}>
+              <Center
+                style={{
+                  flexDirection: "column",
+                  textAlign: "center",
+                  height: "100%",
+                }}
+              >
                 <Title order={2}>First-Time Setup</Title>
                 <Text size="sm" c="dimmed">
-                  Any options changed here can be modified later.
-                  For additional assistance, ask for help in one of the
-                  following Discord servers or message 'evxl.' on Discord.
+                  Any options changed here can be modified later. For additional
+                  assistance, ask for help in one of the following Discord
+                  servers or message 'evxl.' on Discord.
                 </Text>
                 <UsefulResources />
               </Center>
@@ -145,13 +157,16 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             <Stepper.Step
               label="Game Path"
               color={gamePathError ? "red" : "teal"}
-              completedIcon={gamePathError ? <IconCircleX style={{ width: rem(20), height: rem(20) }} /> : undefined}
+              completedIcon={
+                gamePathError ? (
+                  <IconCircleX style={{ width: rem(20), height: rem(20) }} />
+                ) : undefined
+              }
             >
               <GamePathStep
                 gamePathError={gamePathError}
                 setGamePathError={setGamePathError}
               />
-
             </Stepper.Step>
 
             {/* ----------- Packages ----------- */}
@@ -161,87 +176,19 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
             {/* ----------- Launch Options ----------- */}
             <Stepper.Step label="Options">
-              <Paper p='lg' bg='rgba(255,255,255,0.04)' radius='lg'>
+              <Paper p="lg" bg="rgba(255,255,255,0.04)" radius="lg">
                 <LaunchOptions />
               </Paper>
             </Stepper.Step>
 
             {/* ----------- Config Options ----------- */}
             <Stepper.Step label="Config">
-              <Center style={{ flexDirection: 'column', textAlign: 'center', height: '100%', width: '100%' }}>
-                <Text c="dimmed" size="sm">
-                  <strong>Tribes.ini Presets:</strong> Select a preset to apply (if you want).
-                </Text>
-                <Text c="dimmed" size="sm">
-                  *INI files are graphics config files that let you change more options that in-game.
-                </Text>
-                <Grid mt="xs" gutter="xs">
-                  {configPresets.map((config) => (
-                    <Grid.Col span={4} key={config.id}>
-                      <ConfigCard
-                        title={config.displayName}
-                        author={config.author}
-                        description={config.description}
-                        configId={config.id}
-                        setNotification={setNotification}
-                        fetchConfigFiles={async () => {
-                          await fetchConfigFiles(setIniValues);
-                        }}
-                      />
-                    </Grid.Col>
-                  ))}
-                </Grid>
-                <Space h="xs" />
-                <Group align="flex-start" gap='sm' grow style={{ width: '100%' }}>
-                  <ConfigSettingsTable
-                    fields={iniFields.slice(0, third)}
-                    iniValues={iniValues}
-                    handleInputChange={(key, value) => handleInputChange('main', key, value, setIniValues)}
-                  />
-                  <ConfigSettingsTable
-                    fields={iniFields.slice(third, third * 2)}
-                    iniValues={iniValues}
-                    handleInputChange={(key, value) => handleInputChange('main', key, value, setIniValues)}
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <ConfigSettingsTable
-                      fields={inputIniFields}
-                      iniValues={iniValues}
-                      handleInputChange={(key, value) => handleInputChange('input', key, value, setIniValues)}
-                    />
-                    <div style={{ marginTop: '0.7rem', flexShrink: 0 }}>
-                      <Card
-                        className="card-custom"
-                        radius='md'
-                        shadow="sm"
-                        padding="1.64rem"
-                        onClick={() => openDirectory("config")}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <Group justify='space-between'>
-                          <Text fz={16} fw={500}>Config Folder</Text>
-                          <IoOpenOutline style={{ fontSize: '24px' }} />
-                        </Group>
-                      </Card>
-                    </div>
-                  </div>
-                </Group>
-
-                <SensitivityCalculator
-                  mouseSensitivity={iniValues.MouseSensitivity as number}
-                  FOVSetting={iniValues.FOVSetting as number}
-                  onSensitivityChange={(value) => handleSensitivityChange(value, iniValues, config, (fileKey, key, value) => handleInputChange(fileKey, key, value, setIniValues))}
-                />
-
-              </Center>
+              <ConfigStep />
             </Stepper.Step>
           </Stepper>
         </div>
+
+        {/* ----------- Footer ----------- */}
         <Group
           p="xs"
           style={{
@@ -250,8 +197,8 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             backgroundColor: "rgba(128, 128, 128, 0.04)",
             backdropFilter: "blur(6px)",
             borderTop: "solid 1px rgba(128, 128, 128, 0.25)",
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           {queueLength > 0 ? (
@@ -260,15 +207,42 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
             <div style={{ width: 30 }}></div> // Placeholder to maintain space
           )}
           <Group>
-            <Button color="cyan" radius="xl" variant="subtle" size="sm" onClick={prevStep}>Back</Button>
+            <Button
+              color="cyan"
+              radius="xl"
+              variant="subtle"
+              size="sm"
+              onClick={prevStep}
+            >
+              Back
+            </Button>
             {active === 4 ? (
-              <Button radius="md" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={handleSetup} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }} >Finish</Button>
+              <Button
+                radius="md"
+                variant="gradient"
+                gradient={{ from: "cyan", to: "teal", deg: 253 }}
+                size="sm"
+                onClick={handleSetup}
+                style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)" }}
+              >
+                Finish
+              </Button>
             ) : (
-              <Button radius="md" variant="gradient" gradient={{ from: 'cyan', to: 'teal', deg: 253 }} size="sm" onClick={nextStep} style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' }}>Next</Button>
+              <Button
+                radius="md"
+                variant="gradient"
+                gradient={{ from: "cyan", to: "teal", deg: 253 }}
+                size="sm"
+                onClick={nextStep}
+                style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)" }}
+              >
+                Next
+              </Button>
             )}
           </Group>
         </Group>
-      </Container></>
+      </Container>
+    </>
   );
 };
 

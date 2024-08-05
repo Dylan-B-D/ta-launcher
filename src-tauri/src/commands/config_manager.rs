@@ -1,8 +1,8 @@
+use super::data::{CONFIG_DIR, CONFIG_FILES};
 use std::fs::{self, copy, create_dir_all};
 use std::io::Read;
 use std::path::PathBuf;
 use tauri::{path::BaseDirectory, Manager};
-use super::data::{CONFIG_DIR, CONFIG_FILES};
 
 /// Store the content and permissions of a config file.
 #[derive(serde::Serialize)]
@@ -20,29 +20,37 @@ pub struct ConfigFilesResult {
 
 /// Fetch the tribes.ini and TribesInput.ini files from the user's documents directory.
 /// Additionally, check and copy the default files if they don't exist.
-/// 
+///
 /// # Returns
-/// 
+///
 /// The content and permissions of the tribes.ini and TribesInput.ini files.
 #[tauri::command]
 pub fn fetch_config_files(handle: tauri::AppHandle) -> Result<ConfigFilesResult, String> {
     // Ensure the config directory exists
     if !CONFIG_DIR.exists() {
-        create_dir_all(&*CONFIG_DIR).map_err(|e| format!("Failed to create config directory: {}", e))?;
+        create_dir_all(&*CONFIG_DIR)
+            .map_err(|e| format!("Failed to create config directory: {}", e))?;
     }
 
     // Check and copy default files if they don't exist
     for file_info in &CONFIG_FILES {
         let target_path = CONFIG_DIR.join(file_info.name);
-        let default_path = handle.path().resolve(file_info.default_path, BaseDirectory::Resource)
+        let default_path = handle
+            .path()
+            .resolve(file_info.default_path, BaseDirectory::Resource)
             .map_err(|e| e.to_string())?;
 
         if !default_path.exists() {
-            return Err(format!("Default {} file not found: {}", file_info.name, default_path.display()));
+            return Err(format!(
+                "Default {} file not found: {}",
+                file_info.name,
+                default_path.display()
+            ));
         }
 
         if !target_path.exists() {
-            copy(&default_path, &target_path).map_err(|e| format!("Failed to copy {}: {}", file_info.name, e))?;
+            copy(&default_path, &target_path)
+                .map_err(|e| format!("Failed to copy {}: {}", file_info.name, e))?;
         }
     }
 
@@ -57,13 +65,13 @@ pub fn fetch_config_files(handle: tauri::AppHandle) -> Result<ConfigFilesResult,
 }
 
 /// Update the tribes.ini file with the specified changes.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `changes` - The changes to apply to the tribes.ini file.
-/// 
+///
 /// # Returns
-/// 
+///
 /// An error message if the operation failed.
 #[tauri::command]
 pub fn update_ini_file(file: String, changes: Vec<(String, String)>) -> Result<(), String> {
@@ -73,7 +81,13 @@ pub fn update_ini_file(file: String, changes: Vec<(String, String)>) -> Result<(
     let mut lines: Vec<String> = content.split('\n').map(String::from).collect();
 
     // Check if the file is read-only
-    let metadata = fs::metadata(&file_path).map_err(|e| format!("Failed to get metadata for file {}: {}", file_path.display(), e))?;
+    let metadata = fs::metadata(&file_path).map_err(|e| {
+        format!(
+            "Failed to get metadata for file {}: {}",
+            file_path.display(),
+            e
+        )
+    })?;
     let mut was_read_only = false;
 
     if metadata.permissions().readonly() {
@@ -81,7 +95,13 @@ pub fn update_ini_file(file: String, changes: Vec<(String, String)>) -> Result<(
         // Make the file writable
         let mut permissions = metadata.permissions();
         permissions.set_readonly(false);
-        fs::set_permissions(&file_path, permissions).map_err(|e| format!("Failed to set permissions for file {}: {}", file_path.display(), e))?;
+        fs::set_permissions(&file_path, permissions).map_err(|e| {
+            format!(
+                "Failed to set permissions for file {}: {}",
+                file_path.display(),
+                e
+            )
+        })?;
     }
 
     for (key, new_value) in changes {
@@ -102,13 +122,22 @@ pub fn update_ini_file(file: String, changes: Vec<(String, String)>) -> Result<(
     }
 
     content = lines.join("\n");
-    fs::write(&file_path, content).map_err(|e| format!("Failed to write to file {}: {}", file_path.display(), e))?;
+    fs::write(&file_path, content)
+        .map_err(|e| format!("Failed to write to file {}: {}", file_path.display(), e))?;
 
     // Restore the read-only permission if it was initially read-only
     if was_read_only {
-        let mut permissions = fs::metadata(&file_path).map_err(|e| e.to_string())?.permissions();
+        let mut permissions = fs::metadata(&file_path)
+            .map_err(|e| e.to_string())?
+            .permissions();
         permissions.set_readonly(true);
-        fs::set_permissions(&file_path, permissions).map_err(|e| format!("Failed to restore permissions for file {}: {}", file_path.display(), e))?;
+        fs::set_permissions(&file_path, permissions).map_err(|e| {
+            format!(
+                "Failed to restore permissions for file {}: {}",
+                file_path.display(),
+                e
+            )
+        })?;
     }
 
     Ok(())
@@ -124,15 +153,23 @@ fn read_config_file(path: &PathBuf) -> Result<ConfigFile, String> {
 
 /// Read the content of a file.
 fn read_file(path: &PathBuf) -> Result<String, String> {
-    let mut file = fs::File::open(path).map_err(|e| format!("Failed to open file {}: {}", path.display(), e))?;
+    let mut file = fs::File::open(path)
+        .map_err(|e| format!("Failed to open file {}: {}", path.display(), e))?;
     let mut content = String::new();
-    file.read_to_string(&mut content).map_err(|e| format!("Failed to read file {}: {}", path.display(), e))?;
+    file.read_to_string(&mut content)
+        .map_err(|e| format!("Failed to read file {}: {}", path.display(), e))?;
     Ok(content)
 }
 
 /// Get the permissions of a file.
 fn get_permissions(path: &PathBuf) -> Result<String, String> {
-    let metadata = fs::metadata(path).map_err(|e| format!("Failed to get metadata for {}: {}", path.display(), e))?;
+    let metadata = fs::metadata(path)
+        .map_err(|e| format!("Failed to get metadata for {}: {}", path.display(), e))?;
     let permissions = metadata.permissions();
-    Ok(if permissions.readonly() { "readonly" } else { "read-write" }.to_string())
+    Ok(if permissions.readonly() {
+        "readonly"
+    } else {
+        "read-write"
+    }
+    .to_string())
 }

@@ -1,9 +1,12 @@
-use std::{collections::{HashMap, HashSet}, future::Future};
+use super::data::{PKG_CFG_FILE, PKG_ENDPOINT};
 use futures::future::join_all;
+use futures::FutureExt;
 use reqwest;
 use serde::{Deserialize, Serialize};
-use futures::FutureExt;
-use super::data::{PKG_ENDPOINT, PKG_CFG_FILE};
+use std::{
+    collections::{HashMap, HashSet},
+    future::Future,
+};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[allow(non_snake_case)]
@@ -67,7 +70,8 @@ pub async fn fetch_packages() -> Result<String, String> {
 
     let results = join_all(update_futures).await;
 
-    for (result, (_package_name, package_info)) in results.into_iter().zip(package_tree.iter_mut()) {
+    for (result, (_package_name, package_info)) in results.into_iter().zip(package_tree.iter_mut())
+    {
         match result {
             Ok(Ok(updated_info)) => *package_info = updated_info,
             Ok(Err(e)) => return Err(e),
@@ -84,7 +88,8 @@ pub async fn fetch_packages() -> Result<String, String> {
 
 fn calculate_total_size(node: &PackageNode) -> u64 {
     let own_size = node.package.size.unwrap_or(0);
-    let dependencies_size: u64 = node.dependencies
+    let dependencies_size: u64 = node
+        .dependencies
         .values()
         .map(|dep_node| calculate_total_size(dep_node))
         .sum();
@@ -104,10 +109,10 @@ async fn fetch_package_tree() -> Result<HashMap<String, PackageNode>, String> {
     let response = reqwest::get(yaml_url).await.map_err(|e| e.to_string())?;
     let yaml_content = response.text().await.map_err(|e| e.to_string())?;
 
-    let packages: PackageList = serde_yaml::from_str(&yaml_content)
-        .map_err(|e| e.to_string())?;
+    let packages: PackageList = serde_yaml::from_str(&yaml_content).map_err(|e| e.to_string())?;
 
-    let mut package_map: HashMap<String, Package> = packages.packages
+    let mut package_map: HashMap<String, Package> = packages
+        .packages
         .iter()
         .map(|p| (p.id.clone(), Package::default()))
         .collect();
@@ -121,11 +126,18 @@ async fn fetch_package_tree() -> Result<HashMap<String, PackageNode>, String> {
             default_package.version = package.version;
             default_package.objectKey = package.objectKey;
             default_package.size = package.size.or(default_package.size);
-            default_package.dependencies = package.dependencies.or(default_package.dependencies.clone());
-            default_package.dependencyCount = package.dependencyCount.or(default_package.dependencyCount);
-            default_package.isTopLevelPackage = package.isTopLevelPackage.or(default_package.isTopLevelPackage);
+            default_package.dependencies = package
+                .dependencies
+                .or(default_package.dependencies.clone());
+            default_package.dependencyCount =
+                package.dependencyCount.or(default_package.dependencyCount);
+            default_package.isTopLevelPackage = package
+                .isTopLevelPackage
+                .or(default_package.isTopLevelPackage);
             default_package.totalSize = package.totalSize.or(default_package.totalSize);
-            default_package.lastModified = package.lastModified.or(default_package.lastModified.clone());
+            default_package.lastModified = package
+                .lastModified
+                .or(default_package.lastModified.clone());
             default_package.hash = package.hash.or(default_package.hash.clone());
         }
     }
@@ -141,14 +153,18 @@ async fn fetch_package_tree() -> Result<HashMap<String, PackageNode>, String> {
         dependency_map.insert(package.id.clone(), dependencies);
     }
 
-    let root_packages: Vec<_> = dependency_map.keys()
+    let root_packages: Vec<_> = dependency_map
+        .keys()
         .filter(|pkg_id| !all_dependencies.contains(*pkg_id))
         .cloned()
         .collect();
 
     let mut tree = HashMap::new();
     for root in root_packages {
-        tree.insert(root.clone(), build_package_node(&root, &package_map, &dependency_map));
+        tree.insert(
+            root.clone(),
+            build_package_node(&root, &package_map, &dependency_map),
+        );
     }
 
     Ok(tree)
@@ -156,7 +172,7 @@ async fn fetch_package_tree() -> Result<HashMap<String, PackageNode>, String> {
 fn build_package_node(
     package_id: &str,
     package_map: &HashMap<String, Package>,
-    dependency_map: &HashMap<String, Vec<String>>
+    dependency_map: &HashMap<String, Vec<String>>,
 ) -> PackageNode {
     let package = package_map.get(package_id).unwrap().clone();
     let mut dependencies = HashMap::new();
@@ -165,10 +181,13 @@ fn build_package_node(
         for dep in deps {
             // Only include the package information for dependencies, not their nested dependencies
             if let Some(dep_package) = package_map.get(dep) {
-                dependencies.insert(dep.clone(), PackageNode {
-                    package: dep_package.clone(),
-                    dependencies: HashMap::new(),
-                });
+                dependencies.insert(
+                    dep.clone(),
+                    PackageNode {
+                        package: dep_package.clone(),
+                        dependencies: HashMap::new(),
+                    },
+                );
             }
         }
     }
@@ -179,7 +198,9 @@ fn build_package_node(
     }
 }
 
-fn update_package_metadata(mut package_node: PackageNode) -> impl Future<Output = Result<PackageNode, String>> + Send {
+fn update_package_metadata(
+    mut package_node: PackageNode,
+) -> impl Future<Output = Result<PackageNode, String>> + Send {
     async move {
         // Update metadata for the current package
         let updated_package = fetch_package_metadata(package_node.package.clone()).await?;
@@ -194,7 +215,10 @@ fn update_package_metadata(mut package_node: PackageNode) -> impl Future<Output 
 
         let results = join_all(update_futures).await;
 
-        for (result, (_dep_name, dep_node)) in results.into_iter().zip(package_node.dependencies.iter_mut()) {
+        for (result, (_dep_name, dep_node)) in results
+            .into_iter()
+            .zip(package_node.dependencies.iter_mut())
+        {
             match result {
                 Ok(Ok(updated_node)) => *dep_node = updated_node,
                 Ok(Err(e)) => return Err(e),
@@ -203,7 +227,8 @@ fn update_package_metadata(mut package_node: PackageNode) -> impl Future<Output 
         }
 
         Ok(package_node)
-    }.boxed()
+    }
+    .boxed()
 }
 
 async fn fetch_package_metadata(mut package: Package) -> Result<Package, String> {
@@ -211,17 +236,25 @@ async fn fetch_package_metadata(mut package: Package) -> Result<Package, String>
     let client = reqwest::Client::new();
     let response = client.head(url).send().await.map_err(|e| e.to_string())?;
 
-    package.size = Some(response.headers().get(reqwest::header::CONTENT_LENGTH)
+    package.size = Some(
+        response
+            .headers()
+            .get(reqwest::header::CONTENT_LENGTH)
             .and_then(|ct| ct.to_str().ok())
             .and_then(|ct_str| ct_str.parse::<u64>().ok())
-            .unwrap_or(0));
+            .unwrap_or(0),
+    );
 
-    package.lastModified = response.headers().get(reqwest::header::LAST_MODIFIED)
+    package.lastModified = response
+        .headers()
+        .get(reqwest::header::LAST_MODIFIED)
         .and_then(|lm| lm.to_str().ok())
         .map(String::from)
         .or(Some("unknown".to_string()));
 
-        package.hash = response.headers().get(reqwest::header::ETAG)
+    package.hash = response
+        .headers()
+        .get(reqwest::header::ETAG)
         .and_then(|e| e.to_str().ok())
         .map(|s| s.trim_matches('"').to_string())
         .or(Some("unknown".to_string()));

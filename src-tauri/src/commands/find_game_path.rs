@@ -14,9 +14,9 @@ pub fn find_path() -> Option<String> {
 }
 
 /// Get the path to the Steam installation.
-/// 
+///
 /// # Returns
-/// 
+///
 /// The path to the Steam installation.
 fn get_steam_path() -> Option<PathBuf> {
     let hkey = RegKey::predef(HKEY_CURRENT_USER)
@@ -29,13 +29,13 @@ fn get_steam_path() -> Option<PathBuf> {
 }
 
 /// Get the possible directories where the game might be installed.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `steam_path` - The path to the Steam installation.
-/// 
+///
 /// # Returns
-/// 
+///
 /// A list of possible directories where the game might be installed.
 fn get_possible_directories(steam_path: &Path) -> Vec<PathBuf> {
     let mut possible_dirs = vec![get_default_steam_library(steam_path)];
@@ -44,13 +44,13 @@ fn get_possible_directories(steam_path: &Path) -> Vec<PathBuf> {
 }
 
 /// Get the default Steam library path.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `steam_path` - The path to the Steam installation.
-/// 
+///
 /// # Returns
-/// 
+///
 /// The default Steam library path.
 fn get_default_steam_library(steam_path: &Path) -> PathBuf {
     steam_path.join(format!(
@@ -60,17 +60,18 @@ fn get_default_steam_library(steam_path: &Path) -> PathBuf {
 }
 
 /// Get the additional Steam library paths.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `steam_path` - The path to the Steam installation.
-/// 
+///
 /// # Returns
-/// 
+///
 /// A list of additional Steam library paths.
 fn get_additional_libraries(steam_path: &Path) -> Vec<PathBuf> {
-    let library_folders_path = steam_path.join(format!("steamapps{}libraryfolders.vdf", MAIN_SEPARATOR));
-    
+    let library_folders_path =
+        steam_path.join(format!("steamapps{}libraryfolders.vdf", MAIN_SEPARATOR));
+
     let content = match fs::read_to_string(&library_folders_path) {
         Ok(content) => content,
         Err(e) => {
@@ -81,7 +82,8 @@ fn get_additional_libraries(steam_path: &Path) -> Vec<PathBuf> {
 
     let libraries = parse_vdf(&content);
 
-    libraries.into_iter()
+    libraries
+        .into_iter()
         .filter_map(|(key, value)| {
             if key.parse::<usize>().is_ok() {
                 value.get("path").map(|path| {
@@ -98,13 +100,13 @@ fn get_additional_libraries(steam_path: &Path) -> Vec<PathBuf> {
 }
 
 /// Parse the content of a VDF file.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `content` - The content of the VDF file.
-/// 
+///
 /// # Returns
-/// 
+///
 /// A map of maps containing the parsed content.
 fn parse_vdf(content: &str) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
@@ -139,13 +141,13 @@ fn parse_vdf(content: &str) -> HashMap<String, HashMap<String, String>> {
 }
 
 /// Find the Tribes Ascend executable in the given directories.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `possible_dirs` - The directories to search in.
-/// 
+///
 /// # Returns
-/// 
+///
 /// The path to the Tribes Ascend executable.
 fn find_tribes_executable(possible_dirs: Vec<PathBuf>) -> Option<String> {
     for dir in possible_dirs {
@@ -162,11 +164,15 @@ fn find_tribes_executable(possible_dirs: Vec<PathBuf>) -> Option<String> {
 /// Capitalizes each word in the path to make it look more like a standard filesystem path
 fn capitalize_path(path: &Path) -> PathBuf {
     let components = path.iter().map(|component| {
-        component.to_str().unwrap_or("")
+        component
+            .to_str()
+            .unwrap_or("")
             .split_whitespace()
             .map(|word| {
                 let mut chars = word.chars();
-                chars.next().map_or(String::new(), |f| f.to_uppercase().collect::<String>() + chars.as_str())
+                chars.next().map_or(String::new(), |f| {
+                    f.to_uppercase().collect::<String>() + chars.as_str()
+                })
             })
             .collect::<Vec<String>>()
             .join(" ")

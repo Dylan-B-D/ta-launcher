@@ -15,29 +15,29 @@ td {
   position: relative;
   overflow: hidden;
   border-radius: 0 4px 4px 0 !important;
-  transition:
-    transform 150ms ease,
-    box-shadow 100ms ease;
+  transition: transform 150ms ease, box-shadow 100ms ease;
   padding: var(--mantine-spacing-xs);
   padding-left: calc(var(--mantine-spacing-xs) * 2);
-  background-image: linear-gradient(to right,
-      var(--mantine-color-dark-8),
-      var(--mantine-color-dark-8)) !important;
+  background-image: linear-gradient(
+    to right,
+    var(--mantine-color-dark-8),
+    var(--mantine-color-dark-8)
+  ) !important;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     width: 4px;
-    background-image: linear-gradient(0,
-        var(--mantine-color-teal-6),
-        var(--mantine-color-cyan-6));
+    background-image: linear-gradient(
+      0,
+      var(--mantine-color-teal-6),
+      var(--mantine-color-cyan-6)
+    );
   }
 }
-
-
 
 :root {
   --glow-color: rgba(97, 239, 255, 0.85);
@@ -94,7 +94,6 @@ td {
   text-shadow: none;
   animation: none;
 }
-
 
 .glowing-btn:hover .glowing-txt {
   animation: none;

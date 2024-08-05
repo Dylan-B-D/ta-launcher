@@ -105,7 +105,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
     // Replace the content of matching DLLs in the game folder with the chosen TAMods DLL if DLL version != "None"
     if dll_version != "None" {
         let mut replaced_dlls = Vec::new();
-    
+
         let original_dlls = fs::read_dir(&original_dll_path)
             .map_err(|e| format!("Failed to read originalDLLs directory: {}", e))?
             .filter_map(|entry| {
@@ -120,7 +120,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
             })
             .collect::<Vec<String>>();
         info!("Original DLLs found: {:?}", original_dlls);
-    
+
         // Replace the content of matching DLLs in the game folder
         for dll_name in &original_dlls {
             let game_dll_path = match game_folder {
@@ -132,7 +132,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 let original_content = fs::read(&game_dll_path)
                     .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
                 replaced_dlls.push((game_dll_path.clone(), original_content));
-    
+
                 // Replace with TAMods DLL content
                 fs::write(&game_dll_path, &tamods_dll_content)
                     .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
@@ -207,7 +207,7 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 Err(e) => {
                     eprintln!("Failed to launch game: {}", e);
                     Err(format!("Failed to launch game: {}", e))
-                },
+                }
             }
         }
         "Steam" => {
@@ -269,16 +269,15 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                 Err(e) => {
                     eprintln!("Failed to launch game through Steam: {}", e);
                     Err(format!("Failed to launch game through Steam: {}", e))
-                },
+                }
             }
         }
         _ => {
             println!("Invalid launch method specified.");
             Err("Invalid launch method".to_string())
-        },
+        }
     }
 }
-
 
 /// Check if the game is running.
 ///

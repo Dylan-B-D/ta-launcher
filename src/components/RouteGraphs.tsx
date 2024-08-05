@@ -1,12 +1,11 @@
-import React from 'react';
-import Plot, { PlotParams } from 'react-plotly.js';
+import React from "react";
+import Plot, { PlotParams } from "react-plotly.js";
 
 interface Point {
   x: number;
   y: number;
   z: number;
 }
-
 
 type LocationsArray = Point[][];
 
@@ -19,23 +18,22 @@ const LocationChart: React.FC<LocationChartProps> = ({ locations }) => {
     return <p>No location data available.</p>;
   }
 
-
-  const data: PlotParams['data'] = locations.map((loc, index) => ({
-    x: loc.map(point => point.x),
-    y: loc.map(point => point.y),
-    z: loc.map(point => point.z),
-    mode: 'lines',
-    type: 'scatter3d',
+  const data: PlotParams["data"] = locations.map((loc, index) => ({
+    x: loc.map((point) => point.x),
+    y: loc.map((point) => point.y),
+    z: loc.map((point) => point.z),
+    mode: "lines",
+    type: "scatter3d",
     line: {
-        width: 4,
-      },
+      width: 4,
+    },
     marker: {
       line: {
         width: 2,
-        color: `rgba(75, 192, 192, ${0.2 + (index * 0.1) % 1})`,
+        color: `rgba(75, 192, 192, ${0.2 + ((index * 0.1) % 1)})`,
       },
     },
-    name: `Route ${index + 1}`
+    name: `Route ${index + 1}`,
   }));
 
   const layout = {
@@ -45,30 +43,28 @@ const LocationChart: React.FC<LocationChartProps> = ({ locations }) => {
       l: 0,
       r: 0,
       b: 0,
-      t: 0
+      t: 0,
     },
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
+    paper_bgcolor: "rgba(0,0,0,0)",
+    plot_bgcolor: "rgba(0,0,0,0)",
     scene: {
       xaxis: {
-        title: 'X Axis',
-        color: 'rgba(0,0,0,0)',
+        title: "X Axis",
+        color: "rgba(0,0,0,0)",
       },
       yaxis: {
-        title: 'Y Axis',
-        color: 'rgba(0,0,0,0)',
+        title: "Y Axis",
+        color: "rgba(0,0,0,0)",
       },
       zaxis: {
-        title: 'Z Axis',
-        color: 'rgba(0,0,0,0)',
+        title: "Z Axis",
+        color: "rgba(0,0,0,0)",
       },
-      aspectratio: { x: 1, y: 1, z: 0.30 }
-    }
+      aspectratio: { x: 1, y: 1, z: 0.3 },
+    },
   };
-  
-  
+
   return <Plot data={data} layout={layout} />;
-  
 };
 
 export default LocationChart;

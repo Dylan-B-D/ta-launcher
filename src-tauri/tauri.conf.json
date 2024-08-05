@@ -1,6 +1,6 @@
 {
   "productName": "TA Launcher V2",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "identifier": "TALauncherV2",
   "build": {
     "beforeDevCommand": "bun run dev",

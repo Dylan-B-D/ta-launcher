@@ -2,7 +2,7 @@ cargo-features = ["profile-rustflags", "trim-paths"]
 
 [package]
 name = "ta-launcherv2"
-version = "0.1.0"
+version = "0.1.1"
 description = "TA Launcher v2"
 authors = ["dbd"]
 edition = "2021"
@@ -19,10 +19,10 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1.0.120"
 tauri-plugin-fs = "2.0.0-beta.11"
 tauri-plugin-dialog = "2.0.0-beta.11"
-dirs = "5.0.1"          # Used to get the user's home directory
-winreg = "0.52.0"       # Used to read steam install path
-env_logger = "0.11.4"   # Used to log to console
-log = "0.4.14"          # Used to log to console
+dirs = "5.0.1"                                           # Used to get the user's home directory
+winreg = "0.52.0"                                        # Used to read steam install path
+env_logger = "0.11.4"                                    # Used to log to console
+log = "0.4.14"                                           # Used to log to console
 serde_yaml = "0.9.34"
 reqwest = "0.12.5"
 tokio = { version = "1.39.1", features = ["full"] }
@@ -37,14 +37,14 @@ tauri-plugin-window-state = "2.0.0-rc"
 chrono = "0.4.38"
 
 [profile.dev]
-incremental = true # Compile your binary in smaller steps.
+incremental = true           # Compile your binary in smaller steps.
 rustflags = ["-Zthreads=16"] # Better compile performance.
 
 [profile.release]
-codegen-units = 1 # Allows LLVM to perform better optimization.
-lto = true # Enables link-time-optimizations.
-opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
-panic = "abort" # Higher performance by disabling panic handlers.
-strip = true # Ensures debug symbols are removed.
-trim-paths = "all" # Removes potentially privileged information from your binaries.
+codegen-units = 1                             # Allows LLVM to perform better optimization.
+lto = true                                    # Enables link-time-optimizations.
+opt-level = "s"                               # Prioritizes small binary size. Use `3` if you prefer speed.
+panic = "abort"                               # Higher performance by disabling panic handlers.
+strip = true                                  # Ensures debug symbols are removed.
+trim-paths = "all"                            # Removes potentially privileged information from your binaries.
 rustflags = ["-Cdebuginfo=0", "-Zthreads=16"] # Better compile performance.
