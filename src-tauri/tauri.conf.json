@@ -41,7 +41,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE1QTVGQjc0QzRCMjMyNTUKUldSVk1yTEVkUHVsRlN2ZUhDUkVFdHd2eFN6aUFKR3dQL2NnZjQ5ZWZQa2srSEtXZzNpNDJPVU8K",
       "endpoints": [
-        "https://gist.githubusercontent.com/Dylan-B-D/baf8f637fea53bc8ae963c4a30683973/raw/c4b286cef5cd741bf9fcd3f35262b0750ec7059e/latest.json"
+        "https://gist.githubusercontent.com/Dylan-B-D/baf8f637fea53bc8ae963c4a30683973/raw/"
       ],
       "windows": {
         "installMode": "passive"

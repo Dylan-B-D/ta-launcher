@@ -29,10 +29,11 @@ function App() {
   const checkForUpdates = async () => {
     try {
       const update = await check();
+      console.log("Update:", update);
       if (update?.available) {
         setUpdateVersion(update.version);
         setUpdateBody(update.body || "");
-        // setUpdateModalOpened(true); // TODO: Uncomment when updater is ready
+        setUpdateModalOpened(true);
       }
     } catch (error) {
       console.error("Error checking for updates:", error);

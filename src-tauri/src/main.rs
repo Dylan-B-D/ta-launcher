@@ -48,7 +48,8 @@ fn main() {
             load_backup_ini_file,
             backup_ini_files,
             delete_backup,
-            get_backups
+            get_backups,
+            
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
