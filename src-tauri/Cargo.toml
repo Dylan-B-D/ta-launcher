@@ -2,7 +2,7 @@ cargo-features = ["profile-rustflags", "trim-paths"]
 
 [package]
 name = "ta-launcherv2"
-version = "0.1.2"
+version = "0.1.3"
 description = "TA Launcher v2"
 authors = ["dbd"]
 edition = "2021"

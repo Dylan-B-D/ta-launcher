@@ -9,14 +9,13 @@ const ReleaseNotesCard = () => (
         alignItems: "center",
       }}
     >
-      <Title order={4}>Version 0.1.2-beta2</Title>
+      <Title order={4}>Version 0.1.3-beta</Title>
       <Text size="sm" c="dimmed">
-        Last updated: 2024.08.05
+        Last updated: 2024.08.10
       </Text>
     </div>
     <List fz="sm" c="dimmed" mt="sm">
-      <List.Item>Fix incorrect config check on setup.</List.Item>
-      <List.Item>Removed inches from sensitivity calculator due to issues.</List.Item>
+      <List.Item>Switched the main installer to Microsoft's Installer (MSI).</List.Item>
     </List>
   </Card>
 );
