@@ -2,6 +2,13 @@
 
 A launcher for Tribes: Ascend that has a first time setup to streamline the installation.
 
+
+# Screenshots
+![Screenshot 2](./images/config.png)
+![Screenshot 3](./images/packages.png)
+![Screenshot 1](./images/home.png)
+
+
 ## Improvements
 
 - First time setup
