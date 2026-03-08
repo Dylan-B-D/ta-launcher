@@ -9,13 +9,15 @@ const ReleaseNotesCard = () => (
         alignItems: "center",
       }}
     >
-      <Title order={4}>Version 0.1.3-beta</Title>
+      <Title order={4}>Version 0.1.4</Title>
       <Text size="sm" c="dimmed">
-        Last updated: 2024.08.10
+        Last updated: 2026.03.08
       </Text>
     </div>
     <List fz="sm" c="dimmed" mt="sm">
-      <List.Item>Switched the main installer to Microsoft's Installer (MSI).</List.Item>
+      <List.Item>Added Lag comp dll support.</List.Item>
+      <List.Item>Fixed player count tooltip overflow.</List.Item>
+      <List.Item>Update app icon.</List.Item>
     </List>
   </Card>
 );

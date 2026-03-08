@@ -4185,7 +4185,7 @@ dependencies = [
 
 [[package]]
 name = "ta-launcherv2"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "async-process",
  "chrono",
