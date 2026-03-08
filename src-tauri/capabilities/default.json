@@ -6,7 +6,8 @@
     "main"
   ],
   "permissions": [
-    "shell:allow-open",
+    "core:default",
+    "opener:default",
     "fs:default",
     {
       "identifier": "fs:allow-exists",

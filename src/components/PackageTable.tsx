@@ -43,6 +43,7 @@ const PackagesTable = () => {
     "tamods-routesjphard",
     "tamods-dll-beta",
     "tamods-dll-edge",
+    "lag-compensation-client",
   ];
 
   const minimumPackages = ["tamods-dll"];
@@ -52,6 +53,7 @@ const PackagesTable = () => {
     "tamods-stdlib",
     "community-maps",
     "tamods-routesrec",
+    "lag-compensation-client",
   ];
 
   const sortedPackages = Object.values(packages)
@@ -95,6 +97,16 @@ const PackagesTable = () => {
             ...pkg.package,
             description: "Hard Pathfinder Routes for competitive maps", // Simplify description
             displayName: "JP's Hard Pathfinder Routes", // Shorten name
+          },
+        };
+      }
+      if (pkg.package.id === "lag-compensation-client") {
+        return {
+          ...pkg,
+          package: {
+            ...pkg.package,
+            description: "Lag compensation client implementation.",
+            displayName: "Lag Comp",
           },
         };
       }
@@ -282,7 +294,7 @@ const PackagesTable = () => {
       </Text>
       <Text size="sm" c="dimmed">
         <strong>Recommended:</strong> TAMods Core, Standard Library, Community
-        Maps, and Recommended GOTY Routes.
+        Maps, Recommended GOTY Routes and Lag Comp.
       </Text>
 
       <Space h="8px" />

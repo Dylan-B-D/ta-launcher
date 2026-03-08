@@ -2,7 +2,7 @@ use super::data::{get_app_local_data_dir, get_game_folder, get_tribes_dir, CONFI
 use std::path::PathBuf;
 use tauri::command;
 use tauri::AppHandle;
-use tauri_plugin_shell::ShellExt;
+use tauri_plugin_opener::OpenerExt;
 
 #[command]
 pub fn open_directory(path_type: String, handle: AppHandle) -> Result<(), String> {
@@ -16,7 +16,7 @@ pub fn open_directory(path_type: String, handle: AppHandle) -> Result<(), String
 
     // Open the path with the default system handler
     handle
-        .shell()
-        .open(path.to_str().unwrap(), None)
+        .opener()
+        .open_path(path.to_str().unwrap(), None::<&str>)
         .map_err(|e| format!("Failed to open directory: {}", e))
 }

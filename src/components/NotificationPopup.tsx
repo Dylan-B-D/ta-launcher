@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, JSX } from "react";
 import { Notification, Progress, Box } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 

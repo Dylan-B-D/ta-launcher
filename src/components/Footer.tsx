@@ -171,6 +171,7 @@ function Footer() {
               <Tooltip
                 label={playerData.Community.names.join(", ") || "No players"}
                 withArrow
+                multiline
               >
                 <Badge
                   fw={500}
@@ -201,6 +202,7 @@ function Footer() {
               <Tooltip
                 label={playerData.PUG.names.join(", ") || "No players"}
                 withArrow
+                multiline
               >
                 <Badge
                   fw={500}

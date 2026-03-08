@@ -49,15 +49,15 @@ const LocationChart: React.FC<LocationChartProps> = ({ locations }) => {
     plot_bgcolor: "rgba(0,0,0,0)",
     scene: {
       xaxis: {
-        title: "X Axis",
+        title: { text: "X Axis" },
         color: "rgba(0,0,0,0)",
       },
       yaxis: {
-        title: "Y Axis",
+        title: { text: "Y Axis" },
         color: "rgba(0,0,0,0)",
       },
       zaxis: {
-        title: "Z Axis",
+        title: { text: "Z Axis" },
         color: "rgba(0,0,0,0)",
       },
       aspectratio: { x: 1, y: 1, z: 0.3 },

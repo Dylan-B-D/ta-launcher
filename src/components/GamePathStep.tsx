@@ -31,16 +31,16 @@ export const GamePathStep: React.FC<GamePathStepProps> = ({
 
   const selectFile = async () => {
     try {
-      const selected = await open();
-
+      const selected = await open({
+        filters: [{ name: "EXE", extensions: ["exe"] }],
+      });
       if (
         selected &&
-        typeof selected.path === "string" &&
-        selected.path.endsWith(".exe")
+        typeof selected === "string" && selected.endsWith(".exe")
       ) {
         setConfig((prevConfig: any) => ({
           ...prevConfig,
-          gamePath: selected.path,
+          gamePath: selected,
         }));
         setGamePathError(false);
       }
