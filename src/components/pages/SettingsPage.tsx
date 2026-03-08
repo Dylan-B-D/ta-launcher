@@ -28,12 +28,14 @@ const SettingsPage = () => {
 
   const selectFile = async (field: "gamePath") => {
     try {
-      const selected = await open();
+      const selected = await open({
+        filters: [{ name: "EXE", extensions: ["exe"] }],
+      });
 
-      if (selected && typeof selected.path === "string") {
-        if (field === "gamePath" && !selected.path.endsWith(".exe")) return;
+      if (selected && typeof selected === "string") {
+        if (field === "gamePath" && !selected.endsWith(".exe")) return;
 
-        setConfig((prevConfig) => ({ ...prevConfig, [field]: selected.path }));
+        setConfig((prevConfig) => ({ ...prevConfig, [field]: selected }));
       }
     } catch (error) {
       console.error(`Error selecting file for ${field}:`, error);
