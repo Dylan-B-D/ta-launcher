@@ -19,6 +19,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({
     loginServer: "Community",
     launchMethod: "Non-Steam",
     dllVersion: "Release",
+    lagCompVersion: "Edge",
     dpi: 800,
     units: "Metric",
     customServerIP: "",

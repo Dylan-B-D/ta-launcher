@@ -25,7 +25,9 @@ const LaunchOptions = () => {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [pendingDLL, setPendingDLL] = useState("");
+  const [pendingLAGComp, setPendingLAGComp] = useState("");
   const [pendingVersion, setPendingVersion] = useState("");
+  const [pendingLAGCompVersion, setPendingLAGCompVersion] = useState("");
   const [downloadRequested, setDownloadRequested] = useState(false);
   const { addToQueue, getCompletedPackages } = useDownloadContext();
   const completedPackages = getCompletedPackages();
@@ -76,6 +78,20 @@ const LaunchOptions = () => {
     setConfig,
   ]);
 
+  useEffect(() => {
+    if (downloadRequested && completedPackages.has(pendingLAGCompVersion)) {
+      setConfig((prev) => ({ ...prev, lagCompVersion: pendingLAGCompVersion }));
+      setDownloadRequested(false);
+      setPendingLAGComp("");
+      setPendingLAGCompVersion("");
+    }
+  }, [
+    completedPackages,
+    pendingLAGComp,
+    pendingLAGCompVersion,
+    downloadRequested,
+    setConfig,
+  ]);
   const handleServerChange = (value: string) => {
     setConfig((prev) => ({ ...prev, loginServer: value }));
     if (value !== "Custom") {
@@ -122,19 +138,38 @@ const LaunchOptions = () => {
     }
   };
 
-  const selectFile = async () => {
+  const checkAndSetLagCompVersion = (version: string) => {
+    if (version === "None" || version === "Custom") {
+      setConfig((prev) => ({ ...prev, lagCompVersion: version }));
+      return;
+    }
+
+    const packageMap: { [key: string]: string } = {
+      Release: "lag-compensation-client",
+      Beta: "lag-compensation-client",
+      Edge: "lag-compensation-client",
+    };
+    const packageId = packageMap[version];
+
+    if (completedPackages.has(packageId)) {
+      setConfig((prev) => ({ ...prev, lagCompVersion: version }));
+    } else {
+      setPendingLAGComp(packageId);
+      setPendingLAGCompVersion(version);
+      setShowModal(true);
+    }
+  };
+const selectFile = async () => {
     try {
-      const selected = await open();
-      if (
-        selected &&
-        typeof selected.path === "string" &&
-        selected.path.endsWith(".dll")
-      ) {
+      const selected = await open({
+        filters: [{ name: "DLL", extensions: ["dll"] }],
+      });
+      if (typeof selected === "string" && selected.endsWith(".dll")) {
         setConfig((prevConfig) => ({
           ...prevConfig,
-          customDLLPath: selected.path,
+          customDLLPath: selected,
         }));
-        setCustomDLLPath(selected.path);
+        setCustomDLLPath(selected);
       }
     } catch (error) {
       console.error(`Error selecting DLL file:`, error);
@@ -146,12 +181,18 @@ const LaunchOptions = () => {
       addToQueue(pendingDLL);
       setDownloadRequested(true);
     }
+    if (pendingLAGComp) {
+      addToQueue(pendingLAGComp);
+      setDownloadRequested(true);
+    }
     setShowModal(false);
   };
 
   const handleModalCancel = () => {
     setPendingDLL("");
     setPendingVersion("");
+    setPendingLAGComp("");
+    setPendingLAGCompVersion("");
     setConfig((prev) => ({ ...prev, dllVersion: "None" }));
     setShowModal(false);
   };
@@ -321,7 +362,45 @@ const LaunchOptions = () => {
           </>
         )}
       </Group>
+      <Divider my="xs" />
 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Title order={5}>Lag Compensation</Title>
+        <Text size="sm" c="dimmed">
+          <strong>Recommended:</strong> Edge
+        </Text>
+      </div>
+      {/* <Text size="sm" c="dimmed">
+        <strong>Release:</strong> The latest stable version of Lag Compensation.
+      </Text>
+      <Text size="sm" c="dimmed">
+        <strong>Beta:</strong> Likely to have minor issues.
+      </Text> */}
+      <Text size="sm" c="dimmed">
+        <strong>Edge:</strong> Testing purposes only, high likelihood of stability concerns.
+      </Text>
+      <Group style={{ marginTop: "10px", width: "100%" }}>
+        <SegmentedControl
+          color="rgba(0, 128, 158, 0.7)"
+          value={config.lagCompVersion}
+          onChange={(value) => checkAndSetLagCompVersion(value)}
+          data={["Edge", "None"]}
+          style={{
+            background:
+              "linear-gradient(to right, rgba(0, 255, 255, 0.1), rgba(0, 128, 128, 0.1))",
+            borderRadius: "8px",
+            color: "transparent",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)",
+            flexGrow: 1,
+          }}
+        />
+      </Group>
       <Modal
         opened={showModal}
         onClose={handleModalCancel}

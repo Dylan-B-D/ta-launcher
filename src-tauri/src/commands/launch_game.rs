@@ -50,6 +50,11 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
         .ok_or("DLL version not found")?;
     info!("DLL version: {}", dll_version);
 
+    let lag_comp_version = config["lagCompVersion"]
+        .as_str()
+        .ok_or("LAG Comp version not found")?;
+    info!("LAG Comp version: {}", lag_comp_version);
+
     let login_server = config["loginServer"]
         .as_str()
         .ok_or("Login server not found")?;
@@ -102,7 +107,35 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
         _ => return Err("Invalid DLL version".to_string()),
     };
 
+    let lagcomp_content = match lag_comp_version {
+        "Release" => {
+            let path = app_data_dir
+                .join("dlls")
+                .join("TribesAscendServerLagCompensation.dll");
+            info!("LAG Comp Release DLL path: {:?}", path);
+            fs::read(&path).map_err(|e| format!("Failed to read Release LAG Comp DLL: {}", e))?
+        }
+        "Beta" => {
+            let path = app_data_dir
+                .join("dlls")
+                .join("TribesAscendServerLagCompensation.dll");
+            info!("LAG Comp Beta DLL path: {:?}", path);
+            fs::read(&path).map_err(|e| format!("Failed to read Beta LAG Comp DLL: {}", e))?
+        }
+        "Edge" => {
+            let path = app_data_dir
+                .join("dlls")
+                .join("TribesAscendServerLagCompensation.dll");
+            info!("LAG Comp Edge DLL path: {:?}", path);
+            fs::read(&path).map_err(|e| format!("Failed to read Edge LAG Comp DLL: {}", e))?
+        }
+        "None" => Vec::new(), // No LAG Comp DLL injection, just launch the game
+        _ => return Err("Invalid LAG Comp version".to_string()),
+    };
     // Replace the content of matching DLLs in the game folder with the chosen TAMods DLL if DLL version != "None"
+    // Also replaced one with a LAG Comp DLL
+    let mut lag_dll_replaced = false;
+
     if dll_version != "None" {
         let mut replaced_dlls = Vec::new();
 
@@ -133,9 +166,17 @@ pub async fn launch_game(handle: tauri::AppHandle) -> Result<(), String> {
                     .map_err(|e| format!("Failed to read game DLL {}: {}", dll_name, e))?;
                 replaced_dlls.push((game_dll_path.clone(), original_content));
 
-                // Replace with TAMods DLL content
-                fs::write(&game_dll_path, &tamods_dll_content)
-                    .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+                if lag_comp_version == "None" || lag_dll_replaced {
+                    // Replace with TAMods DLL content
+                    fs::write(&game_dll_path, &tamods_dll_content)
+                        .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+                } else {
+                    // Replace with LAG Comp DLL content
+                    fs::write(&game_dll_path, &lagcomp_content)
+                        .map_err(|e| format!("Failed to replace game DLL {}: {}", dll_name, e))?;
+
+                    lag_dll_replaced = true;
+                }
             }
         }
         info!("DLLs replaced.");

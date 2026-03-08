@@ -1,4 +1,5 @@
 import { IconType } from "react-icons";
+import { JSX } from "react/jsx-runtime";
 
 export interface FirstTimeSetupProps {
   onComplete: () => void;
@@ -65,6 +66,7 @@ export interface Config {
   loginServer: string;
   launchMethod: string;
   dllVersion: string;
+  lagCompVersion: string;
   dpi: number;
   units: string; // Currently only "cm" is supported
   customServerIP: string;
