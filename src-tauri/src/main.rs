@@ -23,6 +23,7 @@ fn main() {
         .filter_level(log::LevelFilter::Info) // Set the level for printing debug to console (Off, Warn, Info, Debug etc)
         .init();
     tauri::Builder::default()
+        .plugin(tauri_plugin_window_state::Builder::new().build())
         .setup(|app| {
             #[cfg(desktop)]
             app.handle()
